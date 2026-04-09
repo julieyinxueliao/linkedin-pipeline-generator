@@ -186,7 +186,7 @@ const Onboarding = () => {
             ) : voiceOption === 'write' ? (
               <>
                 <h2 className="text-xl font-bold text-primary-foreground text-center">
-                  {currentPrompt === 0 ? 'Share one lesson you learned this year' : 'What's one thing you wish you knew earlier in your career?'}
+                  {currentPrompt === 0 ? 'Share one lesson you learned this year' : "What's one thing you wish you knew earlier in your career?"}
                 </h2>
                 <Textarea
                   value={currentPrompt === 0 ? samplePost1 : samplePost2}
