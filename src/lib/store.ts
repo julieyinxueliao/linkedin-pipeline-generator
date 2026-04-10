@@ -1,5 +1,11 @@
 import { create } from 'zustand';
 
+export interface ContentSuggestion {
+  id: string;
+  excerpt: string;
+  tag: string;
+}
+
 export interface UserProfile {
   name: string;
   role: string;
@@ -8,6 +14,7 @@ export interface UserProfile {
   goalCustom?: string;
   voiceStyle: string[];
   samplePosts: string[];
+  contentSuggestions: ContentSuggestion[];
 }
 
 export interface ScheduleSlot {
@@ -55,6 +62,7 @@ export const useAppStore = create<AppState>((set) => ({
     goal: '',
     voiceStyle: [],
     samplePosts: [],
+    contentSuggestions: [],
   },
   schedule: [],
   drafts: [],
