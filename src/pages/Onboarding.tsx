@@ -258,7 +258,7 @@ const Onboarding = () => {
                 )}
               </div>
             </div>
-            <Button variant="linkedin" size="lg" className="w-full h-12 text-base font-semibold" disabled={!role || !industry} onClick={handleRoleContinue}>
+            <Button size="lg" className="w-full h-12 text-base font-semibold bg-success text-linkedin-foreground hover:brightness-110 shadow-glow active:scale-[0.98]" disabled={!role || !industry} onClick={handleRoleContinue}>
               Continue
               <ArrowRight className="h-4 w-4 ml-1" />
             </Button>
