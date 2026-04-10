@@ -4,6 +4,15 @@ export interface ContentSuggestion {
   id: string;
   excerpt: string;
   tag: string;
+  source: 'niche' | 'trending' | 'document';
+}
+
+export interface ConnectedSource {
+  id: string;
+  name: string;
+  icon: string;
+  connectedAt: string;
+  documentCount: number;
 }
 
 export interface UserProfile {
@@ -15,6 +24,7 @@ export interface UserProfile {
   voiceStyle: string[];
   samplePosts: string[];
   contentSuggestions: ContentSuggestion[];
+  connectedSources: ConnectedSource[];
 }
 
 export interface ScheduleSlot {
@@ -63,6 +73,7 @@ export const useAppStore = create<AppState>((set) => ({
     voiceStyle: [],
     samplePosts: [],
     contentSuggestions: [],
+    connectedSources: [],
   },
   schedule: [],
   drafts: [],
