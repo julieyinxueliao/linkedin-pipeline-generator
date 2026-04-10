@@ -15,6 +15,10 @@ const Dashboard = () => {
   const draftCount = drafts.filter((d) => d.status === 'draft').length;
   const suggestions = profile.contentSuggestions || [];
 
+  const handleUseSuggestion = (suggestion: typeof suggestions[0]) => {
+    navigate('/draft', { state: { suggestion } });
+  };
+
   return (
     <div className="p-6 md:p-8 max-w-6xl mx-auto">
       {/* Header */}
@@ -92,7 +96,7 @@ const Dashboard = () => {
             </section>
           )}
 
-          {/* Content Suggestions — only show if user selected some during onboarding */}
+          {/* Content Suggestions */}
           {suggestions.length > 0 && (
             <section>
               <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-4 flex items-center gap-2">
@@ -109,7 +113,7 @@ const Dashboard = () => {
                       <p className="text-sm text-foreground leading-relaxed font-medium">{s.excerpt}</p>
                       <Badge variant="secondary" className="mt-2 text-[10px] uppercase tracking-wider font-semibold">{s.tag}</Badge>
                     </div>
-                    <Button variant="ghost" size="sm" className="shrink-0 text-linkedin hover:text-linkedin hover:bg-linkedin/5" onClick={() => navigate('/draft')}>
+                    <Button variant="ghost" size="sm" className="shrink-0 text-linkedin hover:text-linkedin hover:bg-linkedin/5" onClick={() => handleUseSuggestion(s)}>
                       Use this
                     </Button>
                   </div>

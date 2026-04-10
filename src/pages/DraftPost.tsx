@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useAppStore } from '@/lib/store';
 import { generateMockPost } from '@/lib/mock-data';
 import { Button } from '@/components/ui/button';
@@ -12,11 +13,25 @@ type Step = 'source' | 'recording' | 'generating' | 'editing' | 'preview';
 
 const DraftPost = () => {
   const addDraft = useAppStore((s) => s.addDraft);
-  const [step, setStep] = useState<Step>('source');
+  const location = useLocation();
+  const suggestion = (location.state as any)?.suggestion;
+
+  const [step, setStep] = useState<Step>(suggestion ? 'generating' : 'source');
   const [content, setContent] = useState('');
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
   const [transcript, setTranscript] = useState('');
+
+  // When arriving with a suggestion, auto-generate a draft from it
+  useEffect(() => {
+    if (suggestion) {
+      const timer = setTimeout(() => {
+        setContent(generateMockPost(suggestion.tag || 'Content idea', suggestion.excerpt || ''));
+        setStep('editing');
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [suggestion]);
 
   const handleSourceSelect = (source: string) => {
     if (source === 'scratch') {
@@ -27,7 +42,6 @@ const DraftPost = () => {
       setStep('recording');
       return;
     }
-    // document source
     setStep('generating');
     setTimeout(() => {
       setContent(generateMockPost('Industry insight', 'Story arc'));
@@ -38,7 +52,6 @@ const DraftPost = () => {
   const handleStartRecording = () => {
     setIsRecording(true);
     const interval = setInterval(() => setRecordingTime((t) => t + 1), 1000);
-    // simulate recording for demo
     setTimeout(() => {
       clearInterval(interval);
       setIsRecording(false);
@@ -83,9 +96,10 @@ const DraftPost = () => {
   return (
     <div className="p-6 md:p-8 max-w-3xl mx-auto">
       <h1 className="text-2xl font-bold text-foreground mb-2">Draft a Post</h1>
-      <p className="text-muted-foreground text-sm mb-8">Create a LinkedIn post from your ideas.</p>
+      <p className="text-muted-foreground text-sm mb-8">
+        {suggestion ? `Building on: "${suggestion.excerpt?.slice(0, 60)}…"` : 'Create a LinkedIn post from your ideas.'}
+      </p>
 
-      {/* Source Selection */}
       {step === 'source' && (
         <div className="grid sm:grid-cols-3 gap-4 animate-fade-in">
           {[
@@ -106,7 +120,6 @@ const DraftPost = () => {
         </div>
       )}
 
-      {/* Recording */}
       {step === 'recording' && (
         <div className="text-center space-y-6 animate-fade-in">
           {!transcript ? (
@@ -131,7 +144,6 @@ const DraftPost = () => {
         </div>
       )}
 
-      {/* Generating */}
       {step === 'generating' && (
         <div className="text-center space-y-4 py-16 animate-fade-in">
           <Loader2 className="h-10 w-10 text-linkedin animate-spin mx-auto" />
@@ -140,7 +152,6 @@ const DraftPost = () => {
         </div>
       )}
 
-      {/* Editing */}
       {step === 'editing' && (
         <div className="space-y-4 animate-fade-in">
           <div className="flex items-center justify-between">
@@ -168,7 +179,6 @@ const DraftPost = () => {
         </div>
       )}
 
-      {/* Preview */}
       {step === 'preview' && (
         <div className="space-y-6 animate-fade-in">
           <h2 className="text-lg font-semibold text-foreground">Post Preview</h2>
