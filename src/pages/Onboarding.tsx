@@ -1,12 +1,12 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAppStore } from '@/lib/store';
-import { mockVoiceProfile, generateNicheSuggestions } from '@/lib/mock-data';
+import { useAppStore, type ConnectedSource } from '@/lib/store';
+import { mockVoiceProfile, generateNicheSuggestion, generateTrendingSuggestion, generateDocumentSuggestions } from '@/lib/mock-data';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { Target, User, FileText, Check, ArrowRight, Sparkles } from 'lucide-react';
+import { Target, User, FileText, Check, ArrowRight, Sparkles, FolderOpen, Link2, FileUp, Cloud, TrendingUp, BookOpen } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const goals = [
@@ -26,6 +26,14 @@ const nicheExamples = [
   'Cybersecurity & compliance',
   'EdTech & workforce development',
   'Real estate technology',
+];
+
+const documentSources = [
+  { id: 'google-drive', name: 'Google Drive', icon: '📁', desc: 'Docs, slides, and spreadsheets' },
+  { id: 'notion', name: 'Notion', icon: '📝', desc: 'Pages, databases, and wikis' },
+  { id: 'dropbox', name: 'Dropbox', icon: '📦', desc: 'Files and paper documents' },
+  { id: 'confluence', name: 'Confluence', icon: '📄', desc: 'Team knowledge base' },
+  { id: 'upload', name: 'Upload files', icon: '⬆️', desc: 'PDF, DOCX, or TXT files' },
 ];
 
 function getTopicPrompts(industry: string): [string, string] {
@@ -91,6 +99,12 @@ function getTopicPrompts(industry: string): [string, string] {
   ];
 }
 
+const sourceIconMap: Record<string, typeof Target> = {
+  niche: BookOpen,
+  trending: TrendingUp,
+  document: FileText,
+};
+
 const Onboarding = () => {
   const navigate = useNavigate();
   const { currentOnboardingStep, setOnboardingStep, updateProfile, setOnboardingComplete } = useAppStore();
@@ -108,13 +122,23 @@ const Onboarding = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [voiceProfileReady, setVoiceProfileReady] = useState(false);
   const [selectedSuggestions, setSelectedSuggestions] = useState<Set<string>>(new Set());
+  const [connectedSources, setConnectedSources] = useState<ConnectedSource[]>([]);
+  const [connectingSourceId, setConnectingSourceId] = useState<string | null>(null);
 
   const step = currentOnboardingStep;
   const topicPrompts = useMemo(() => getTopicPrompts(industry), [industry]);
-  const nicheSuggestions = useMemo(
-    () => generateNicheSuggestions(profile.role || role, profile.industry || industry),
-    [profile.role, profile.industry, role, industry]
-  );
+
+  const finalRole = profile.role || role;
+  const finalIndustry = profile.industry || industry;
+
+  // Generate exactly 4 suggestions: 1 niche + 1 trending + 2 document-based
+  const allSuggestions = useMemo(() => {
+    const niche = generateNicheSuggestion(finalRole, finalIndustry);
+    const trending = generateTrendingSuggestion(finalIndustry);
+    const sourceNames = connectedSources.map((s) => s.name);
+    const docs = generateDocumentSuggestions(finalRole, finalIndustry, sourceNames);
+    return [niche, trending, ...docs];
+  }, [finalRole, finalIndustry, connectedSources]);
 
   const handleGoalContinue = () => {
     updateProfile({ goal: selectedGoal === 'other' ? customGoal : selectedGoal });
@@ -142,6 +166,31 @@ const Onboarding = () => {
     setOnboardingStep(3);
   };
 
+  const handleConnectSource = (source: typeof documentSources[0]) => {
+    setConnectingSourceId(source.id);
+    // Simulate connecting to a document source
+    setTimeout(() => {
+      const newSource: ConnectedSource = {
+        id: source.id,
+        name: source.name,
+        icon: source.icon,
+        connectedAt: new Date().toISOString(),
+        documentCount: Math.floor(Math.random() * 20) + 5,
+      };
+      setConnectedSources((prev) => [...prev, newSource]);
+      setConnectingSourceId(null);
+    }, 1500);
+  };
+
+  const handleDisconnectSource = (sourceId: string) => {
+    setConnectedSources((prev) => prev.filter((s) => s.id !== sourceId));
+  };
+
+  const handleDocsContinue = () => {
+    updateProfile({ connectedSources });
+    setOnboardingStep(4);
+  };
+
   const toggleSuggestion = (id: string) => {
     setSelectedSuggestions((prev) => {
       const next = new Set(prev);
@@ -152,13 +201,13 @@ const Onboarding = () => {
   };
 
   const handleFinish = () => {
-    const selected = nicheSuggestions.filter((s) => selectedSuggestions.has(s.id));
-    updateProfile({ contentSuggestions: selected.length > 0 ? selected : nicheSuggestions });
+    const selected = allSuggestions.filter((s) => selectedSuggestions.has(s.id));
+    updateProfile({ contentSuggestions: selected.length > 0 ? selected : allSuggestions });
     setOnboardingComplete(true);
     navigate('/dashboard');
   };
 
-  const totalSteps = 4;
+  const totalSteps = 5;
 
   return (
     <div className="min-h-screen gradient-hero flex flex-col items-center justify-center px-4 relative overflow-hidden">
@@ -340,7 +389,7 @@ const Onboarding = () => {
                     className="p-6 rounded-xl border border-primary-foreground/8 hover:border-linkedin/30 hover:bg-linkedin/[0.03] transition-all text-center space-y-4 group"
                   >
                     <div className="h-12 w-12 rounded-xl bg-linkedin/10 flex items-center justify-center mx-auto group-hover:bg-linkedin/15 transition-colors">
-                      <FileText className="h-6 w-6 text-linkedin" />
+                      <FileUp className="h-6 w-6 text-linkedin" />
                     </div>
                     <div>
                       <div className="font-semibold text-primary-foreground text-sm">Paste past posts</div>
@@ -401,42 +450,147 @@ const Onboarding = () => {
           </div>
         )}
 
-        {/* Step 3: Tailored Content Suggestions */}
+        {/* Step 3: Connect Document Sources */}
         {step === 3 && (
           <div className="animate-fade-in space-y-8">
             <div className="space-y-3">
               <p className="text-linkedin text-xs font-semibold tracking-widest uppercase">Step 4 of {totalSteps}</p>
+              <h2 className="text-3xl font-black text-primary-foreground tracking-tight">Connect your content</h2>
+              <p className="text-primary-foreground/40 text-sm">
+                We'll mine your existing documents for content gold — ideas only <span className="text-primary-foreground/70 font-medium">you</span> can write about.
+              </p>
+            </div>
+
+            {/* Connected sources */}
+            {connectedSources.length > 0 && (
+              <div className="space-y-2">
+                <p className="text-xs font-semibold text-primary-foreground/40 uppercase tracking-wider">Connected</p>
+                {connectedSources.map((source) => (
+                  <div
+                    key={source.id}
+                    className="flex items-center gap-3 p-4 rounded-xl border border-success/20 bg-success/5"
+                  >
+                    <span className="text-xl">{source.icon}</span>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-primary-foreground">{source.name}</p>
+                      <p className="text-xs text-primary-foreground/40">{source.documentCount} documents found</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Check className="h-4 w-4 text-success" />
+                      <button
+                        onClick={() => handleDisconnectSource(source.id)}
+                        className="text-xs text-primary-foreground/30 hover:text-primary-foreground/60 transition-colors"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Available sources */}
+            <div className="space-y-2">
+              {connectedSources.length > 0 && (
+                <p className="text-xs font-semibold text-primary-foreground/40 uppercase tracking-wider">Add more</p>
+              )}
+              {documentSources
+                .filter((s) => !connectedSources.some((c) => c.id === s.id))
+                .map((source) => (
+                  <button
+                    key={source.id}
+                    onClick={() => handleConnectSource(source)}
+                    disabled={connectingSourceId === source.id}
+                    className={cn(
+                      'w-full flex items-center gap-3 p-4 rounded-xl border transition-all text-left group',
+                      connectingSourceId === source.id
+                        ? 'border-linkedin/30 bg-linkedin/5'
+                        : 'border-primary-foreground/8 hover:border-linkedin/30 hover:bg-linkedin/[0.03]'
+                    )}
+                  >
+                    <span className="text-xl">{source.icon}</span>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-primary-foreground">{source.name}</p>
+                      <p className="text-xs text-primary-foreground/30">{source.desc}</p>
+                    </div>
+                    {connectingSourceId === source.id ? (
+                      <div className="h-5 w-5 rounded-full border-2 border-linkedin border-t-transparent animate-spin" />
+                    ) : (
+                      <Link2 className="h-4 w-4 text-primary-foreground/20 group-hover:text-linkedin transition-colors" />
+                    )}
+                  </button>
+                ))}
+            </div>
+
+            <div className="space-y-3">
+              <Button
+                variant="linkedin"
+                size="lg"
+                className="w-full h-12 text-base font-semibold"
+                disabled={connectedSources.length === 0}
+                onClick={handleDocsContinue}
+              >
+                Continue with {connectedSources.length} source{connectedSources.length !== 1 ? 's' : ''}
+                <ArrowRight className="h-4 w-4 ml-1" />
+              </Button>
+              <button
+                onClick={handleDocsContinue}
+                className="w-full text-center text-xs text-primary-foreground/30 hover:text-primary-foreground/50 transition-colors py-1"
+              >
+                Skip for now — I'll add sources later
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Step 4: Tailored Content Suggestions (exactly 4) */}
+        {step === 4 && (
+          <div className="animate-fade-in space-y-8">
+            <div className="space-y-3">
+              <p className="text-linkedin text-xs font-semibold tracking-widest uppercase">Step 5 of {totalSteps}</p>
               <h2 className="text-3xl font-black text-primary-foreground tracking-tight">Your first content ideas</h2>
               <p className="text-primary-foreground/40 text-sm">
-                Tailored to your role as <span className="text-primary-foreground/70 font-medium">{profile.role}</span> in <span className="text-primary-foreground/70 font-medium">{profile.industry}</span>. Pick the ones that resonate.
+                4 ideas crafted from your niche, trending topics, and {connectedSources.length > 0 ? 'your documents' : 'your expertise'}. Pick the ones that spark something.
               </p>
             </div>
             <div className="space-y-3">
-              {nicheSuggestions.map((s) => (
-                <button
-                  key={s.id}
-                  onClick={() => toggleSuggestion(s.id)}
-                  className={cn(
-                    'w-full p-4 rounded-xl border text-left transition-all flex items-start gap-3 group',
-                    selectedSuggestions.has(s.id)
-                      ? 'border-linkedin bg-linkedin/8 shadow-glow'
-                      : 'border-primary-foreground/8 hover:border-primary-foreground/15 bg-primary-foreground/[0.02]'
-                  )}
-                >
-                  <div className={cn(
-                    'h-5 w-5 rounded-md border-2 flex items-center justify-center shrink-0 mt-0.5 transition-all',
-                    selectedSuggestions.has(s.id)
-                      ? 'border-linkedin bg-linkedin'
-                      : 'border-primary-foreground/20'
-                  )}>
-                    {selectedSuggestions.has(s.id) && <Check className="h-3 w-3 text-white" />}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm text-primary-foreground leading-relaxed font-medium">{s.excerpt}</p>
-                    <Badge variant="secondary" className="mt-2 text-[10px] uppercase tracking-wider font-semibold bg-primary-foreground/5 text-primary-foreground/40">{s.tag}</Badge>
-                  </div>
-                </button>
-              ))}
+              {allSuggestions.map((s) => {
+                const SourceIcon = sourceIconMap[s.source] || Sparkles;
+                const sourceLabel =
+                  s.source === 'niche' ? 'Your niche' :
+                  s.source === 'trending' ? 'Trending on LinkedIn' :
+                  'Your documents';
+
+                return (
+                  <button
+                    key={s.id}
+                    onClick={() => toggleSuggestion(s.id)}
+                    className={cn(
+                      'w-full p-4 rounded-xl border text-left transition-all flex items-start gap-3 group',
+                      selectedSuggestions.has(s.id)
+                        ? 'border-linkedin bg-linkedin/8 shadow-glow'
+                        : 'border-primary-foreground/8 hover:border-primary-foreground/15 bg-primary-foreground/[0.02]'
+                    )}
+                  >
+                    <div className={cn(
+                      'h-5 w-5 rounded-md border-2 flex items-center justify-center shrink-0 mt-0.5 transition-all',
+                      selectedSuggestions.has(s.id)
+                        ? 'border-linkedin bg-linkedin'
+                        : 'border-primary-foreground/20'
+                    )}>
+                      {selectedSuggestions.has(s.id) && <Check className="h-3 w-3 text-white" />}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1.5 mb-1.5">
+                        <SourceIcon className="h-3 w-3 text-primary-foreground/30" />
+                        <span className="text-[10px] uppercase tracking-wider text-primary-foreground/30 font-semibold">{sourceLabel}</span>
+                      </div>
+                      <p className="text-sm text-primary-foreground leading-relaxed font-medium">{s.excerpt}</p>
+                      <Badge variant="secondary" className="mt-2 text-[10px] uppercase tracking-wider font-semibold bg-primary-foreground/5 text-primary-foreground/40">{s.tag}</Badge>
+                    </div>
+                  </button>
+                );
+              })}
             </div>
             <div className="space-y-3">
               <Button variant="linkedin" size="lg" className="w-full h-12 text-base font-semibold" onClick={handleFinish}>

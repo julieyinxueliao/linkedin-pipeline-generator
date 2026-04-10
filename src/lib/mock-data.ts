@@ -48,62 +48,82 @@ export const mockAISuggestions = [
   { id: '4', excerpt: 'The best product feedback comes from your churned customers, not your power users.', tag: 'Product' },
 ];
 
-export function generateNicheSuggestions(role: string, industry: string): { id: string; excerpt: string; tag: string }[] {
+// Generate exactly 1 niche-based suggestion
+export function generateNicheSuggestion(role: string, industry: string): { id: string; excerpt: string; tag: string; source: 'niche' } {
   const lower = industry.toLowerCase();
   const roleLabel = role || 'leader';
 
   if (lower.includes('saas') || lower.includes('software')) {
+    return { id: 'niche-1', excerpt: `As a ${roleLabel}, I learned that churn tells you more about product-market fit than any growth metric ever will.`, tag: 'SaaS Strategy', source: 'niche' };
+  }
+  if (lower.includes('ai') || lower.includes('ml') || lower.includes('machine learning')) {
+    return { id: 'niche-1', excerpt: `90% of AI projects fail not because the model is wrong — but because the problem was never clearly defined.`, tag: 'AI Strategy', source: 'niche' };
+  }
+  if (lower.includes('fintech') || lower.includes('finance') || lower.includes('banking')) {
+    return { id: 'niche-1', excerpt: `The biggest fintech unlock isn't better UX — it's earning regulatory trust before you need it.`, tag: 'Compliance', source: 'niche' };
+  }
+  if (lower.includes('health') || lower.includes('med') || lower.includes('biotech')) {
+    return { id: 'niche-1', excerpt: `In healthtech, "move fast and break things" can literally break things. Here's how we move fast AND stay safe.`, tag: 'Leadership', source: 'niche' };
+  }
+  if (lower.includes('climate') || lower.includes('energy') || lower.includes('clean')) {
+    return { id: 'niche-1', excerpt: `Climate tech has a storytelling problem. We're solving existential risks but communicating like a textbook.`, tag: 'Messaging', source: 'niche' };
+  }
+  return { id: 'niche-1', excerpt: `As a ${roleLabel} in ${industry}, the lesson that took me years to learn: your network IS your net worth.`, tag: 'Career', source: 'niche' };
+}
+
+// Generate 1 trending LinkedIn topic suggestion
+export function generateTrendingSuggestion(industry: string): { id: string; excerpt: string; tag: string; source: 'trending' } {
+  const lower = industry.toLowerCase();
+
+  if (lower.includes('saas') || lower.includes('software')) {
+    return { id: 'trend-1', excerpt: `The "PLG is dead" discourse is missing the point. Product-led and sales-led aren't opposites — the winners do both.`, tag: '🔥 Trending', source: 'trending' };
+  }
+  if (lower.includes('ai') || lower.includes('ml') || lower.includes('machine learning')) {
+    return { id: 'trend-1', excerpt: `Everyone's talking about AI agents replacing jobs. But the real shift? AI is making 10x engineers out of 1x engineers.`, tag: '🔥 Trending', source: 'trending' };
+  }
+  if (lower.includes('fintech') || lower.includes('finance') || lower.includes('banking')) {
+    return { id: 'trend-1', excerpt: `Stablecoin regulation is the most important fintech conversation nobody's having on LinkedIn right now.`, tag: '🔥 Trending', source: 'trending' };
+  }
+  if (lower.includes('health') || lower.includes('med') || lower.includes('biotech')) {
+    return { id: 'trend-1', excerpt: `GLP-1 drugs are reshaping healthtech — and the companies that adapt their digital health models now will dominate.`, tag: '🔥 Trending', source: 'trending' };
+  }
+  if (lower.includes('climate') || lower.includes('energy') || lower.includes('clean')) {
+    return { id: 'trend-1', excerpt: `The IRA is one year in. Here's what climate tech founders are learning about actually deploying government capital.`, tag: '🔥 Trending', source: 'trending' };
+  }
+  return { id: 'trend-1', excerpt: `LinkedIn's algorithm just changed again. Here's what ${industry} leaders should know about reach in 2026.`, tag: '🔥 Trending', source: 'trending' };
+}
+
+// Generate 2 document-based suggestions from connected sources
+export function generateDocumentSuggestions(
+  role: string,
+  industry: string,
+  sourceNames: string[]
+): { id: string; excerpt: string; tag: string; source: 'document' }[] {
+  const roleLabel = role || 'leader';
+  const sourceName = sourceNames[0] || 'your documents';
+  const lower = industry.toLowerCase();
+
+  if (lower.includes('saas') || lower.includes('software')) {
     return [
-      { id: 'ns-1', excerpt: `As a ${roleLabel}, I learned that churn tells you more about product-market fit than any growth metric ever will.`, tag: 'SaaS Strategy' },
-      { id: 'ns-2', excerpt: `The #1 pricing mistake in SaaS? Charging for features instead of outcomes.`, tag: 'Pricing' },
-      { id: 'ns-3', excerpt: `Your first 10 customers should hate 80% of your roadmap — here's why that's a good sign.`, tag: 'Early Stage' },
-      { id: 'ns-4', excerpt: `Most SaaS onboarding flows optimize for activation. The best ones optimize for the "aha" moment.`, tag: 'Product' },
-      { id: 'ns-5', excerpt: `Enterprise sales taught me that the real buyer is never the person on the demo call.`, tag: 'Sales' },
+      { id: 'doc-1', excerpt: `Based on your product docs: "Our onboarding reduces time-to-value by 60%" — this is a killer LinkedIn post waiting to happen.`, tag: `From ${sourceName}`, source: 'document' },
+      { id: 'doc-2', excerpt: `Your Q1 report mentions a 3x improvement in retention. As a ${roleLabel}, share the framework behind it.`, tag: `From ${sourceName}`, source: 'document' },
     ];
   }
   if (lower.includes('ai') || lower.includes('ml') || lower.includes('machine learning')) {
     return [
-      { id: 'ns-1', excerpt: `90% of AI projects fail not because the model is wrong — but because the problem was never clearly defined.`, tag: 'AI Strategy' },
-      { id: 'ns-2', excerpt: `As a ${roleLabel} in AI, I've learned: the best model is the one your team can actually maintain.`, tag: 'Engineering' },
-      { id: 'ns-3', excerpt: `"Just add AI" is the new "just add blockchain." Here's how to tell if AI actually fits your use case.`, tag: 'Hot Take' },
-      { id: 'ns-4', excerpt: `The gap between a demo and a production AI system is 10x bigger than most founders realize.`, tag: 'Product' },
-      { id: 'ns-5', excerpt: `Data quality > model architecture. Every. Single. Time.`, tag: 'ML Ops' },
+      { id: 'doc-1', excerpt: `Your research notes on model evaluation could become a must-read post: "The 3 metrics that actually matter for production AI."`, tag: `From ${sourceName}`, source: 'document' },
+      { id: 'doc-2', excerpt: `That internal case study on reducing inference costs by 40%? Your audience needs to hear this story.`, tag: `From ${sourceName}`, source: 'document' },
     ];
   }
   if (lower.includes('fintech') || lower.includes('finance') || lower.includes('banking')) {
     return [
-      { id: 'ns-1', excerpt: `The biggest fintech unlock isn't better UX — it's earning regulatory trust before you need it.`, tag: 'Compliance' },
-      { id: 'ns-2', excerpt: `As a ${roleLabel}, I learned that the hardest part of fintech isn't building the product — it's building the partnerships.`, tag: 'Strategy' },
-      { id: 'ns-3', excerpt: `Traditional banks aren't slow because they're dumb. They're slow because they understand risk better than we do.`, tag: 'Hot Take' },
-      { id: 'ns-4', excerpt: `The best fintech products make money invisible. The worst ones make it confusing.`, tag: 'Product' },
-      { id: 'ns-5', excerpt: `Embedded finance will create more fintech winners than standalone apps. Here's why.`, tag: 'Trends' },
+      { id: 'doc-1', excerpt: `Your compliance playbook has a section on "trust-first design" — that's a thought leadership post your audience will save.`, tag: `From ${sourceName}`, source: 'document' },
+      { id: 'doc-2', excerpt: `The partnership framework from your strategy deck is exactly what other fintech founders struggle with. Share it.`, tag: `From ${sourceName}`, source: 'document' },
     ];
   }
-  if (lower.includes('health') || lower.includes('med') || lower.includes('biotech')) {
-    return [
-      { id: 'ns-1', excerpt: `In healthtech, "move fast and break things" can literally break things. Here's how we move fast AND stay safe.`, tag: 'Leadership' },
-      { id: 'ns-2', excerpt: `As a ${roleLabel}, the hardest conversation I have is explaining why clinical validation takes so long.`, tag: 'Founder Life' },
-      { id: 'ns-3', excerpt: `The biggest opportunity in healthtech isn't replacing doctors — it's giving them superpowers.`, tag: 'Vision' },
-      { id: 'ns-4', excerpt: `Patient trust is your real product. Everything else is a feature.`, tag: 'Strategy' },
-      { id: 'ns-5', excerpt: `HIPAA compliance isn't a checkbox. It's a competitive advantage if you do it right.`, tag: 'Compliance' },
-    ];
-  }
-  if (lower.includes('climate') || lower.includes('energy') || lower.includes('clean')) {
-    return [
-      { id: 'ns-1', excerpt: `Climate tech has a storytelling problem. We're solving existential risks but communicating like a textbook.`, tag: 'Messaging' },
-      { id: 'ns-2', excerpt: `As a ${roleLabel}, I've learned that climate investors care about unit economics just as much as impact.`, tag: 'Fundraising' },
-      { id: 'ns-3', excerpt: `The hardest sell in climate tech? Convincing enterprises that sustainability IS the cost savings.`, tag: 'Sales' },
-      { id: 'ns-4', excerpt: `Green premium is shrinking. The companies that move now will own the next decade.`, tag: 'Trends' },
-      { id: 'ns-5', excerpt: `Climate tech needs more operators, not more researchers. Here's why.`, tag: 'Hot Take' },
-    ];
-  }
-  // Generic but personalized fallback
   return [
-    { id: 'ns-1', excerpt: `As a ${roleLabel} in ${industry}, the lesson that took me years to learn: your network IS your net worth.`, tag: 'Career' },
-    { id: 'ns-2', excerpt: `Most ${industry} leaders overcomplicate strategy. The best ones can explain it in one sentence.`, tag: 'Leadership' },
-    { id: 'ns-3', excerpt: `The biggest risk in ${industry} isn't competition — it's irrelevance. Here's how I stay ahead.`, tag: 'Strategy' },
-    { id: 'ns-4', excerpt: `I asked 10 ${industry} leaders what they'd do differently. Every single one said the same thing.`, tag: 'Insights' },
-    { id: 'ns-5', excerpt: `What I wish someone told me when I started as a ${roleLabel}: your first year is about learning, not winning.`, tag: 'Founder Life' },
+    { id: 'doc-1', excerpt: `We found a key insight in your documents about ${industry} — this could be a high-engagement post about what makes your approach different.`, tag: `From ${sourceName}`, source: 'document' },
+    { id: 'doc-2', excerpt: `Your internal framework on growth strategy is exactly the kind of original thinking that builds authority as a ${roleLabel}.`, tag: `From ${sourceName}`, source: 'document' },
   ];
 }
 
