@@ -1,6 +1,5 @@
-import { LayoutDashboard, Calendar, PenSquare, FileText, Settings, Linkedin } from 'lucide-react';
+import { LayoutDashboard, Calendar, PenSquare, FileText, Settings } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
-import { useLocation } from 'react-router-dom';
 import {
   Sidebar,
   SidebarContent,
@@ -11,6 +10,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '@/components/ui/sidebar';
+import { useAppStore } from '@/lib/store';
 
 const items = [
   { title: 'Dashboard', url: '/dashboard', icon: LayoutDashboard },
@@ -23,14 +23,19 @@ const items = [
 export function AppSidebar() {
   const { state } = useSidebar();
   const collapsed = state === 'collapsed';
-  const location = useLocation();
+  const profile = useAppStore((s) => s.profile);
+  const initials = profile.name
+    ? profile.name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)
+    : 'U';
 
   return (
     <Sidebar collapsible="icon">
       <SidebarContent>
-        <div className="px-4 py-5 flex items-center gap-2">
-          <Linkedin className="h-6 w-6 text-linkedin shrink-0" />
-          {!collapsed && <span className="font-bold text-sm text-sidebar-foreground tracking-tight">Brand Builder</span>}
+        <div className="px-4 py-5 flex items-center gap-2.5">
+          <div className="h-7 w-7 rounded-lg bg-linkedin flex items-center justify-center shrink-0">
+            <span className="text-linkedin-foreground text-xs font-black">B</span>
+          </div>
+          {!collapsed && <span className="font-black text-sm text-sidebar-foreground tracking-tight">Brand Builder</span>}
         </div>
         <SidebarGroup>
           <SidebarGroupContent>
@@ -42,7 +47,7 @@ export function AppSidebar() {
                       to={item.url}
                       end
                       className="hover:bg-sidebar-accent/50"
-                      activeClassName="bg-sidebar-accent text-sidebar-primary font-medium"
+                      activeClassName="bg-sidebar-accent text-sidebar-primary font-semibold"
                     >
                       <item.icon className="mr-2 h-4 w-4" />
                       {!collapsed && <span>{item.title}</span>}
@@ -56,11 +61,13 @@ export function AppSidebar() {
       </SidebarContent>
       <div className="mt-auto p-4 border-t border-sidebar-border">
         <div className="flex items-center gap-3">
-          <div className="h-8 w-8 rounded-full bg-linkedin/20 flex items-center justify-center text-linkedin text-xs font-bold shrink-0">JD</div>
+          <div className="h-8 w-8 rounded-lg bg-linkedin/15 flex items-center justify-center text-linkedin text-xs font-black shrink-0">
+            {initials}
+          </div>
           {!collapsed && (
             <div className="min-w-0">
-              <p className="text-sm font-medium text-sidebar-foreground truncate">Jane Doe</p>
-              <p className="text-xs text-muted-foreground truncate">CEO, Acme Inc</p>
+              <p className="text-sm font-semibold text-sidebar-foreground truncate">{profile.name || 'User'}</p>
+              <p className="text-xs text-sidebar-foreground/40 truncate">{profile.role || 'Getting started'}</p>
             </div>
           )}
         </div>
