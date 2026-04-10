@@ -14,7 +14,194 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      connected_sources: {
+        Row: {
+          connected_at: string
+          document_count: number
+          icon: string
+          id: string
+          name: string
+          user_id: string
+        }
+        Insert: {
+          connected_at?: string
+          document_count?: number
+          icon: string
+          id?: string
+          name: string
+          user_id: string
+        }
+        Update: {
+          connected_at?: string
+          document_count?: number
+          icon?: string
+          id?: string
+          name?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      content_suggestions: {
+        Row: {
+          created_at: string
+          excerpt: string
+          id: string
+          source: string
+          tag: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          excerpt: string
+          id?: string
+          source: string
+          tag: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          excerpt?: string
+          id?: string
+          source?: string
+          tag?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      drafts: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          schedule_slot_id: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          schedule_slot_id?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          schedule_slot_id?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "drafts_schedule_slot_id_fkey"
+            columns: ["schedule_slot_id"]
+            isOneToOne: false
+            referencedRelation: "schedule_slots"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          goal: string
+          goal_custom: string | null
+          id: string
+          industry: string
+          name: string
+          onboarding_complete: boolean
+          role: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          goal?: string
+          goal_custom?: string | null
+          id?: string
+          industry?: string
+          name?: string
+          onboarding_complete?: boolean
+          role?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          goal?: string
+          goal_custom?: string | null
+          id?: string
+          industry?: string
+          name?: string
+          onboarding_complete?: boolean
+          role?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      schedule_slots: {
+        Row: {
+          content: string | null
+          created_at: string
+          date: string
+          format: string
+          id: string
+          status: string
+          theme: string
+          user_id: string
+        }
+        Insert: {
+          content?: string | null
+          created_at?: string
+          date: string
+          format: string
+          id?: string
+          status?: string
+          theme: string
+          user_id: string
+        }
+        Update: {
+          content?: string | null
+          created_at?: string
+          date?: string
+          format?: string
+          id?: string
+          status?: string
+          theme?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      voice_profiles: {
+        Row: {
+          created_at: string
+          id: string
+          sample_posts: string[]
+          traits: string[]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          sample_posts?: string[]
+          traits?: string[]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          sample_posts?: string[]
+          traits?: string[]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
