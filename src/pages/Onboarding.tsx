@@ -1,11 +1,12 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppStore } from '@/lib/store';
-import { mockVoiceProfile } from '@/lib/mock-data';
+import { mockVoiceProfile, generateNicheSuggestions } from '@/lib/mock-data';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Target, User, FileText, Check, ArrowRight, Loader2 } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Target, User, FileText, Check, ArrowRight, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const goals = [
@@ -27,7 +28,6 @@ const nicheExamples = [
   'Real estate technology',
 ];
 
-// Generate 2 niche-specific writing prompts based on the user's industry
 function getTopicPrompts(industry: string): [string, string] {
   const lower = industry.toLowerCase();
 
@@ -85,7 +85,6 @@ function getTopicPrompts(industry: string): [string, string] {
       "What's your boldest prediction for how people will learn in 5 years?",
     ];
   }
-  // Generic fallback
   return [
     `What's one unconventional insight from ${industry || 'your field'} that most people miss?`,
     `What's the hardest lesson you've learned building in ${industry || 'your industry'}?`,
@@ -95,6 +94,7 @@ function getTopicPrompts(industry: string): [string, string] {
 const Onboarding = () => {
   const navigate = useNavigate();
   const { currentOnboardingStep, setOnboardingStep, updateProfile, setOnboardingComplete } = useAppStore();
+  const profile = useAppStore((s) => s.profile);
   const [selectedGoal, setSelectedGoal] = useState('');
   const [customGoal, setCustomGoal] = useState('');
   const [role, setRole] = useState('');
@@ -107,9 +107,14 @@ const Onboarding = () => {
   const [voiceOption, setVoiceOption] = useState<'write' | 'upload' | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [voiceProfileReady, setVoiceProfileReady] = useState(false);
+  const [selectedSuggestions, setSelectedSuggestions] = useState<Set<string>>(new Set());
 
   const step = currentOnboardingStep;
   const topicPrompts = useMemo(() => getTopicPrompts(industry), [industry]);
+  const nicheSuggestions = useMemo(
+    () => generateNicheSuggestions(profile.role || role, profile.industry || industry),
+    [profile.role, profile.industry, role, industry]
+  );
 
   const handleGoalContinue = () => {
     updateProfile({ goal: selectedGoal === 'other' ? customGoal : selectedGoal });
@@ -133,16 +138,30 @@ const Onboarding = () => {
     }, 2500);
   };
 
+  const handleVoiceDone = () => {
+    setOnboardingStep(3);
+  };
+
+  const toggleSuggestion = (id: string) => {
+    setSelectedSuggestions((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
   const handleFinish = () => {
+    const selected = nicheSuggestions.filter((s) => selectedSuggestions.has(s.id));
+    updateProfile({ contentSuggestions: selected.length > 0 ? selected : nicheSuggestions });
     setOnboardingComplete(true);
     navigate('/dashboard');
   };
 
-  const totalSteps = 3;
+  const totalSteps = 4;
 
   return (
     <div className="min-h-screen gradient-hero flex flex-col items-center justify-center px-4 relative overflow-hidden">
-      {/* Background glow */}
       <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-linkedin/4 blur-[100px] pointer-events-none" />
 
       <div className="w-full max-w-lg relative z-10">
@@ -291,8 +310,8 @@ const Onboarding = () => {
                     </div>
                   ))}
                 </div>
-                <Button variant="linkedin" size="lg" className="w-full h-12 text-base font-semibold" onClick={handleFinish}>
-                  Let's go
+                <Button variant="linkedin" size="lg" className="w-full h-12 text-base font-semibold" onClick={handleVoiceDone}>
+                  Continue
                   <ArrowRight className="h-4 w-4 ml-1" />
                 </Button>
               </div>
@@ -379,6 +398,53 @@ const Onboarding = () => {
                 </Button>
               </div>
             )}
+          </div>
+        )}
+
+        {/* Step 3: Tailored Content Suggestions */}
+        {step === 3 && (
+          <div className="animate-fade-in space-y-8">
+            <div className="space-y-3">
+              <p className="text-linkedin text-xs font-semibold tracking-widest uppercase">Step 4 of {totalSteps}</p>
+              <h2 className="text-3xl font-black text-primary-foreground tracking-tight">Your first content ideas</h2>
+              <p className="text-primary-foreground/40 text-sm">
+                Tailored to your role as <span className="text-primary-foreground/70 font-medium">{profile.role}</span> in <span className="text-primary-foreground/70 font-medium">{profile.industry}</span>. Pick the ones that resonate.
+              </p>
+            </div>
+            <div className="space-y-3">
+              {nicheSuggestions.map((s) => (
+                <button
+                  key={s.id}
+                  onClick={() => toggleSuggestion(s.id)}
+                  className={cn(
+                    'w-full p-4 rounded-xl border text-left transition-all flex items-start gap-3 group',
+                    selectedSuggestions.has(s.id)
+                      ? 'border-linkedin bg-linkedin/8 shadow-glow'
+                      : 'border-primary-foreground/8 hover:border-primary-foreground/15 bg-primary-foreground/[0.02]'
+                  )}
+                >
+                  <div className={cn(
+                    'h-5 w-5 rounded-md border-2 flex items-center justify-center shrink-0 mt-0.5 transition-all',
+                    selectedSuggestions.has(s.id)
+                      ? 'border-linkedin bg-linkedin'
+                      : 'border-primary-foreground/20'
+                  )}>
+                    {selectedSuggestions.has(s.id) && <Check className="h-3 w-3 text-white" />}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm text-primary-foreground leading-relaxed font-medium">{s.excerpt}</p>
+                    <Badge variant="secondary" className="mt-2 text-[10px] uppercase tracking-wider font-semibold bg-primary-foreground/5 text-primary-foreground/40">{s.tag}</Badge>
+                  </div>
+                </button>
+              ))}
+            </div>
+            <div className="space-y-3">
+              <Button variant="linkedin" size="lg" className="w-full h-12 text-base font-semibold" onClick={handleFinish}>
+                {selectedSuggestions.size > 0 ? `Start with ${selectedSuggestions.size} idea${selectedSuggestions.size > 1 ? 's' : ''}` : 'Skip & start building'}
+                <ArrowRight className="h-4 w-4 ml-1" />
+              </Button>
+              <p className="text-center text-xs text-primary-foreground/25">You can always generate more ideas later</p>
+            </div>
           </div>
         )}
       </div>

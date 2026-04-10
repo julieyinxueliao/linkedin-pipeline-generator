@@ -1,5 +1,4 @@
 import { useAppStore } from '@/lib/store';
-import { mockAISuggestions } from '@/lib/mock-data';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Mic, FileUp, PenSquare, FileText, Clock, Sparkles, ArrowRight, CalendarDays } from 'lucide-react';
@@ -14,6 +13,7 @@ const Dashboard = () => {
   const upcoming = schedule.filter((s) => s.status === 'not_started').slice(0, 3);
   const publishedCount = drafts.filter((d) => d.status === 'published').length;
   const draftCount = drafts.filter((d) => d.status === 'draft').length;
+  const suggestions = profile.contentSuggestions || [];
 
   return (
     <div className="p-6 md:p-8 max-w-6xl mx-auto">
@@ -92,32 +92,34 @@ const Dashboard = () => {
             </section>
           )}
 
-          {/* AI Suggestions */}
-          <section>
-            <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-4 flex items-center gap-2">
-              <Sparkles className="h-4 w-4" />
-              Suggested content
-            </h2>
-            <div className="space-y-2">
-              {mockAISuggestions.map((s) => (
-                <div
-                  key={s.id}
-                  className="flex items-start gap-4 p-4 rounded-xl border border-border bg-card hover:border-linkedin/30 hover:shadow-sm transition-all"
-                >
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm text-foreground leading-relaxed font-medium">{s.excerpt}</p>
-                    <Badge variant="secondary" className="mt-2 text-[10px] uppercase tracking-wider font-semibold">{s.tag}</Badge>
+          {/* Content Suggestions — only show if user selected some during onboarding */}
+          {suggestions.length > 0 && (
+            <section>
+              <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-4 flex items-center gap-2">
+                <Sparkles className="h-4 w-4" />
+                Your content ideas
+              </h2>
+              <div className="space-y-2">
+                {suggestions.map((s) => (
+                  <div
+                    key={s.id}
+                    className="flex items-start gap-4 p-4 rounded-xl border border-border bg-card hover:border-linkedin/30 hover:shadow-sm transition-all"
+                  >
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm text-foreground leading-relaxed font-medium">{s.excerpt}</p>
+                      <Badge variant="secondary" className="mt-2 text-[10px] uppercase tracking-wider font-semibold">{s.tag}</Badge>
+                    </div>
+                    <Button variant="ghost" size="sm" className="shrink-0 text-linkedin hover:text-linkedin hover:bg-linkedin/5" onClick={() => navigate('/draft')}>
+                      Use this
+                    </Button>
                   </div>
-                  <Button variant="ghost" size="sm" className="shrink-0 text-linkedin hover:text-linkedin hover:bg-linkedin/5" onClick={() => navigate('/draft')}>
-                    Use this
-                  </Button>
-                </div>
-              ))}
-            </div>
-          </section>
+                ))}
+              </div>
+            </section>
+          )}
         </div>
 
-        {/* Right Panel — empty for now, will hold schedule after doc integration */}
+        {/* Right Panel */}
         <div className="space-y-6">
           <div className="rounded-xl border border-dashed border-border p-8 text-center">
             <CalendarDays className="h-8 w-8 text-muted-foreground/30 mx-auto mb-3" />
