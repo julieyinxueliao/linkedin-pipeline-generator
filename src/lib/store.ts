@@ -80,6 +80,10 @@ export const useAppStore = create<AppState>()(
       updateBrief: (p) =>
         set((s) => ({ brief: s.brief ? { ...s.brief, ...p } : s.brief })),
       setCalendar: (c) => set({ calendar: c }),
+      extendCalendar: () =>
+        set((s) => ({
+          calendar: s.calendar && s.brief ? extendCalendarFn(s.calendar, s.brief, 4) : s.calendar,
+        })),
       updateSlot: (id, p) =>
         set((s) => ({
           calendar: s.calendar
