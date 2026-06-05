@@ -175,6 +175,19 @@ const Dashboard = () => {
           </div>
         ))}
       </div>
+      {(() => {
+        const allDone = calendar.slots.length > 0 && calendar.slots.every((s) => s.status === 'drafted' || s.status === 'published');
+        if (!allDone) return null;
+        return (
+          <div className="mt-10 flex flex-col items-center gap-3 p-6 rounded-xl border border-linkedin/30 bg-linkedin/5 text-center">
+            <p className="text-sm font-semibold text-foreground">You've drafted every slot in this 4-week plan.</p>
+            <p className="text-xs text-muted-foreground">Generate the next 4 weeks so you don't run out of runway.</p>
+            <Button variant="linkedin" size="sm" onClick={() => { extendCalendar(); toast.success('Added 4 more weeks to your calendar'); }}>
+              <Sparkles className="h-4 w-4 mr-1.5" /> Generate next 4 weeks
+            </Button>
+          </div>
+        );
+      })()}
       {!calendar.approvedAt && (
         <p className="text-xs text-muted-foreground text-center mt-8">Approve the calendar to unlock drafting.</p>
       )}
