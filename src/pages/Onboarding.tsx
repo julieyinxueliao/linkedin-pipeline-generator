@@ -1,16 +1,18 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppStore, type ConnectedSource } from '@/lib/store';
-import { mockVoiceProfile } from '@/lib/mock-data';
-import { generateStrategyBrief, type BriefInputs, type PovItem } from '@/lib/strategy';
-import { goalToPreset, PRESET_MIX } from '@/lib/principles';
+import { generateStrategyBrief, type BriefInputs, type PovItem, type StrategyBrief } from '@/lib/strategy';
+import { goalToPreset } from '@/lib/principles';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { Target, User, FileText, Check, ArrowRight, Link2, FileUp, X, Sparkles, Loader2, Linkedin, Globe, AlertTriangle } from 'lucide-react';
+import {
+  Target, User, FileText, Check, ArrowRight, Link2, FileUp, X, Sparkles, Loader2,
+  Globe, AlertTriangle, FolderOpen, BookOpen, Database, Library,
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const goals = [
@@ -20,10 +22,10 @@ const goals = [
 ];
 
 const documentSources = [
-  { id: 'google-drive', name: 'Google Drive', icon: '📁', desc: 'Docs, slides, and spreadsheets' },
-  { id: 'notion', name: 'Notion', icon: '📝', desc: 'Pages, databases, and wikis' },
-  { id: 'dropbox', name: 'Dropbox', icon: '📦', desc: 'Files and paper documents' },
-  { id: 'confluence', name: 'Confluence', icon: '📄', desc: 'Team knowledge base' },
+  { id: 'google-drive', name: 'Google Drive', Icon: FolderOpen, desc: 'Docs, slides, and spreadsheets' },
+  { id: 'notion', name: 'Notion', Icon: BookOpen, desc: 'Pages, databases, and wikis' },
+  { id: 'dropbox', name: 'Dropbox', Icon: Database, desc: 'Files and paper documents' },
+  { id: 'confluence', name: 'Confluence', Icon: Library, desc: 'Team knowledge base' },
 ];
 
 const TOTAL_STEPS = 5;
@@ -37,9 +39,10 @@ const Onboarding = () => {
   const [selectedGoal, setSelectedGoal] = useState('');
   const [customGoal, setCustomGoal] = useState('');
 
-  // Step 1 — Company URLs + auto-pull
+  // Step 1 — Company website + source documents/text
   const [websiteUrl, setWebsiteUrl] = useState('');
-  const [linkedinCompanyUrl, setLinkedinCompanyUrl] = useState('');
+  const [additionalContext, setAdditionalContext] = useState('');
+  const [uploadedFileNames, setUploadedFileNames] = useState<string[]>([]);
   const [isPulling, setIsPulling] = useState(false);
   const [pulled, setPulled] = useState(false);
   const [companyName, setCompanyName] = useState('');
@@ -48,6 +51,7 @@ const Onboarding = () => {
   const [icpTitles, setIcpTitles] = useState('');
   const [icpCompanyType, setIcpCompanyType] = useState('');
   const [proofPointsRaw, setProofPointsRaw] = useState('');
+  const [pullWarning, setPullWarning] = useState<string | null>(null);
 
   // Step 2 — Connect document sources
   const [connectedSources, setConnectedSources] = useState<ConnectedSource[]>([]);
@@ -60,38 +64,37 @@ const Onboarding = () => {
   const [pastedPosts, setPastedPosts] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [voiceReady, setVoiceReady] = useState(false);
+  const [voiceSkipped, setVoiceSkipped] = useState(false);
+  const [voiceTraits, setVoiceTraits] = useState<string[]>([]);
   const [currentPrompt, setCurrentPrompt] = useState(0);
 
-  // Step 4 — Brief preview
-  const briefDraft = useMemo(() => {
-    const inputs: BriefInputs = {
-      preset: goalToPreset(selectedGoal),
-      companyName,
-      companyOneLiner,
-      websiteUrl,
-      wedge,
-      icpTitles,
-      icpCompanyType,
-      proofPoints: proofPointsRaw.split('\n').map((s) => s.trim()).filter(Boolean),
-      samplePosts: voiceOption === 'write' ? [samplePost1, samplePost2].filter(Boolean) : pastedPosts ? [pastedPosts] : [],
-      connectedSourceNames: connectedSources.map((c) => c.name),
-    };
-    return generateStrategyBrief(inputs);
-  }, [selectedGoal, companyName, companyOneLiner, websiteUrl, wedge, icpTitles, icpCompanyType, proofPointsRaw, samplePost1, samplePost2, pastedPosts, voiceOption, connectedSources]);
-
+  // Step 4 — Strategy Brief
+  const [briefLoading, setBriefLoading] = useState(false);
+  const [briefError, setBriefError] = useState<string | null>(null);
+  const [aiBrief, setAiBrief] = useState<StrategyBrief | null>(null);
   const [editablePovBank, setEditablePovBank] = useState<PovItem[] | null>(null);
-  const povBank = editablePovBank ?? briefDraft.povBank;
+
+  const briefInputs: BriefInputs = useMemo(() => ({
+    preset: goalToPreset(selectedGoal),
+    companyName,
+    companyOneLiner,
+    websiteUrl,
+    wedge,
+    icpTitles,
+    icpCompanyType,
+    proofPoints: proofPointsRaw.split('\n').map((s) => s.trim()).filter(Boolean),
+    samplePosts: voiceOption === 'write' ? [samplePost1, samplePost2].filter(Boolean) : pastedPosts ? [pastedPosts] : [],
+    connectedSourceNames: connectedSources.map((c) => c.name),
+  }), [selectedGoal, companyName, companyOneLiner, websiteUrl, wedge, icpTitles, icpCompanyType, proofPointsRaw, samplePost1, samplePost2, pastedPosts, voiceOption, connectedSources]);
 
   const promptForWedge = wedge ? `What's one thing most ${icpTitles || 'people in your space'} get wrong about ${wedge}?` : `What's one thing most people in your space get wrong?`;
-
-  const [pullWarning, setPullWarning] = useState<string | null>(null);
 
   const handleAutoPull = async () => {
     setIsPulling(true);
     setPullWarning(null);
     try {
       const { data, error } = await supabase.functions.invoke('pull-company-profile', {
-        body: { websiteUrl, linkedinCompanyUrl },
+        body: { websiteUrl, additionalContext },
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
@@ -112,12 +115,36 @@ const Onboarding = () => {
     }
   };
 
+  const handleFiles = async (files: FileList | null) => {
+    if (!files || !files.length) return;
+    const accepted = ['text/plain', 'text/markdown'];
+    const additions: string[] = [];
+    const names: string[] = [];
+    for (const f of Array.from(files)) {
+      const ok = accepted.includes(f.type) || /\.(txt|md|markdown)$/i.test(f.name);
+      if (!ok) {
+        toast.error(`${f.name}: only .txt and .md files can be parsed in-browser. Paste content for PDFs / decks.`);
+        continue;
+      }
+      try {
+        const text = await f.text();
+        additions.push(`--- ${f.name} ---\n${text}`);
+        names.push(f.name);
+      } catch {
+        toast.error(`Could not read ${f.name}`);
+      }
+    }
+    if (additions.length) {
+      setAdditionalContext((prev) => (prev ? prev + '\n\n' : '') + additions.join('\n\n'));
+      setUploadedFileNames((prev) => [...prev, ...names]);
+    }
+  };
 
   const handleConnectSource = (s: typeof documentSources[0]) => {
     setConnectingSourceId(s.id);
     setTimeout(() => {
       setConnectedSources((prev) => [...prev, {
-        id: s.id, name: s.name, icon: s.icon,
+        id: s.id, name: s.name, icon: s.name,
         connectedAt: new Date().toISOString(),
         documentCount: Math.floor(Math.random() * 20) + 5,
       }]);
@@ -125,32 +152,87 @@ const Onboarding = () => {
     }, 1200);
   };
 
-  const handleAnalyzeVoice = () => {
+  const handleAnalyzeVoice = async () => {
+    const samples = voiceOption === 'write'
+      ? [samplePost1, samplePost2].filter(Boolean)
+      : pastedPosts ? [pastedPosts] : [];
+    if (!samples.length) return;
     setIsAnalyzing(true);
-    setTimeout(() => {
-      setIsAnalyzing(false);
+    try {
+      const { data, error } = await supabase.functions.invoke('analyze-voice', { body: { samples } });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      const traits = Array.isArray(data?.traits) ? data.traits : [];
+      if (!traits.length) throw new Error('No voice traits returned');
+      setVoiceTraits(traits);
       setVoiceReady(true);
-    }, 2000);
+    } catch (e) {
+      toast.error((e as Error).message || 'Could not analyze voice');
+    } finally {
+      setIsAnalyzing(false);
+    }
   };
 
+  const handleSkipVoice = () => {
+    setVoiceTraits([]);
+    setVoiceSkipped(true);
+    setVoiceReady(true);
+  };
+
+  // Generate the strategy brief when entering step 4
+  useEffect(() => {
+    if (step !== 4 || aiBrief || briefLoading) return;
+    let cancelled = false;
+    (async () => {
+      setBriefLoading(true);
+      setBriefError(null);
+      try {
+        const payload = { ...briefInputs, voiceTraits, additionalContext };
+        const { data, error } = await supabase.functions.invoke('generate-strategy-brief', { body: payload });
+        if (cancelled) return;
+        if (error) throw error;
+        if (data?.error) throw new Error(data.error);
+        const ai = data?.brief;
+        if (!ai) throw new Error('No brief returned');
+        // Compose final StrategyBrief by combining inputs with AI output (structural fields)
+        const fallback = generateStrategyBrief(briefInputs);
+        const final: StrategyBrief = {
+          ...fallback,
+          positioning: ai.positioning || fallback.positioning,
+          categoryPov: ai.categoryPov || fallback.categoryPov,
+          povBank: ai.povBank?.length ? ai.povBank : fallback.povBank,
+          pillars: ai.pillars?.length ? ai.pillars : fallback.pillars,
+          assetInventory: ai.assetInventory?.length ? ai.assetInventory : fallback.assetInventory,
+        };
+        setAiBrief(final);
+      } catch (e) {
+        if (!cancelled) setBriefError((e as Error).message || 'Could not generate brief');
+      } finally {
+        if (!cancelled) setBriefLoading(false);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [step, briefInputs, voiceTraits, additionalContext, aiBrief, briefLoading]);
+
+  const brief = aiBrief;
+  const povBank = editablePovBank ?? brief?.povBank ?? [];
+
   const handleFinish = () => {
-    const finalBrief = { ...briefDraft, povBank };
+    if (!brief) return;
+    const finalBrief = { ...brief, povBank };
     setBrief(finalBrief);
     updateProfile({
       goal: selectedGoal === 'other' ? customGoal : selectedGoal,
       role: selectedGoal,
       industry: wedge,
-      voiceStyle: mockVoiceProfile,
+      voiceStyle: voiceTraits,
       samplePosts: voiceOption === 'write' ? [samplePost1, samplePost2].filter(Boolean) : pastedPosts ? [pastedPosts] : [],
       connectedSources,
       websiteUrl,
-      linkedinUrl: linkedinCompanyUrl,
     });
     setOnboardingComplete(true);
     navigate('/dashboard');
   };
-
-  const preset = goalToPreset(selectedGoal);
 
   return (
     <div className="min-h-screen gradient-hero flex flex-col items-center justify-center px-4 py-10 relative overflow-hidden">
@@ -180,20 +262,15 @@ const Onboarding = () => {
               {selectedGoal === 'other' && (
                 <Input value={customGoal} onChange={(e) => setCustomGoal(e.target.value)} placeholder="What are you trying to achieve?" className="bg-primary-foreground/5 border-primary-foreground/10 text-primary-foreground h-12" />
               )}
-              {selectedGoal && (
-                <div className="text-xs text-primary-foreground/40 px-1">
-                  Preset: <span className="text-linkedin font-semibold">{PRESET_MIX[preset].label}</span> — {PRESET_MIX[preset].description}
-                </div>
-              )}
             </div>
             <Button variant="linkedin" size="lg" className="w-full h-12 font-semibold" disabled={!selectedGoal || (selectedGoal === 'other' && !customGoal)} onClick={() => setOnboardingStep(1)}>Continue<ArrowRight className="h-4 w-4 ml-1" /></Button>
           </div>
         )}
 
-        {/* Step 1 — Company URLs + auto-pull */}
+        {/* Step 1 — Website + sources */}
         {step === 1 && (
           <div className="animate-fade-in space-y-8">
-            <Header step={2} title="About your company" subtitle="Paste your website and LinkedIn company page — we'll pull the rest." />
+            <Header step={2} title="About your company" subtitle="Paste your website and add any source materials — pitch deck, business plan, company overview. We'll extract the rest." />
             <div className="space-y-4">
               <Field label="Company website">
                 <div className="relative">
@@ -201,11 +278,26 @@ const Onboarding = () => {
                   <Input value={websiteUrl} onChange={(e) => setWebsiteUrl(e.target.value)} placeholder="https://yourcompany.com" className={cn(inputCls, 'pl-9')} />
                 </div>
               </Field>
-              <Field label="LinkedIn company page">
-                <div className="relative">
-                  <Linkedin className="h-4 w-4 text-primary-foreground/30 absolute left-3 top-1/2 -translate-y-1/2" />
-                  <Input value={linkedinCompanyUrl} onChange={(e) => setLinkedinCompanyUrl(e.target.value)} placeholder="https://linkedin.com/company/…" className={cn(inputCls, 'pl-9')} />
+
+              <Field label="Source materials (pitch deck, business plan, company doc)">
+                <Textarea
+                  value={additionalContext}
+                  onChange={(e) => setAdditionalContext(e.target.value)}
+                  placeholder="Paste content from your pitch deck, business plan, one-pager, or any internal doc that describes your company, ICP, and proof points."
+                  rows={6}
+                  className={cn(inputCls, 'resize-none leading-relaxed')}
+                />
+                <div className="mt-2 flex items-center gap-3">
+                  <label className="inline-flex items-center gap-2 text-xs text-primary-foreground/60 cursor-pointer hover:text-primary-foreground">
+                    <FileUp className="h-3.5 w-3.5" />
+                    <span>Upload .txt or .md files</span>
+                    <input type="file" multiple accept=".txt,.md,.markdown,text/plain,text/markdown" className="hidden" onChange={(e) => handleFiles(e.target.files)} />
+                  </label>
+                  {uploadedFileNames.length > 0 && (
+                    <span className="text-[11px] text-primary-foreground/40">{uploadedFileNames.length} file{uploadedFileNames.length === 1 ? '' : 's'} attached</span>
+                  )}
                 </div>
+                <p className="text-[11px] text-primary-foreground/30 mt-2">For PDFs or slide decks, copy the text and paste it above.</p>
               </Field>
 
               {!pulled ? (
@@ -213,15 +305,15 @@ const Onboarding = () => {
                   variant="linkedin"
                   size="lg"
                   className="w-full h-12 font-semibold"
-                  disabled={!websiteUrl || !linkedinCompanyUrl || isPulling}
+                  disabled={(!websiteUrl && !additionalContext.trim()) || isPulling}
                   onClick={handleAutoPull}
                 >
-                  {isPulling ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Pulling company data…</> : <>Auto-pull company data<Sparkles className="h-4 w-4 ml-1" /></>}
+                  {isPulling ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Extracting from your sources…</> : <>Extract company profile<Sparkles className="h-4 w-4 ml-1" /></>}
                 </Button>
               ) : (
                 <div className="space-y-4 p-4 rounded-xl border border-success/20 bg-success/5">
                   <div className="flex items-center gap-2 text-success text-xs font-semibold">
-                    <Check className="h-3.5 w-3.5" /> Pulled — edit anything that's off
+                    <Check className="h-3.5 w-3.5" /> Extracted — edit anything that's off
                   </div>
                   {pullWarning && (
                     <div className="flex items-start gap-2 p-3 rounded-lg border border-warning/20 bg-warning/5 text-xs text-primary-foreground/70">
@@ -252,23 +344,27 @@ const Onboarding = () => {
             {connectedSources.length > 0 && (
               <div className="space-y-2">
                 <p className="text-xs font-semibold text-primary-foreground/40 uppercase tracking-wider">Connected</p>
-                {connectedSources.map((s) => (
-                  <div key={s.id} className="flex items-center gap-3 p-4 rounded-xl border border-success/20 bg-success/5">
-                    <span className="text-xl">{s.icon}</span>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-primary-foreground">{s.name}</p>
-                      <p className="text-xs text-primary-foreground/40">{s.documentCount} documents found</p>
+                {connectedSources.map((s) => {
+                  const Source = documentSources.find((d) => d.id === s.id);
+                  const Icon = Source?.Icon ?? FolderOpen;
+                  return (
+                    <div key={s.id} className="flex items-center gap-3 p-4 rounded-xl border border-success/20 bg-success/5">
+                      <Icon className="h-5 w-5 text-success" />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-primary-foreground">{s.name}</p>
+                        <p className="text-xs text-primary-foreground/40">{s.documentCount} documents found</p>
+                      </div>
+                      <Check className="h-4 w-4 text-success" />
+                      <button onClick={() => setConnectedSources((prev) => prev.filter((x) => x.id !== s.id))} className="text-xs text-primary-foreground/30 hover:text-primary-foreground/60"><X className="h-3.5 w-3.5" /></button>
                     </div>
-                    <Check className="h-4 w-4 text-success" />
-                    <button onClick={() => setConnectedSources((prev) => prev.filter((x) => x.id !== s.id))} className="text-xs text-primary-foreground/30 hover:text-primary-foreground/60"><X className="h-3.5 w-3.5" /></button>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
             <div className="space-y-2">
               {documentSources.filter((s) => !connectedSources.some((c) => c.id === s.id)).map((s) => (
                 <button key={s.id} onClick={() => handleConnectSource(s)} disabled={connectingSourceId === s.id} className={cn('w-full flex items-center gap-3 p-4 rounded-xl border transition-all text-left group', connectingSourceId === s.id ? 'border-linkedin/30 bg-linkedin/5' : 'border-primary-foreground/8 hover:border-linkedin/30 hover:bg-linkedin/[0.03]')}>
-                  <span className="text-xl">{s.icon}</span>
+                  <s.Icon className="h-5 w-5 text-primary-foreground/60" />
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold text-primary-foreground">{s.name}</p>
                     <p className="text-xs text-primary-foreground/30">{s.desc}</p>
@@ -289,14 +385,20 @@ const Onboarding = () => {
                 <div className="h-12 w-12 rounded-full border-2 border-linkedin border-t-transparent animate-spin mx-auto" />
                 <h2 className="text-xl font-bold text-primary-foreground">Analyzing your voice…</h2>
               </div>
-            ) : voiceReady ? (
+            ) : voiceReady && !voiceSkipped ? (
               <div className="text-center space-y-8">
                 <div className="h-16 w-16 rounded-2xl bg-success/15 flex items-center justify-center mx-auto"><Check className="h-8 w-8 text-success" /></div>
                 <Header step={4} title="Voice captured" subtitle="Every draft will sound like you." center />
                 <div className="bg-primary-foreground/[0.03] border border-primary-foreground/8 rounded-xl p-5 space-y-3 text-left">
-                  {mockVoiceProfile.map((trait, i) => (<div key={i} className="flex items-center gap-3"><div className="h-1.5 w-1.5 rounded-full bg-linkedin shrink-0" /><span className="text-sm text-primary-foreground/70">{trait}</span></div>))}
+                  {voiceTraits.map((trait, i) => (<div key={i} className="flex items-center gap-3"><div className="h-1.5 w-1.5 rounded-full bg-linkedin shrink-0" /><span className="text-sm text-primary-foreground/70">{trait}</span></div>))}
                 </div>
-                <Nav back={() => { setVoiceReady(false); setVoiceOption(null); }} next={() => setOnboardingStep(4)} nextLabel="Build my brief" />
+                <Nav back={() => { setVoiceReady(false); setVoiceOption(null); setVoiceTraits([]); }} next={() => setOnboardingStep(4)} nextLabel="Build my brief" />
+              </div>
+            ) : voiceReady && voiceSkipped ? (
+              <div className="text-center space-y-8">
+                <div className="h-16 w-16 rounded-2xl bg-warning/15 flex items-center justify-center mx-auto"><AlertTriangle className="h-8 w-8 text-warning" /></div>
+                <Header step={4} title="Voice calibration skipped" subtitle="We can't generate a voice profile without samples. Drafts will use generic phrasing until you add samples in Settings." center />
+                <Nav back={() => { setVoiceReady(false); setVoiceSkipped(false); setVoiceOption(null); }} next={() => setOnboardingStep(4)} nextLabel="Continue without voice" />
               </div>
             ) : !voiceOption ? (
               <>
@@ -311,7 +413,7 @@ const Onboarding = () => {
                     <div><div className="font-semibold text-primary-foreground text-sm">Paste past posts</div><p className="text-xs text-primary-foreground/30 mt-1">We extract your style</p></div>
                   </button>
                 </div>
-                <Nav back={() => setOnboardingStep(2)} next={() => { setVoiceReady(true); setVoiceOption('upload'); }} nextLabel="Skip — calibrate later" />
+                <Nav back={() => setOnboardingStep(2)} next={handleSkipVoice} nextLabel="Skip — calibrate later" />
               </>
             ) : voiceOption === 'write' ? (
               <div className="space-y-6">
@@ -345,66 +447,81 @@ const Onboarding = () => {
           <div className="animate-fade-in space-y-8">
             <Header step={5} title="Your Strategy Brief" subtitle="Confirm or edit. This becomes the source of every post." />
 
-            <BriefBlock label="Preset" value={`${PRESET_MIX[preset].label} — ${PRESET_MIX[preset].description}`} />
-            <BriefBlock label="Positioning" value={briefDraft.positioning} />
-            <BriefBlock label="Category POV to own" value={briefDraft.categoryPov} />
-
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <p className="text-xs font-semibold text-primary-foreground/40 uppercase tracking-wider flex items-center gap-1.5"><Sparkles className="h-3 w-3" /> POV Bank ({povBank.length})</p>
+            {briefLoading && (
+              <div className="text-center py-12 space-y-4">
+                <div className="h-10 w-10 rounded-full border-2 border-linkedin border-t-transparent animate-spin mx-auto" />
+                <p className="text-sm text-primary-foreground/60">Generating a brief from your inputs…</p>
               </div>
-              <div className="space-y-2">
-                {povBank.map((p, idx) => (
-                  <div key={p.id} className="flex items-start gap-2 p-3 rounded-lg border border-primary-foreground/8 bg-primary-foreground/[0.02]">
-                    <span className="text-[10px] text-linkedin font-bold mt-1 w-5 shrink-0">#{idx + 1}</span>
-                    <Textarea
-                      value={p.text}
-                      onChange={(e) => {
-                        const next = [...povBank];
-                        next[idx] = { ...p, text: e.target.value, edited: true };
-                        setEditablePovBank(next);
-                      }}
-                      rows={2}
-                      className="bg-transparent border-none focus-visible:ring-0 text-sm text-primary-foreground/80 resize-none p-0 min-h-0 leading-snug"
-                    />
-                    <button onClick={() => setEditablePovBank(povBank.filter((_, i) => i !== idx))} className="text-primary-foreground/20 hover:text-primary-foreground/60"><X className="h-3.5 w-3.5" /></button>
+            )}
+            {briefError && !briefLoading && (
+              <div className="p-4 rounded-xl border border-destructive/30 bg-destructive/10 text-sm text-destructive">
+                {briefError}
+                <Button variant="outline" size="sm" className="ml-3" onClick={() => { setAiBrief(null); setBriefError(null); }}>Retry</Button>
+              </div>
+            )}
+
+            {!briefLoading && brief && (
+              <>
+                <BriefBlock label="Category POV to own" value={brief.categoryPov} />
+
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <p className="text-xs font-semibold text-primary-foreground/40 uppercase tracking-wider flex items-center gap-1.5"><Sparkles className="h-3 w-3" /> POV Bank ({povBank.length})</p>
                   </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              <p className="text-xs font-semibold text-primary-foreground/40 uppercase tracking-wider">Content Pillars</p>
-              <div className="space-y-2">
-                {briefDraft.pillars.map((p) => (
-                  <div key={p.id} className="p-3 rounded-lg border border-primary-foreground/8 bg-primary-foreground/[0.02]">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-sm font-semibold text-primary-foreground">{p.name}</span>
-                      <Badge variant="secondary" className="text-[10px] bg-primary-foreground/5 text-primary-foreground/40">{p.funnelTilt}</Badge>
-                    </div>
-                    <p className="text-xs text-primary-foreground/40">{p.exampleAngles.join(' · ')}</p>
+                  <div className="space-y-2">
+                    {povBank.map((p, idx) => (
+                      <div key={p.id} className="flex items-start gap-2 p-3 rounded-lg border border-primary-foreground/8 bg-primary-foreground/[0.02]">
+                        <span className="text-[10px] text-linkedin font-bold mt-1 w-5 shrink-0">#{idx + 1}</span>
+                        <Textarea
+                          value={p.text}
+                          onChange={(e) => {
+                            const next = [...povBank];
+                            next[idx] = { ...p, text: e.target.value, edited: true };
+                            setEditablePovBank(next);
+                          }}
+                          rows={2}
+                          className="bg-transparent border-none focus-visible:ring-0 text-sm text-primary-foreground/80 resize-none p-0 min-h-0 leading-snug"
+                        />
+                        <button onClick={() => setEditablePovBank(povBank.filter((_, i) => i !== idx))} className="text-primary-foreground/20 hover:text-primary-foreground/60"><X className="h-3.5 w-3.5" /></button>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-            </div>
+                </div>
 
-            <div className="space-y-3">
-              <p className="text-xs font-semibold text-primary-foreground/40 uppercase tracking-wider">Asset Inventory</p>
-              <div className="space-y-1.5">
-                {briefDraft.assetInventory.map((a) => (
-                  <div key={a.id} className="flex items-center gap-2 text-xs">
-                    <span className={cn('h-1.5 w-1.5 rounded-full shrink-0', a.hasProof ? 'bg-success' : 'bg-warning')} />
-                    <span className="text-primary-foreground/60">{a.text}</span>
-                    {!a.hasProof && <span className="text-warning/80 text-[10px] uppercase">to source</span>}
+                <div className="space-y-3">
+                  <p className="text-xs font-semibold text-primary-foreground/40 uppercase tracking-wider">Content Pillars</p>
+                  <div className="space-y-2">
+                    {brief.pillars.map((p) => (
+                      <div key={p.id} className="p-3 rounded-lg border border-primary-foreground/8 bg-primary-foreground/[0.02]">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="text-sm font-semibold text-primary-foreground">{p.name}</span>
+                          <Badge variant="secondary" className="text-[10px] bg-primary-foreground/5 text-primary-foreground/40">{p.funnelTilt}</Badge>
+                        </div>
+                        <p className="text-xs text-primary-foreground/40">{p.exampleAngles.join(' · ')}</p>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-            </div>
+                </div>
 
-            <div className="flex gap-3 pt-4">
-              <Button variant="ghost" className="text-primary-foreground/40" onClick={() => setOnboardingStep(3)}>Back</Button>
-              <Button variant="linkedin" size="lg" className="flex-1 h-12 font-semibold" onClick={handleFinish}>Approve & generate calendar<ArrowRight className="h-4 w-4 ml-1" /></Button>
-            </div>
+                <div className="space-y-3">
+                  <p className="text-xs font-semibold text-primary-foreground/40 uppercase tracking-wider">Asset Inventory</p>
+                  <div className="space-y-1.5">
+                    {brief.assetInventory.map((a) => (
+                      <div key={a.id} className="flex items-center gap-2 text-xs">
+                        <span className={cn('h-1.5 w-1.5 rounded-full shrink-0', a.hasProof ? 'bg-success' : 'bg-warning')} />
+                        <span className="text-primary-foreground/60">{a.text}</span>
+                        {!a.hasProof && <span className="text-warning/80 text-[10px] uppercase">to source</span>}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex gap-3 pt-4">
+                  <Button variant="ghost" className="text-primary-foreground/40" onClick={() => setOnboardingStep(3)}>Back</Button>
+                  <Button variant="linkedin" size="lg" className="flex-1 h-12 font-semibold" onClick={handleFinish}>Approve & generate calendar<ArrowRight className="h-4 w-4 ml-1" /></Button>
+                </div>
+              </>
+            )}
           </div>
         )}
       </div>
