@@ -25,6 +25,7 @@ const Dashboard = () => {
   const calendar = useAppStore((s) => s.calendar);
   const drafts = useAppStore((s) => s.drafts);
   const setCalendar = useAppStore((s) => s.setCalendar);
+  const extendCalendar = useAppStore((s) => s.extendCalendar);
   const updateSlot = useAppStore((s) => s.updateSlot);
   const approveCalendar = useAppStore((s) => s.approveCalendar);
 
