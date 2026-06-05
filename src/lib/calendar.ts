@@ -95,15 +95,13 @@ function assetForArchetype(archetypeId: string, brief: StrategyBrief): string {
 
 export function generateCalendar(
   brief: StrategyBrief,
-  opts: { cadencePerWeek?: number; weeks?: number; startDate?: Date } = {},
+  opts: { cadencePerWeek?: number; weeks?: number; startDate?: Date; weekOffset?: number; rotationOffset?: number } = {},
 ): ContentCalendar {
   const cadencePerWeek = opts.cadencePerWeek ?? 2;
   const weeks = opts.weeks ?? 4;
   const preset: Preset = brief.preset;
   const rotation = ARCHETYPE_ROTATION[preset];
 
-  // Avoid weekends. Default cadence is Monday morning + Friday afternoon.
-  // dayPattern uses 1=Mon ... 5=Fri.
   const dayPattern = cadencePerWeek === 5
     ? [1, 2, 3, 4, 5]
     : cadencePerWeek === 4
@@ -112,14 +110,14 @@ export function generateCalendar(
     ? [1, 3, 5]
     : [1, 5];
 
-  const timeForDay = (dow: number) =>
-    dow === 5 ? '15:30' : '08:30';
+  const timeForDay = (dow: number) => (dow === 5 ? '15:30' : '08:30');
 
-  let cursor = new Date();
+  let cursor = opts.startDate ? new Date(opts.startDate) : new Date();
   while (cursor.getDay() !== 1) cursor = nextBusinessDay(cursor);
 
   const slots: CalendarSlot[] = [];
-  let i = 0;
+  const weekOffset = opts.weekOffset ?? 0;
+  let i = opts.rotationOffset ?? 0;
   for (let w = 1; w <= weeks; w++) {
     const weekStart = new Date(cursor);
     weekStart.setDate(cursor.getDate() + (w - 1) * 7);
@@ -131,8 +129,8 @@ export function generateCalendar(
       const date = new Date(weekStart);
       date.setDate(weekStart.getDate() + (dow - 1));
       slots.push({
-        id: `slot-${w}-${dow}-${Math.random().toString(36).slice(2, 6)}`,
-        week: w,
+        id: `slot-${weekOffset + w}-${dow}-${Math.random().toString(36).slice(2, 6)}`,
+        week: weekOffset + w,
         dayOfWeek: dow,
         scheduledFor: `${date.toISOString().split('T')[0]}T${timeForDay(dow)}:00`,
         pillarId: pillar.id,
@@ -154,6 +152,30 @@ export function generateCalendar(
     cadencePerWeek,
     weeks,
     slots,
+  };
+}
+
+/** Append more weeks of slots to an existing calendar, starting the week after the last slot. */
+export function extendCalendar(existing: ContentCalendar, brief: StrategyBrief, addWeeks = 4): ContentCalendar {
+  const lastDate = existing.slots
+    .map((s) => new Date(s.scheduledFor))
+    .sort((a, b) => b.getTime() - a.getTime())[0] ?? new Date();
+  const start = new Date(lastDate);
+  start.setDate(start.getDate() + 7);
+  while (start.getDay() !== 1) start.setDate(start.getDate() + 1);
+
+  const added = generateCalendar(brief, {
+    cadencePerWeek: existing.cadencePerWeek,
+    weeks: addWeeks,
+    startDate: start,
+    weekOffset: existing.weeks,
+    rotationOffset: existing.slots.length,
+  });
+
+  return {
+    ...existing,
+    weeks: existing.weeks + addWeeks,
+    slots: [...existing.slots, ...added.slots],
   };
 }
 

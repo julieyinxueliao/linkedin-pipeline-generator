@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { StrategyBrief } from './strategy';
-import type { ContentCalendar, CalendarSlot } from './calendar';
+import { extendCalendar as extendCalendarFn, type ContentCalendar, type CalendarSlot } from './calendar';
 
 export interface ConnectedSource {
   id: string;
@@ -46,6 +46,7 @@ interface AppState {
   setBrief: (b: StrategyBrief | null) => void;
   updateBrief: (p: Partial<StrategyBrief>) => void;
   setCalendar: (c: ContentCalendar | null) => void;
+  extendCalendar: () => void;
   updateSlot: (id: string, p: Partial<CalendarSlot>) => void;
   approveCalendar: () => void;
   addDraft: (d: DraftPost) => void;
@@ -79,6 +80,10 @@ export const useAppStore = create<AppState>()(
       updateBrief: (p) =>
         set((s) => ({ brief: s.brief ? { ...s.brief, ...p } : s.brief })),
       setCalendar: (c) => set({ calendar: c }),
+      extendCalendar: () =>
+        set((s) => ({
+          calendar: s.calendar && s.brief ? extendCalendarFn(s.calendar, s.brief, 4) : s.calendar,
+        })),
       updateSlot: (id, p) =>
         set((s) => ({
           calendar: s.calendar
