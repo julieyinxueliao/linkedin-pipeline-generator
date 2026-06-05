@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { Target, User, FileText, Check, ArrowRight, FolderOpen, Link2, FileUp, X, Plus, Sparkles } from 'lucide-react';
+import { Target, User, FileText, Check, ArrowRight, Link2, FileUp, X, Sparkles, Loader2, Linkedin, Globe } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const goals = [
@@ -24,7 +24,7 @@ const documentSources = [
   { id: 'confluence', name: 'Confluence', icon: '📄', desc: 'Team knowledge base' },
 ];
 
-const TOTAL_STEPS = 6;
+const TOTAL_STEPS = 5;
 
 const Onboarding = () => {
   const navigate = useNavigate();
@@ -35,22 +35,23 @@ const Onboarding = () => {
   const [selectedGoal, setSelectedGoal] = useState('');
   const [customGoal, setCustomGoal] = useState('');
 
-  // Step 1 — Company & wedge
+  // Step 1 — Company URLs + auto-pull
+  const [websiteUrl, setWebsiteUrl] = useState('');
+  const [linkedinCompanyUrl, setLinkedinCompanyUrl] = useState('');
+  const [isPulling, setIsPulling] = useState(false);
+  const [pulled, setPulled] = useState(false);
   const [companyName, setCompanyName] = useState('');
   const [companyOneLiner, setCompanyOneLiner] = useState('');
-  const [websiteUrl, setWebsiteUrl] = useState('');
   const [wedge, setWedge] = useState('');
-
-  // Step 2 — ICP + proof
   const [icpTitles, setIcpTitles] = useState('');
   const [icpCompanyType, setIcpCompanyType] = useState('');
   const [proofPointsRaw, setProofPointsRaw] = useState('');
 
-  // Step 3 — Connect document sources
+  // Step 2 — Connect document sources
   const [connectedSources, setConnectedSources] = useState<ConnectedSource[]>([]);
   const [connectingSourceId, setConnectingSourceId] = useState<string | null>(null);
 
-  // Step 4 — Voice
+  // Step 3 — Voice
   const [voiceOption, setVoiceOption] = useState<'write' | 'upload' | null>(null);
   const [samplePost1, setSamplePost1] = useState('');
   const [samplePost2, setSamplePost2] = useState('');
@@ -59,7 +60,7 @@ const Onboarding = () => {
   const [voiceReady, setVoiceReady] = useState(false);
   const [currentPrompt, setCurrentPrompt] = useState(0);
 
-  // Step 5 — Generated Brief preview / edit
+  // Step 4 — Brief preview
   const briefDraft = useMemo(() => {
     const inputs: BriefInputs = {
       preset: goalToPreset(selectedGoal),
@@ -80,6 +81,28 @@ const Onboarding = () => {
   const povBank = editablePovBank ?? briefDraft.povBank;
 
   const promptForWedge = wedge ? `What's one thing most ${icpTitles || 'people in your space'} get wrong about ${wedge}?` : `What's one thing most people in your space get wrong?`;
+
+  const handleAutoPull = () => {
+    setIsPulling(true);
+    // Mock: simulate scraping the website + LinkedIn company page
+    setTimeout(() => {
+      // Derive a plausible company name from the website URL
+      let derivedName = 'Acme';
+      try {
+        const u = new URL(websiteUrl.startsWith('http') ? websiteUrl : `https://${websiteUrl}`);
+        derivedName = u.hostname.replace(/^www\./, '').split('.')[0];
+        derivedName = derivedName.charAt(0).toUpperCase() + derivedName.slice(1);
+      } catch { /* keep default */ }
+      setCompanyName(derivedName);
+      setCompanyOneLiner(`${derivedName} helps modern teams move faster with AI-native workflows`);
+      setWedge('AI-native workflow automation');
+      setIcpTitles('VP Ops, Head of RevOps, Founder');
+      setIcpCompanyType('Series A–C B2B SaaS, 50–500 employees');
+      setProofPointsRaw('Cut onboarding from 90 → 21 days for 12 customers\n3x pipeline velocity in Q1 with design-partner cohort\nReduced manual ops work by 60% on average');
+      setIsPulling(false);
+      setPulled(true);
+    }, 1400);
+  };
 
   const handleConnectSource = (s: typeof documentSources[0]) => {
     setConnectingSourceId(s.id);
@@ -111,6 +134,8 @@ const Onboarding = () => {
       voiceStyle: mockVoiceProfile,
       samplePosts: voiceOption === 'write' ? [samplePost1, samplePost2].filter(Boolean) : pastedPosts ? [pastedPosts] : [],
       connectedSources,
+      websiteUrl,
+      linkedinUrl: linkedinCompanyUrl,
     });
     setOnboardingComplete(true);
     navigate('/dashboard');
@@ -156,40 +181,59 @@ const Onboarding = () => {
           </div>
         )}
 
-        {/* Step 1 — Company & wedge */}
+        {/* Step 1 — Company URLs + auto-pull */}
         {step === 1 && (
           <div className="animate-fade-in space-y-8">
-            <Header step={2} title="About your company" subtitle="One line, plus the category you want to own." />
+            <Header step={2} title="About your company" subtitle="Paste your website and LinkedIn company page — we'll pull the rest." />
             <div className="space-y-4">
-              <Field label="Company name"><Input value={companyName} onChange={(e) => setCompanyName(e.target.value)} placeholder="e.g., Northstar" className={inputCls} /></Field>
-              <Field label="One-line description"><Input value={companyOneLiner} onChange={(e) => setCompanyOneLiner(e.target.value)} placeholder="e.g., AI co-pilot for outbound sales teams" className={inputCls} /></Field>
-              <Field label="Website (optional)"><Input value={websiteUrl} onChange={(e) => setWebsiteUrl(e.target.value)} placeholder="https://…" className={inputCls} /></Field>
-              <Field label="Category / wedge you want to own"><Input value={wedge} onChange={(e) => setWedge(e.target.value)} placeholder="e.g., AI-native outbound, RevOps for usage-based pricing" className={inputCls} /></Field>
+              <Field label="Company website">
+                <div className="relative">
+                  <Globe className="h-4 w-4 text-primary-foreground/30 absolute left-3 top-1/2 -translate-y-1/2" />
+                  <Input value={websiteUrl} onChange={(e) => setWebsiteUrl(e.target.value)} placeholder="https://yourcompany.com" className={cn(inputCls, 'pl-9')} />
+                </div>
+              </Field>
+              <Field label="LinkedIn company page">
+                <div className="relative">
+                  <Linkedin className="h-4 w-4 text-primary-foreground/30 absolute left-3 top-1/2 -translate-y-1/2" />
+                  <Input value={linkedinCompanyUrl} onChange={(e) => setLinkedinCompanyUrl(e.target.value)} placeholder="https://linkedin.com/company/…" className={cn(inputCls, 'pl-9')} />
+                </div>
+              </Field>
+
+              {!pulled ? (
+                <Button
+                  variant="linkedin"
+                  size="lg"
+                  className="w-full h-12 font-semibold"
+                  disabled={!websiteUrl || !linkedinCompanyUrl || isPulling}
+                  onClick={handleAutoPull}
+                >
+                  {isPulling ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Pulling company data…</> : <>Auto-pull company data<Sparkles className="h-4 w-4 ml-1" /></>}
+                </Button>
+              ) : (
+                <div className="space-y-4 p-4 rounded-xl border border-success/20 bg-success/5">
+                  <div className="flex items-center gap-2 text-success text-xs font-semibold">
+                    <Check className="h-3.5 w-3.5" /> Pulled — edit anything that's off
+                  </div>
+                  <Field label="Company name"><Input value={companyName} onChange={(e) => setCompanyName(e.target.value)} className={inputCls} /></Field>
+                  <Field label="One-line description"><Input value={companyOneLiner} onChange={(e) => setCompanyOneLiner(e.target.value)} className={inputCls} /></Field>
+                  <Field label="Category / wedge you want to own"><Input value={wedge} onChange={(e) => setWedge(e.target.value)} className={inputCls} /></Field>
+                  <Field label="Buyer titles"><Input value={icpTitles} onChange={(e) => setIcpTitles(e.target.value)} className={inputCls} /></Field>
+                  <Field label="Company type (ICP)"><Input value={icpCompanyType} onChange={(e) => setIcpCompanyType(e.target.value)} className={inputCls} /></Field>
+                  <Field label="Proof points (one per line)">
+                    <Textarea value={proofPointsRaw} onChange={(e) => setProofPointsRaw(e.target.value)} rows={4} className={cn(inputCls, 'resize-none leading-relaxed')} />
+                    <p className="text-[11px] text-primary-foreground/30 mt-1">We never invent metrics. Anything missing becomes [INSERT METRIC].</p>
+                  </Field>
+                </div>
+              )}
             </div>
-            <Nav back={() => setOnboardingStep(0)} next={() => setOnboardingStep(2)} disabled={!companyName || !companyOneLiner || !wedge} />
+            <Nav back={() => setOnboardingStep(0)} next={() => setOnboardingStep(2)} disabled={!pulled || !companyName || !wedge} />
           </div>
         )}
 
-        {/* Step 2 — ICP + proof points */}
+        {/* Step 2 — Connect document sources */}
         {step === 2 && (
           <div className="animate-fade-in space-y-8">
-            <Header step={3} title="Who you sell to + what you can prove" subtitle="ICP shapes who reads. Proof points fuel customer-story posts." />
-            <div className="space-y-4">
-              <Field label="Buyer titles"><Input value={icpTitles} onChange={(e) => setIcpTitles(e.target.value)} placeholder="e.g., VP Sales, Head of RevOps" className={inputCls} /></Field>
-              <Field label="Company type"><Input value={icpCompanyType} onChange={(e) => setIcpCompanyType(e.target.value)} placeholder="e.g., Series A–C B2B SaaS, 50–500 reps" className={inputCls} /></Field>
-              <Field label="Proof points (one per line)">
-                <Textarea value={proofPointsRaw} onChange={(e) => setProofPointsRaw(e.target.value)} placeholder={'e.g.\nCut SDR ramp from 90 → 30 days\n$2M ARR added in 6 months\nReply rate 4x vs control'} rows={5} className={cn(inputCls, 'resize-none leading-relaxed')} />
-                <p className="text-[11px] text-primary-foreground/30 mt-1">We never invent metrics. Anything you don't list will appear as [INSERT METRIC] in drafts.</p>
-              </Field>
-            </div>
-            <Nav back={() => setOnboardingStep(1)} next={() => setOnboardingStep(3)} disabled={!icpTitles} />
-          </div>
-        )}
-
-        {/* Step 3 — Connect document sources */}
-        {step === 3 && (
-          <div className="animate-fade-in space-y-8">
-            <Header step={4} title="Connect your content" subtitle="We mine your real materials so suggestions are not generic." />
+            <Header step={3} title="Connect your content" subtitle="We mine your real materials so suggestions are not generic." />
             {connectedSources.length > 0 && (
               <div className="space-y-2">
                 <p className="text-xs font-semibold text-primary-foreground/40 uppercase tracking-wider">Connected</p>
@@ -218,12 +262,12 @@ const Onboarding = () => {
                 </button>
               ))}
             </div>
-            <Nav back={() => setOnboardingStep(2)} next={() => setOnboardingStep(4)} nextLabel={connectedSources.length ? `Continue with ${connectedSources.length}` : 'Skip for now'} />
+            <Nav back={() => setOnboardingStep(1)} next={() => setOnboardingStep(3)} nextLabel={connectedSources.length ? `Continue with ${connectedSources.length}` : 'Skip for now'} />
           </div>
         )}
 
-        {/* Step 4 — Voice */}
-        {step === 4 && (
+        {/* Step 3 — Voice */}
+        {step === 3 && (
           <div className="animate-fade-in space-y-8">
             {isAnalyzing ? (
               <div className="text-center space-y-5 py-16">
@@ -233,15 +277,15 @@ const Onboarding = () => {
             ) : voiceReady ? (
               <div className="text-center space-y-8">
                 <div className="h-16 w-16 rounded-2xl bg-success/15 flex items-center justify-center mx-auto"><Check className="h-8 w-8 text-success" /></div>
-                <Header step={5} title="Voice captured" subtitle="Every draft will sound like you." center />
+                <Header step={4} title="Voice captured" subtitle="Every draft will sound like you." center />
                 <div className="bg-primary-foreground/[0.03] border border-primary-foreground/8 rounded-xl p-5 space-y-3 text-left">
                   {mockVoiceProfile.map((trait, i) => (<div key={i} className="flex items-center gap-3"><div className="h-1.5 w-1.5 rounded-full bg-linkedin shrink-0" /><span className="text-sm text-primary-foreground/70">{trait}</span></div>))}
                 </div>
-                <Nav back={() => { setVoiceReady(false); setVoiceOption(null); }} next={() => setOnboardingStep(5)} nextLabel="Build my brief" />
+                <Nav back={() => { setVoiceReady(false); setVoiceOption(null); }} next={() => setOnboardingStep(4)} nextLabel="Build my brief" />
               </div>
             ) : !voiceOption ? (
               <>
-                <Header step={5} title="Capture your voice" subtitle="So every post sounds like you — not a chatbot." />
+                <Header step={4} title="Capture your voice" subtitle="So every post sounds like you — not a chatbot." />
                 <div className="grid grid-cols-2 gap-3">
                   <button onClick={() => setVoiceOption('write')} className="p-6 rounded-xl border border-primary-foreground/8 hover:border-linkedin/30 hover:bg-linkedin/[0.03] transition-all text-center space-y-4 group">
                     <div className="h-12 w-12 rounded-xl bg-linkedin/10 flex items-center justify-center mx-auto"><FileText className="h-6 w-6 text-linkedin" /></div>
@@ -252,7 +296,7 @@ const Onboarding = () => {
                     <div><div className="font-semibold text-primary-foreground text-sm">Paste past posts</div><p className="text-xs text-primary-foreground/30 mt-1">We extract your style</p></div>
                   </button>
                 </div>
-                <Nav back={() => setOnboardingStep(3)} next={() => { setVoiceReady(true); setVoiceOption('upload'); }} nextLabel="Skip — calibrate later" />
+                <Nav back={() => setOnboardingStep(2)} next={() => { setVoiceReady(true); setVoiceOption('upload'); }} nextLabel="Skip — calibrate later" />
               </>
             ) : voiceOption === 'write' ? (
               <div className="space-y-6">
@@ -281,10 +325,10 @@ const Onboarding = () => {
           </div>
         )}
 
-        {/* Step 5 — Strategy Brief review */}
-        {step === 5 && (
+        {/* Step 4 — Strategy Brief review */}
+        {step === 4 && (
           <div className="animate-fade-in space-y-8">
-            <Header step={6} title="Your Strategy Brief" subtitle="Confirm or edit. This becomes the source of every post." />
+            <Header step={5} title="Your Strategy Brief" subtitle="Confirm or edit. This becomes the source of every post." />
 
             <BriefBlock label="Preset" value={`${PRESET_MIX[preset].label} — ${PRESET_MIX[preset].description}`} />
             <BriefBlock label="Positioning" value={briefDraft.positioning} />
@@ -343,7 +387,7 @@ const Onboarding = () => {
             </div>
 
             <div className="flex gap-3 pt-4">
-              <Button variant="ghost" className="text-primary-foreground/40" onClick={() => setOnboardingStep(4)}>Back</Button>
+              <Button variant="ghost" className="text-primary-foreground/40" onClick={() => setOnboardingStep(3)}>Back</Button>
               <Button variant="linkedin" size="lg" className="flex-1 h-12 font-semibold" onClick={handleFinish}>Approve & generate calendar<ArrowRight className="h-4 w-4 ml-1" /></Button>
             </div>
           </div>
@@ -353,7 +397,6 @@ const Onboarding = () => {
   );
 };
 
-// ---------- helpers ----------
 const inputCls = 'bg-primary-foreground/5 border-primary-foreground/10 text-primary-foreground placeholder:text-primary-foreground/20 h-12';
 const cardCls = (active: boolean) => cn(
   'w-full p-5 rounded-xl border text-left transition-all flex items-start gap-4 group',
