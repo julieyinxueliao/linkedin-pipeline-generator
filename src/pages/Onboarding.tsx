@@ -223,6 +223,12 @@ const Onboarding = () => {
                   <div className="flex items-center gap-2 text-success text-xs font-semibold">
                     <Check className="h-3.5 w-3.5" /> Pulled — edit anything that's off
                   </div>
+                  {pullWarning && (
+                    <div className="flex items-start gap-2 p-3 rounded-lg border border-warning/20 bg-warning/5 text-xs text-primary-foreground/70">
+                      <AlertTriangle className="h-3.5 w-3.5 text-warning shrink-0 mt-0.5" />
+                      <span>{pullWarning}</span>
+                    </div>
+                  )}
                   <Field label="Company name"><Input value={companyName} onChange={(e) => setCompanyName(e.target.value)} className={inputCls} /></Field>
                   <Field label="One-line description"><Input value={companyOneLiner} onChange={(e) => setCompanyOneLiner(e.target.value)} className={inputCls} /></Field>
                   <Field label="Category / wedge you want to own"><Input value={wedge} onChange={(e) => setWedge(e.target.value)} className={inputCls} /></Field>
