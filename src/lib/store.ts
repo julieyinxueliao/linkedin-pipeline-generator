@@ -46,6 +46,7 @@ interface AppState {
   setBrief: (b: StrategyBrief | null) => void;
   updateBrief: (p: Partial<StrategyBrief>) => void;
   setCalendar: (c: ContentCalendar | null) => void;
+  extendCalendar: () => void;
   updateSlot: (id: string, p: Partial<CalendarSlot>) => void;
   approveCalendar: () => void;
   addDraft: (d: DraftPost) => void;
