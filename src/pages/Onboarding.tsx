@@ -4,11 +4,13 @@ import { useAppStore, type ConnectedSource } from '@/lib/store';
 import { mockVoiceProfile } from '@/lib/mock-data';
 import { generateStrategyBrief, type BriefInputs, type PovItem } from '@/lib/strategy';
 import { goalToPreset, PRESET_MIX } from '@/lib/principles';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { Target, User, FileText, Check, ArrowRight, Link2, FileUp, X, Sparkles, Loader2, Linkedin, Globe } from 'lucide-react';
+import { Target, User, FileText, Check, ArrowRight, Link2, FileUp, X, Sparkles, Loader2, Linkedin, Globe, AlertTriangle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const goals = [
