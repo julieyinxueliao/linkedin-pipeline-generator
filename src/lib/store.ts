@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 import type { StrategyBrief } from './strategy';
 import type { ContentCalendar, CalendarSlot } from './calendar';
 
@@ -19,6 +20,8 @@ export interface UserProfile {
   voiceStyle: string[];
   samplePosts: string[];
   connectedSources: ConnectedSource[];
+  websiteUrl?: string;
+  linkedinUrl?: string;
 }
 
 export interface DraftPost {
@@ -47,41 +50,58 @@ interface AppState {
   approveCalendar: () => void;
   addDraft: (d: DraftPost) => void;
   updateDraft: (id: string, p: Partial<DraftPost>) => void;
+  resetAll: () => void;
 }
 
-export const useAppStore = create<AppState>((set) => ({
-  onboardingComplete: false,
-  currentOnboardingStep: 0,
-  profile: {
-    name: '',
-    role: '',
-    industry: '',
-    goal: '',
-    voiceStyle: [],
-    samplePosts: [],
-    connectedSources: [],
-  },
-  brief: null,
-  calendar: null,
-  drafts: [],
-  setOnboardingComplete: (v) => set({ onboardingComplete: v }),
-  setOnboardingStep: (s) => set({ currentOnboardingStep: s }),
-  updateProfile: (p) => set((s) => ({ profile: { ...s.profile, ...p } })),
-  setBrief: (b) => set({ brief: b }),
-  updateBrief: (p) =>
-    set((s) => ({ brief: s.brief ? { ...s.brief, ...p } : s.brief })),
-  setCalendar: (c) => set({ calendar: c }),
-  updateSlot: (id, p) =>
-    set((s) => ({
-      calendar: s.calendar
-        ? { ...s.calendar, slots: s.calendar.slots.map((sl) => (sl.id === id ? { ...sl, ...p } : sl)) }
-        : s.calendar,
-    })),
-  approveCalendar: () =>
-    set((s) => ({
-      calendar: s.calendar ? { ...s.calendar, approvedAt: new Date().toISOString() } : s.calendar,
-    })),
-  addDraft: (d) => set((s) => ({ drafts: [...s.drafts, d] })),
-  updateDraft: (id, p) =>
-    set((s) => ({ drafts: s.drafts.map((d) => (d.id === id ? { ...d, ...p } : d)) })),
-}));
+const initialProfile: UserProfile = {
+  name: '',
+  role: '',
+  industry: '',
+  goal: '',
+  voiceStyle: [],
+  samplePosts: [],
+  connectedSources: [],
+};
+
+export const useAppStore = create<AppState>()(
+  persist(
+    (set) => ({
+      onboardingComplete: false,
+      currentOnboardingStep: 0,
+      profile: initialProfile,
+      brief: null,
+      calendar: null,
+      drafts: [],
+      setOnboardingComplete: (v) => set({ onboardingComplete: v }),
+      setOnboardingStep: (s) => set({ currentOnboardingStep: s }),
+      updateProfile: (p) => set((s) => ({ profile: { ...s.profile, ...p } })),
+      setBrief: (b) => set({ brief: b }),
+      updateBrief: (p) =>
+        set((s) => ({ brief: s.brief ? { ...s.brief, ...p } : s.brief })),
+      setCalendar: (c) => set({ calendar: c }),
+      updateSlot: (id, p) =>
+        set((s) => ({
+          calendar: s.calendar
+            ? { ...s.calendar, slots: s.calendar.slots.map((sl) => (sl.id === id ? { ...sl, ...p } : sl)) }
+            : s.calendar,
+        })),
+      approveCalendar: () =>
+        set((s) => ({
+          calendar: s.calendar ? { ...s.calendar, approvedAt: new Date().toISOString() } : s.calendar,
+        })),
+      addDraft: (d) => set((s) => ({ drafts: [...s.drafts, d] })),
+      updateDraft: (id, p) =>
+        set((s) => ({ drafts: s.drafts.map((d) => (d.id === id ? { ...d, ...p } : d)) })),
+      resetAll: () =>
+        set({
+          onboardingComplete: false,
+          currentOnboardingStep: 0,
+          profile: initialProfile,
+          brief: null,
+          calendar: null,
+          drafts: [],
+        }),
+    }),
+    { name: 'brand-builder-state' },
+  ),
+);
