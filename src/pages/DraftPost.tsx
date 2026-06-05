@@ -51,7 +51,7 @@ const DraftPost = () => {
         <AlertCircle className="h-10 w-10 text-muted-foreground mx-auto" />
         <h2 className="text-xl font-bold">Approve a calendar before drafting</h2>
         <p className="text-muted-foreground text-sm">Drafts are anchored to calendar slots — that keeps every post on-strategy.</p>
-        <Button variant="linkedin" onClick={() => navigate('/schedule')}>Open calendar</Button>
+        <Button variant="linkedin" onClick={() => navigate('/dashboard')}>Open calendar</Button>
       </div>
     );
   }
@@ -61,7 +61,7 @@ const DraftPost = () => {
       <div className="p-8 max-w-2xl mx-auto text-center space-y-4">
         <AlertCircle className="h-10 w-10 text-muted-foreground mx-auto" />
         <h2 className="text-xl font-bold">Pick a slot from your calendar</h2>
-        <Button variant="linkedin" onClick={() => navigate('/schedule')}>Open calendar</Button>
+        <Button variant="linkedin" onClick={() => navigate('/dashboard')}>Open calendar</Button>
       </div>
     );
   }
@@ -167,7 +167,7 @@ const DraftPost = () => {
           </Card>
           <div className="flex gap-3 justify-center">
             <Button variant="outline" onClick={handleCopy}><Copy className="h-4 w-4 mr-2" />Copy</Button>
-            <Button variant="linkedin" onClick={() => navigate('/schedule')}>Back to calendar</Button>
+            <Button variant="linkedin" onClick={() => navigate('/dashboard')}>Back to calendar</Button>
           </div>
         </div>
       )}
