@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { StrategyBrief } from './strategy';
-import type { ContentCalendar, CalendarSlot } from './calendar';
+import { extendCalendar as extendCalendarFn, type ContentCalendar, type CalendarSlot } from './calendar';
 
 export interface ConnectedSource {
   id: string;
