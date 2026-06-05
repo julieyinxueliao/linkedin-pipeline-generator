@@ -97,21 +97,24 @@ export function generateCalendar(
   brief: StrategyBrief,
   opts: { cadencePerWeek?: number; weeks?: number; startDate?: Date } = {},
 ): ContentCalendar {
-  const cadencePerWeek = opts.cadencePerWeek ?? 3;
+  const cadencePerWeek = opts.cadencePerWeek ?? 2;
   const weeks = opts.weeks ?? 4;
   const preset: Preset = brief.preset;
   const rotation = ARCHETYPE_ROTATION[preset];
 
-  // Schedule: Mon/Wed/Fri-style spread for default 3/week
+  // Avoid weekends. Default cadence is Monday morning + Friday afternoon.
+  // dayPattern uses 1=Mon ... 5=Fri.
   const dayPattern = cadencePerWeek === 5
     ? [1, 2, 3, 4, 5]
     : cadencePerWeek === 4
-    ? [1, 2, 3, 5]
-    : cadencePerWeek === 2
-    ? [2, 4]
-    : [1, 3, 5];
+    ? [1, 2, 4, 5]
+    : cadencePerWeek === 3
+    ? [1, 3, 5]
+    : [1, 5];
 
-  // Start on next Monday
+  const timeForDay = (dow: number) =>
+    dow === 5 ? '15:30' : '08:30';
+
   let cursor = new Date();
   while (cursor.getDay() !== 1) cursor = nextBusinessDay(cursor);
 
@@ -124,7 +127,6 @@ export function generateCalendar(
       const archId = rotation[i % rotation.length];
       const arch = ARCHETYPE_BY_ID[archId];
       const pillar = pickPillarForArchetype(archId, brief.pillars);
-      // funnel stage: prefer the archetype's first funnel, but slot into preset's target distribution gradually
       const funnelStage: FunnelStage = arch.funnel[0];
       const date = new Date(weekStart);
       date.setDate(weekStart.getDate() + (dow - 1));
@@ -132,7 +134,7 @@ export function generateCalendar(
         id: `slot-${w}-${dow}-${Math.random().toString(36).slice(2, 6)}`,
         week: w,
         dayOfWeek: dow,
-        scheduledFor: date.toISOString().split('T')[0],
+        scheduledFor: `${date.toISOString().split('T')[0]}T${timeForDay(dow)}:00`,
         pillarId: pillar.id,
         pillarName: pillar.name,
         funnelStage,
