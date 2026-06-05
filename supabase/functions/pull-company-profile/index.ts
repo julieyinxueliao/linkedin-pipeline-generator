@@ -5,7 +5,7 @@ const AI_GATEWAY = 'https://ai.gateway.lovable.dev/v1/chat/completions';
 
 interface PullBody {
   websiteUrl?: string;
-  linkedinCompanyUrl?: string;
+  additionalContext?: string;
 }
 
 function isValidUrl(s: unknown): s is string {
@@ -31,7 +31,6 @@ async function firecrawlScrape(url: string, apiKey: string, formats: string[]): 
     });
     const data = await res.json().catch(() => ({}));
     if (!res.ok) return { error: `${res.status}: ${data?.error ?? res.statusText}` };
-    // v2 returns { success, data: { markdown, summary, metadata, ... } } typically
     const payload = data?.data ?? data;
     return { markdown: payload?.markdown, summary: payload?.summary };
   } catch (e) {
@@ -49,50 +48,46 @@ Deno.serve(async (req) => {
     if (!LOVABLE_API_KEY) throw new Error('LOVABLE_API_KEY is not configured');
 
     const body = (await req.json().catch(() => ({}))) as PullBody;
-    if (!isValidUrl(body.websiteUrl) || !isValidUrl(body.linkedinCompanyUrl)) {
-      return new Response(JSON.stringify({ error: 'websiteUrl and linkedinCompanyUrl must be valid URLs' }), {
+    if (!isValidUrl(body.websiteUrl)) {
+      return new Response(JSON.stringify({ error: 'websiteUrl must be a valid URL' }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
     const websiteUrl = normalizeUrl(body.websiteUrl!);
-    const linkedinUrl = normalizeUrl(body.linkedinCompanyUrl!);
+    const additionalContext = (body.additionalContext ?? '').trim();
 
-    const [site, li] = await Promise.all([
-      firecrawlScrape(websiteUrl, FIRECRAWL_API_KEY, ['markdown', 'summary']),
-      firecrawlScrape(linkedinUrl, FIRECRAWL_API_KEY, ['markdown']),
-    ]);
-
+    const site = await firecrawlScrape(websiteUrl, FIRECRAWL_API_KEY, ['markdown', 'summary']);
     const websiteAvailable = !!(site.markdown || site.summary);
-    const linkedinAvailable = !!li.markdown && li.markdown.length > 200;
 
-    if (!websiteAvailable && !linkedinAvailable) {
+    if (!websiteAvailable && !additionalContext) {
       return new Response(JSON.stringify({
-        error: 'Could not read either source',
-        details: { website: site.error, linkedin: li.error },
+        error: 'Could not read website and no additional context provided',
+        details: { website: site.error },
       }), { status: 502, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
 
     const truncate = (s?: string, n = 12000) => (s ?? '').slice(0, n);
     const context = [
       websiteAvailable ? `### WEBSITE (${websiteUrl})\nSummary: ${site.summary ?? ''}\n\n${truncate(site.markdown)}` : '',
-      linkedinAvailable ? `### LINKEDIN COMPANY (${linkedinUrl})\n${truncate(li.markdown)}` : '',
+      additionalContext ? `### ADDITIONAL SOURCES (pitch deck / business plan / company docs pasted by user)\n${truncate(additionalContext, 20000)}` : '',
     ].filter(Boolean).join('\n\n---\n\n');
 
-    const systemPrompt = `You extract a B2B company profile from scraped web content. Return ONLY valid JSON matching this exact shape, with no commentary:
+    const systemPrompt = `You extract a B2B company profile from scraped web content and user-provided source documents. Return ONLY valid JSON matching this exact shape, with no commentary:
 {
   "companyName": string,
-  "oneLiner": string,                 // <= 140 chars, plain language, what they actually do
-  "wedge": string,                    // 3-7 word category they want to own
-  "icpTitles": string,                // comma-separated buyer titles, e.g. "VP Ops, Head of RevOps"
-  "icpCompanyType": string,           // e.g. "Series A–C B2B SaaS, 50–500 employees"
-  "proofPoints": string[]             // 3-5 concrete proof points. Each MUST be grounded in the source text. If a number/metric is not explicitly stated, write it WITHOUT a number rather than inventing one. Never fabricate metrics.
+  "oneLiner": string,
+  "wedge": string,
+  "icpTitles": string,
+  "icpCompanyType": string,
+  "proofPoints": string[]
 }
 Rules:
 - Never invent metrics, customer names, or claims not present in the source.
 - Prefer specificity over marketing fluff.
-- If a field cannot be determined, return an empty string (or empty array for proofPoints).`;
+- If a field cannot be determined, return an empty string (or empty array for proofPoints).
+- proofPoints must each be grounded in the source. Include the metric verbatim when present; do not invent numbers.`;
 
     const aiRes = await fetch(AI_GATEWAY, {
       method: 'POST',
@@ -138,10 +133,9 @@ Rules:
 
     return new Response(JSON.stringify({
       data,
-      sources: { websiteAvailable, linkedinAvailable },
+      sources: { websiteAvailable, additionalContextProvided: !!additionalContext },
       warnings: [
-        !websiteAvailable ? 'Website could not be read' : null,
-        !linkedinAvailable ? 'LinkedIn company page could not be read (often gated). Filled in from website only.' : null,
+        !websiteAvailable ? 'Website could not be read — relied on pasted context only.' : null,
       ].filter(Boolean),
     }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 });
 
