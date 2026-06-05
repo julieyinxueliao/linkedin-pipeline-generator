@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { useAppStore } from '@/lib/store';
-import { mockVoiceProfile } from '@/lib/mock-data';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -17,11 +16,11 @@ const SettingsPage = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  const [voiceTraits, setVoiceTraits] = useState<string[]>(profile.voiceStyle.length ? profile.voiceStyle : mockVoiceProfile);
+  const [voiceTraits, setVoiceTraits] = useState<string[]>(profile.voiceStyle);
   const [newTrait, setNewTrait] = useState('');
 
   useEffect(() => {
-    if (profile.voiceStyle.length) setVoiceTraits(profile.voiceStyle);
+    setVoiceTraits(profile.voiceStyle);
   }, [profile.voiceStyle]);
 
   const handleSave = () => {
