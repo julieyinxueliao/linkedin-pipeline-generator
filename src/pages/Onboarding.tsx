@@ -1,12 +1,14 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppStore, type ConnectedSource } from '@/lib/store';
-import { mockVoiceProfile, generateNicheSuggestion, generateTrendingSuggestion, generateDocumentSuggestions } from '@/lib/mock-data';
+import { mockVoiceProfile } from '@/lib/mock-data';
+import { generateStrategyBrief, type BriefInputs, type PovItem } from '@/lib/strategy';
+import { goalToPreset, PRESET_MIX } from '@/lib/principles';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { Target, User, FileText, Check, ArrowRight, Sparkles, FolderOpen, Link2, FileUp, Cloud, TrendingUp, BookOpen } from 'lucide-react';
+import { Target, User, FileText, Check, ArrowRight, FolderOpen, Link2, FileUp, X, Plus, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const goals = [
@@ -15,589 +17,334 @@ const goals = [
   { id: 'other', label: 'Something else', desc: 'Tell us your unique goal', icon: FileText },
 ];
 
-const nicheExamples = [
-  'B2B SaaS for mid-market companies',
-  'AI/ML infrastructure & tooling',
-  'FinTech payments & banking',
-  'HealthTech & digital therapeutics',
-  'Climate tech & clean energy',
-  'Developer tools & DevOps',
-  'E-commerce & DTC brands',
-  'Cybersecurity & compliance',
-  'EdTech & workforce development',
-  'Real estate technology',
-];
-
 const documentSources = [
   { id: 'google-drive', name: 'Google Drive', icon: '📁', desc: 'Docs, slides, and spreadsheets' },
   { id: 'notion', name: 'Notion', icon: '📝', desc: 'Pages, databases, and wikis' },
   { id: 'dropbox', name: 'Dropbox', icon: '📦', desc: 'Files and paper documents' },
   { id: 'confluence', name: 'Confluence', icon: '📄', desc: 'Team knowledge base' },
-  { id: 'upload', name: 'Upload files', icon: '⬆️', desc: 'PDF, DOCX, or TXT files' },
 ];
 
-function getTopicPrompts(industry: string): [string, string] {
-  const lower = industry.toLowerCase();
-
-  if (lower.includes('saas') || lower.includes('software')) {
-    return [
-      "What's one product decision you made that seemed wrong at first but paid off?",
-      "What do most SaaS founders get wrong about their first 100 customers?",
-    ];
-  }
-  if (lower.includes('ai') || lower.includes('ml') || lower.includes('machine learning')) {
-    return [
-      "What's one AI trend everyone's excited about that you think is overhyped?",
-      "How do you think about building AI products that actually solve real problems?",
-    ];
-  }
-  if (lower.includes('fintech') || lower.includes('finance') || lower.includes('banking')) {
-    return [
-      "What's one thing traditional finance still gets right that fintech ignores?",
-      "What was the hardest regulatory lesson you learned building in fintech?",
-    ];
-  }
-  if (lower.includes('health') || lower.includes('med') || lower.includes('biotech')) {
-    return [
-      "What's one misconception about building technology for healthcare?",
-      "How do you balance innovation speed with patient safety in your work?",
-    ];
-  }
-  if (lower.includes('climate') || lower.includes('energy') || lower.includes('clean')) {
-    return [
-      "What's the biggest gap between climate tech hype and reality that you've seen?",
-      "What made you decide to build in climate — and what keeps you going?",
-    ];
-  }
-  if (lower.includes('developer') || lower.includes('devops') || lower.includes('infra')) {
-    return [
-      "What's one developer workflow problem that still hasn't been properly solved?",
-      "How do you think about developer experience vs. enterprise requirements?",
-    ];
-  }
-  if (lower.includes('ecommerce') || lower.includes('commerce') || lower.includes('dtc') || lower.includes('retail')) {
-    return [
-      "What's one thing you've learned about customer behavior that surprised you?",
-      "What's the most underrated growth lever in e-commerce right now?",
-    ];
-  }
-  if (lower.includes('cyber') || lower.includes('security')) {
-    return [
-      "What's one security risk that most companies still dramatically underestimate?",
-      "How do you make cybersecurity feel urgent without resorting to fear?",
-    ];
-  }
-  if (lower.includes('ed') || lower.includes('learning') || lower.includes('education')) {
-    return [
-      "What's one thing the traditional education system does that technology can't replace?",
-      "What's your boldest prediction for how people will learn in 5 years?",
-    ];
-  }
-  return [
-    `What's one unconventional insight from ${industry || 'your field'} that most people miss?`,
-    `What's the hardest lesson you've learned building in ${industry || 'your industry'}?`,
-  ];
-}
-
-const sourceIconMap: Record<string, typeof Target> = {
-  niche: BookOpen,
-  trending: TrendingUp,
-  document: FileText,
-};
+const TOTAL_STEPS = 6;
 
 const Onboarding = () => {
   const navigate = useNavigate();
-  const { currentOnboardingStep, setOnboardingStep, updateProfile, setOnboardingComplete } = useAppStore();
-  const profile = useAppStore((s) => s.profile);
+  const { currentOnboardingStep, setOnboardingStep, updateProfile, setOnboardingComplete, setBrief } = useAppStore();
+  const step = currentOnboardingStep;
+
+  // Step 0 — Goal
   const [selectedGoal, setSelectedGoal] = useState('');
   const [customGoal, setCustomGoal] = useState('');
-  const [role, setRole] = useState('');
-  const [industry, setIndustry] = useState('');
-  const [showNicheSuggestions, setShowNicheSuggestions] = useState(false);
-  const [samplePost1, setSamplePost1] = useState('');
-  const [samplePost2, setSamplePost2] = useState('');
-  const [currentPrompt, setCurrentPrompt] = useState(0);
-  const [pastedPosts, setPastedPosts] = useState('');
-  const [voiceOption, setVoiceOption] = useState<'write' | 'upload' | null>(null);
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [voiceProfileReady, setVoiceProfileReady] = useState(false);
-  const [selectedSuggestions, setSelectedSuggestions] = useState<Set<string>>(new Set());
+
+  // Step 1 — Company & wedge
+  const [companyName, setCompanyName] = useState('');
+  const [companyOneLiner, setCompanyOneLiner] = useState('');
+  const [websiteUrl, setWebsiteUrl] = useState('');
+  const [wedge, setWedge] = useState('');
+
+  // Step 2 — ICP + proof
+  const [icpTitles, setIcpTitles] = useState('');
+  const [icpCompanyType, setIcpCompanyType] = useState('');
+  const [proofPointsRaw, setProofPointsRaw] = useState('');
+
+  // Step 3 — Connect document sources
   const [connectedSources, setConnectedSources] = useState<ConnectedSource[]>([]);
   const [connectingSourceId, setConnectingSourceId] = useState<string | null>(null);
 
-  const step = currentOnboardingStep;
-  const topicPrompts = useMemo(() => getTopicPrompts(industry), [industry]);
+  // Step 4 — Voice
+  const [voiceOption, setVoiceOption] = useState<'write' | 'upload' | null>(null);
+  const [samplePost1, setSamplePost1] = useState('');
+  const [samplePost2, setSamplePost2] = useState('');
+  const [pastedPosts, setPastedPosts] = useState('');
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [voiceReady, setVoiceReady] = useState(false);
+  const [currentPrompt, setCurrentPrompt] = useState(0);
 
-  const finalRole = profile.role || role;
-  const finalIndustry = profile.industry || industry;
+  // Step 5 — Generated Brief preview / edit
+  const briefDraft = useMemo(() => {
+    const inputs: BriefInputs = {
+      preset: goalToPreset(selectedGoal),
+      companyName,
+      companyOneLiner,
+      websiteUrl,
+      wedge,
+      icpTitles,
+      icpCompanyType,
+      proofPoints: proofPointsRaw.split('\n').map((s) => s.trim()).filter(Boolean),
+      samplePosts: voiceOption === 'write' ? [samplePost1, samplePost2].filter(Boolean) : pastedPosts ? [pastedPosts] : [],
+      connectedSourceNames: connectedSources.map((c) => c.name),
+    };
+    return generateStrategyBrief(inputs);
+  }, [selectedGoal, companyName, companyOneLiner, websiteUrl, wedge, icpTitles, icpCompanyType, proofPointsRaw, samplePost1, samplePost2, pastedPosts, voiceOption, connectedSources]);
 
-  // Generate exactly 4 suggestions: 1 niche + 1 trending + 2 document-based
-  const allSuggestions = useMemo(() => {
-    const niche = generateNicheSuggestion(finalRole, finalIndustry);
-    const trending = generateTrendingSuggestion(finalIndustry);
-    const sourceNames = connectedSources.map((s) => s.name);
-    const docs = generateDocumentSuggestions(finalRole, finalIndustry, sourceNames);
-    return [niche, trending, ...docs];
-  }, [finalRole, finalIndustry, connectedSources]);
+  const [editablePovBank, setEditablePovBank] = useState<PovItem[] | null>(null);
+  const povBank = editablePovBank ?? briefDraft.povBank;
 
-  const handleGoalContinue = () => {
-    updateProfile({ goal: selectedGoal === 'other' ? customGoal : selectedGoal });
-    setOnboardingStep(1);
-  };
+  const promptForWedge = wedge ? `What's one thing most ${icpTitles || 'people in your space'} get wrong about ${wedge}?` : `What's one thing most people in your space get wrong?`;
 
-  const handleRoleContinue = () => {
-    updateProfile({ role, industry });
-    setOnboardingStep(2);
+  const handleConnectSource = (s: typeof documentSources[0]) => {
+    setConnectingSourceId(s.id);
+    setTimeout(() => {
+      setConnectedSources((prev) => [...prev, {
+        id: s.id, name: s.name, icon: s.icon,
+        connectedAt: new Date().toISOString(),
+        documentCount: Math.floor(Math.random() * 20) + 5,
+      }]);
+      setConnectingSourceId(null);
+    }, 1200);
   };
 
   const handleAnalyzeVoice = () => {
     setIsAnalyzing(true);
     setTimeout(() => {
       setIsAnalyzing(false);
-      setVoiceProfileReady(true);
-      updateProfile({
-        voiceStyle: mockVoiceProfile,
-        samplePosts: voiceOption === 'write' ? [samplePost1, samplePost2] : [pastedPosts],
-      });
-    }, 2500);
-  };
-
-  const handleVoiceDone = () => {
-    setOnboardingStep(3);
-  };
-
-  const handleConnectSource = (source: typeof documentSources[0]) => {
-    setConnectingSourceId(source.id);
-    // Simulate connecting to a document source
-    setTimeout(() => {
-      const newSource: ConnectedSource = {
-        id: source.id,
-        name: source.name,
-        icon: source.icon,
-        connectedAt: new Date().toISOString(),
-        documentCount: Math.floor(Math.random() * 20) + 5,
-      };
-      setConnectedSources((prev) => [...prev, newSource]);
-      setConnectingSourceId(null);
-    }, 1500);
-  };
-
-  const handleDisconnectSource = (sourceId: string) => {
-    setConnectedSources((prev) => prev.filter((s) => s.id !== sourceId));
-  };
-
-  const handleDocsContinue = () => {
-    updateProfile({ connectedSources });
-    setOnboardingStep(4);
-  };
-
-  const toggleSuggestion = (id: string) => {
-    setSelectedSuggestions((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
+      setVoiceReady(true);
+    }, 2000);
   };
 
   const handleFinish = () => {
-    const selected = allSuggestions.filter((s) => selectedSuggestions.has(s.id));
-    updateProfile({ contentSuggestions: selected.length > 0 ? selected : allSuggestions });
+    const finalBrief = { ...briefDraft, povBank };
+    setBrief(finalBrief);
+    updateProfile({
+      goal: selectedGoal === 'other' ? customGoal : selectedGoal,
+      role: selectedGoal,
+      industry: wedge,
+      voiceStyle: mockVoiceProfile,
+      samplePosts: voiceOption === 'write' ? [samplePost1, samplePost2].filter(Boolean) : pastedPosts ? [pastedPosts] : [],
+      connectedSources,
+    });
     setOnboardingComplete(true);
     navigate('/dashboard');
   };
 
-  const totalSteps = 5;
+  const preset = goalToPreset(selectedGoal);
 
   return (
-    <div className="min-h-screen gradient-hero flex flex-col items-center justify-center px-4 relative overflow-hidden">
+    <div className="min-h-screen gradient-hero flex flex-col items-center justify-center px-4 py-10 relative overflow-hidden">
       <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-linkedin/4 blur-[100px] pointer-events-none" />
-
-      <div className="w-full max-w-lg relative z-10">
+      <div className="w-full max-w-xl relative z-10">
         {/* Progress */}
         <div className="flex items-center gap-2 mb-10 justify-center">
-          {Array.from({ length: totalSteps }).map((_, i) => (
-            <div
-              key={i}
-              className={cn(
-                'h-1 rounded-full transition-all duration-700',
-                i <= step ? 'bg-linkedin w-14' : 'bg-primary-foreground/10 w-8'
-              )}
-            />
+          {Array.from({ length: TOTAL_STEPS }).map((_, i) => (
+            <div key={i} className={cn('h-1 rounded-full transition-all duration-500', i <= step ? 'bg-linkedin w-12' : 'bg-primary-foreground/10 w-6')} />
           ))}
         </div>
 
-        {/* Step 0: Goals */}
+        {/* Step 0 — Goal */}
         {step === 0 && (
           <div className="animate-fade-in space-y-8">
-            <div className="space-y-3">
-              <p className="text-linkedin text-xs font-semibold tracking-widest uppercase">Step 1 of {totalSteps}</p>
-              <h2 className="text-3xl font-black text-primary-foreground tracking-tight">What's your goal?</h2>
-              <p className="text-primary-foreground/40 text-sm">Pick what matters most. We'll tailor everything to this.</p>
-            </div>
+            <Header step={1} title="What's your goal?" subtitle="Pick what matters most — this sets your entire content mix." />
             <div className="space-y-3">
               {goals.map((g) => (
-                <button
-                  key={g.id}
-                  onClick={() => setSelectedGoal(g.id)}
-                  className={cn(
-                    'w-full p-5 rounded-xl border text-left transition-all flex items-start gap-4 group',
-                    selectedGoal === g.id
-                      ? 'border-linkedin bg-linkedin/8 shadow-glow'
-                      : 'border-primary-foreground/8 hover:border-primary-foreground/15 bg-primary-foreground/[0.02]'
-                  )}
-                >
-                  <div className={cn(
-                    'h-10 w-10 rounded-lg flex items-center justify-center shrink-0 transition-colors',
-                    selectedGoal === g.id ? 'bg-linkedin/20 text-linkedin' : 'bg-primary-foreground/5 text-primary-foreground/30'
-                  )}>
-                    <g.icon className="h-5 w-5" />
-                  </div>
-                  <div>
+                <button key={g.id} onClick={() => setSelectedGoal(g.id)} className={cardCls(selectedGoal === g.id)}>
+                  <div className={iconBoxCls(selectedGoal === g.id)}><g.icon className="h-5 w-5" /></div>
+                  <div className="text-left">
                     <span className="font-semibold text-primary-foreground block">{g.label}</span>
                     <span className="text-xs text-primary-foreground/40 mt-0.5 block">{g.desc}</span>
                   </div>
                 </button>
               ))}
               {selectedGoal === 'other' && (
-                <Input
-                  placeholder="What are you trying to achieve?"
-                  value={customGoal}
-                  onChange={(e) => setCustomGoal(e.target.value)}
-                  className="bg-primary-foreground/5 border-primary-foreground/10 text-primary-foreground placeholder:text-primary-foreground/20 h-12"
-                />
+                <Input value={customGoal} onChange={(e) => setCustomGoal(e.target.value)} placeholder="What are you trying to achieve?" className="bg-primary-foreground/5 border-primary-foreground/10 text-primary-foreground h-12" />
+              )}
+              {selectedGoal && (
+                <div className="text-xs text-primary-foreground/40 px-1">
+                  Preset: <span className="text-linkedin font-semibold">{PRESET_MIX[preset].label}</span> — {PRESET_MIX[preset].description}
+                </div>
               )}
             </div>
-            <Button variant="linkedin" size="lg" className="w-full h-12 text-base font-semibold" disabled={!selectedGoal || (selectedGoal === 'other' && !customGoal)} onClick={handleGoalContinue}>
-              Continue
-              <ArrowRight className="h-4 w-4 ml-1" />
-            </Button>
+            <Button variant="linkedin" size="lg" className="w-full h-12 font-semibold" disabled={!selectedGoal || (selectedGoal === 'other' && !customGoal)} onClick={() => setOnboardingStep(1)}>Continue<ArrowRight className="h-4 w-4 ml-1" /></Button>
           </div>
         )}
 
-        {/* Step 1: Role & Industry */}
+        {/* Step 1 — Company & wedge */}
         {step === 1 && (
           <div className="animate-fade-in space-y-8">
-            <div className="space-y-3">
-              <p className="text-linkedin text-xs font-semibold tracking-widest uppercase">Step 2 of {totalSteps}</p>
-              <h2 className="text-3xl font-black text-primary-foreground tracking-tight">About you</h2>
-              <p className="text-primary-foreground/40 text-sm">This shapes your content strategy and tone.</p>
+            <Header step={2} title="About your company" subtitle="One line, plus the category you want to own." />
+            <div className="space-y-4">
+              <Field label="Company name"><Input value={companyName} onChange={(e) => setCompanyName(e.target.value)} placeholder="e.g., Northstar" className={inputCls} /></Field>
+              <Field label="One-line description"><Input value={companyOneLiner} onChange={(e) => setCompanyOneLiner(e.target.value)} placeholder="e.g., AI co-pilot for outbound sales teams" className={inputCls} /></Field>
+              <Field label="Website (optional)"><Input value={websiteUrl} onChange={(e) => setWebsiteUrl(e.target.value)} placeholder="https://…" className={inputCls} /></Field>
+              <Field label="Category / wedge you want to own"><Input value={wedge} onChange={(e) => setWedge(e.target.value)} placeholder="e.g., AI-native outbound, RevOps for usage-based pricing" className={inputCls} /></Field>
             </div>
-            <div className="space-y-5">
-              <div>
-                <label className="text-xs font-semibold text-primary-foreground/60 uppercase tracking-wider mb-2 block">Your role</label>
-                <Input
-                  value={role}
-                  onChange={(e) => setRole(e.target.value)}
-                  placeholder="e.g., CEO, VP of Engineering, Founder"
-                  className="bg-primary-foreground/5 border-primary-foreground/10 text-primary-foreground placeholder:text-primary-foreground/20 h-12"
-                />
-              </div>
-              <div className="relative">
-                <label className="text-xs font-semibold text-primary-foreground/60 uppercase tracking-wider mb-2 block">Your niche / area of expertise</label>
-                <Input
-                  value={industry}
-                  onChange={(e) => {
-                    setIndustry(e.target.value);
-                    setShowNicheSuggestions(true);
-                  }}
-                  onFocus={() => setShowNicheSuggestions(true)}
-                  onBlur={() => setTimeout(() => setShowNicheSuggestions(false), 200)}
-                  placeholder="Be specific — e.g., 'AI infrastructure for enterprise'"
-                  className="bg-primary-foreground/5 border-primary-foreground/10 text-primary-foreground placeholder:text-primary-foreground/20 h-12"
-                />
-                {showNicheSuggestions && !industry && (
-                  <div className="absolute z-20 top-full mt-2 w-full bg-sidebar-accent border border-sidebar-border rounded-xl p-2 shadow-lg max-h-48 overflow-y-auto">
-                    <p className="text-[10px] uppercase tracking-wider text-primary-foreground/30 font-semibold px-2 py-1">Examples — be specific</p>
-                    {nicheExamples.map((niche) => (
-                      <button
-                        key={niche}
-                        onMouseDown={(e) => {
-                          e.preventDefault();
-                          setIndustry(niche);
-                          setShowNicheSuggestions(false);
-                        }}
-                        className="w-full text-left text-sm text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/5 px-2 py-1.5 rounded-lg transition-colors"
-                      >
-                        {niche}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-            <Button variant="linkedin" size="lg" className="w-full h-12 text-base font-semibold" disabled={!role || !industry} onClick={handleRoleContinue}>
-              Continue
-              <ArrowRight className="h-4 w-4 ml-1" />
-            </Button>
+            <Nav back={() => setOnboardingStep(0)} next={() => setOnboardingStep(2)} disabled={!companyName || !companyOneLiner || !wedge} />
           </div>
         )}
 
-        {/* Step 2: Voice Calibration */}
+        {/* Step 2 — ICP + proof points */}
         {step === 2 && (
+          <div className="animate-fade-in space-y-8">
+            <Header step={3} title="Who you sell to + what you can prove" subtitle="ICP shapes who reads. Proof points fuel customer-story posts." />
+            <div className="space-y-4">
+              <Field label="Buyer titles"><Input value={icpTitles} onChange={(e) => setIcpTitles(e.target.value)} placeholder="e.g., VP Sales, Head of RevOps" className={inputCls} /></Field>
+              <Field label="Company type"><Input value={icpCompanyType} onChange={(e) => setIcpCompanyType(e.target.value)} placeholder="e.g., Series A–C B2B SaaS, 50–500 reps" className={inputCls} /></Field>
+              <Field label="Proof points (one per line)">
+                <Textarea value={proofPointsRaw} onChange={(e) => setProofPointsRaw(e.target.value)} placeholder={'e.g.\nCut SDR ramp from 90 → 30 days\n$2M ARR added in 6 months\nReply rate 4x vs control'} rows={5} className={cn(inputCls, 'resize-none leading-relaxed')} />
+                <p className="text-[11px] text-primary-foreground/30 mt-1">We never invent metrics. Anything you don't list will appear as [INSERT METRIC] in drafts.</p>
+              </Field>
+            </div>
+            <Nav back={() => setOnboardingStep(1)} next={() => setOnboardingStep(3)} disabled={!icpTitles} />
+          </div>
+        )}
+
+        {/* Step 3 — Connect document sources */}
+        {step === 3 && (
+          <div className="animate-fade-in space-y-8">
+            <Header step={4} title="Connect your content" subtitle="We mine your real materials so suggestions are not generic." />
+            {connectedSources.length > 0 && (
+              <div className="space-y-2">
+                <p className="text-xs font-semibold text-primary-foreground/40 uppercase tracking-wider">Connected</p>
+                {connectedSources.map((s) => (
+                  <div key={s.id} className="flex items-center gap-3 p-4 rounded-xl border border-success/20 bg-success/5">
+                    <span className="text-xl">{s.icon}</span>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-primary-foreground">{s.name}</p>
+                      <p className="text-xs text-primary-foreground/40">{s.documentCount} documents found</p>
+                    </div>
+                    <Check className="h-4 w-4 text-success" />
+                    <button onClick={() => setConnectedSources((prev) => prev.filter((x) => x.id !== s.id))} className="text-xs text-primary-foreground/30 hover:text-primary-foreground/60"><X className="h-3.5 w-3.5" /></button>
+                  </div>
+                ))}
+              </div>
+            )}
+            <div className="space-y-2">
+              {documentSources.filter((s) => !connectedSources.some((c) => c.id === s.id)).map((s) => (
+                <button key={s.id} onClick={() => handleConnectSource(s)} disabled={connectingSourceId === s.id} className={cn('w-full flex items-center gap-3 p-4 rounded-xl border transition-all text-left group', connectingSourceId === s.id ? 'border-linkedin/30 bg-linkedin/5' : 'border-primary-foreground/8 hover:border-linkedin/30 hover:bg-linkedin/[0.03]')}>
+                  <span className="text-xl">{s.icon}</span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-primary-foreground">{s.name}</p>
+                    <p className="text-xs text-primary-foreground/30">{s.desc}</p>
+                  </div>
+                  {connectingSourceId === s.id ? <div className="h-5 w-5 rounded-full border-2 border-linkedin border-t-transparent animate-spin" /> : <Link2 className="h-4 w-4 text-primary-foreground/20 group-hover:text-linkedin" />}
+                </button>
+              ))}
+            </div>
+            <Nav back={() => setOnboardingStep(2)} next={() => setOnboardingStep(4)} nextLabel={connectedSources.length ? `Continue with ${connectedSources.length}` : 'Skip for now'} />
+          </div>
+        )}
+
+        {/* Step 4 — Voice */}
+        {step === 4 && (
           <div className="animate-fade-in space-y-8">
             {isAnalyzing ? (
               <div className="text-center space-y-5 py-16">
                 <div className="h-12 w-12 rounded-full border-2 border-linkedin border-t-transparent animate-spin mx-auto" />
                 <h2 className="text-xl font-bold text-primary-foreground">Analyzing your voice…</h2>
-                <p className="text-primary-foreground/40 text-sm">Building your unique writing profile.</p>
               </div>
-            ) : voiceProfileReady ? (
+            ) : voiceReady ? (
               <div className="text-center space-y-8">
-                <div className="h-16 w-16 rounded-2xl bg-success/15 flex items-center justify-center mx-auto">
-                  <Check className="h-8 w-8 text-success" />
-                </div>
-                <div className="space-y-2">
-                  <h2 className="text-3xl font-black text-primary-foreground tracking-tight">Voice captured</h2>
-                  <p className="text-primary-foreground/40 text-sm">Every post will sound like you.</p>
-                </div>
+                <div className="h-16 w-16 rounded-2xl bg-success/15 flex items-center justify-center mx-auto"><Check className="h-8 w-8 text-success" /></div>
+                <Header step={5} title="Voice captured" subtitle="Every draft will sound like you." center />
                 <div className="bg-primary-foreground/[0.03] border border-primary-foreground/8 rounded-xl p-5 space-y-3 text-left">
-                  {mockVoiceProfile.map((trait, i) => (
-                    <div key={i} className="flex items-center gap-3">
-                      <div className="h-1.5 w-1.5 rounded-full bg-linkedin shrink-0" />
-                      <span className="text-sm text-primary-foreground/70">{trait}</span>
-                    </div>
-                  ))}
+                  {mockVoiceProfile.map((trait, i) => (<div key={i} className="flex items-center gap-3"><div className="h-1.5 w-1.5 rounded-full bg-linkedin shrink-0" /><span className="text-sm text-primary-foreground/70">{trait}</span></div>))}
                 </div>
-                <Button variant="linkedin" size="lg" className="w-full h-12 text-base font-semibold" onClick={handleVoiceDone}>
-                  Continue
-                  <ArrowRight className="h-4 w-4 ml-1" />
-                </Button>
+                <Nav back={() => { setVoiceReady(false); setVoiceOption(null); }} next={() => setOnboardingStep(5)} nextLabel="Build my brief" />
               </div>
             ) : !voiceOption ? (
               <>
-                <div className="space-y-3">
-                  <p className="text-linkedin text-xs font-semibold tracking-widest uppercase">Step 3 of {totalSteps}</p>
-                  <h2 className="text-3xl font-black text-primary-foreground tracking-tight">Capture your voice</h2>
-                  <p className="text-primary-foreground/40 text-sm">So every post sounds like you — not a chatbot.</p>
-                </div>
+                <Header step={5} title="Capture your voice" subtitle="So every post sounds like you — not a chatbot." />
                 <div className="grid grid-cols-2 gap-3">
-                  <button
-                    onClick={() => setVoiceOption('write')}
-                    className="p-6 rounded-xl border border-primary-foreground/8 hover:border-linkedin/30 hover:bg-linkedin/[0.03] transition-all text-center space-y-4 group"
-                  >
-                    <div className="h-12 w-12 rounded-xl bg-linkedin/10 flex items-center justify-center mx-auto group-hover:bg-linkedin/15 transition-colors">
-                      <FileText className="h-6 w-6 text-linkedin" />
-                    </div>
-                    <div>
-                      <div className="font-semibold text-primary-foreground text-sm">Write 2 posts</div>
-                      <p className="text-xs text-primary-foreground/30 mt-1">On topics from your niche</p>
-                    </div>
+                  <button onClick={() => setVoiceOption('write')} className="p-6 rounded-xl border border-primary-foreground/8 hover:border-linkedin/30 hover:bg-linkedin/[0.03] transition-all text-center space-y-4 group">
+                    <div className="h-12 w-12 rounded-xl bg-linkedin/10 flex items-center justify-center mx-auto"><FileText className="h-6 w-6 text-linkedin" /></div>
+                    <div><div className="font-semibold text-primary-foreground text-sm">Write 2 posts</div><p className="text-xs text-primary-foreground/30 mt-1">On a wedge-relevant prompt</p></div>
                   </button>
-                  <button
-                    onClick={() => setVoiceOption('upload')}
-                    className="p-6 rounded-xl border border-primary-foreground/8 hover:border-linkedin/30 hover:bg-linkedin/[0.03] transition-all text-center space-y-4 group"
-                  >
-                    <div className="h-12 w-12 rounded-xl bg-linkedin/10 flex items-center justify-center mx-auto group-hover:bg-linkedin/15 transition-colors">
-                      <FileUp className="h-6 w-6 text-linkedin" />
-                    </div>
-                    <div>
-                      <div className="font-semibold text-primary-foreground text-sm">Paste past posts</div>
-                      <p className="text-xs text-primary-foreground/30 mt-1">We'll extract your style</p>
-                    </div>
+                  <button onClick={() => setVoiceOption('upload')} className="p-6 rounded-xl border border-primary-foreground/8 hover:border-linkedin/30 hover:bg-linkedin/[0.03] transition-all text-center space-y-4 group">
+                    <div className="h-12 w-12 rounded-xl bg-linkedin/10 flex items-center justify-center mx-auto"><FileUp className="h-6 w-6 text-linkedin" /></div>
+                    <div><div className="font-semibold text-primary-foreground text-sm">Paste past posts</div><p className="text-xs text-primary-foreground/30 mt-1">We extract your style</p></div>
                   </button>
                 </div>
+                <Nav back={() => setOnboardingStep(3)} next={() => { setVoiceReady(true); setVoiceOption('upload'); }} nextLabel="Skip — calibrate later" />
               </>
             ) : voiceOption === 'write' ? (
               <div className="space-y-6">
-                <div className="space-y-2">
-                  <p className="text-linkedin text-xs font-semibold tracking-widest uppercase">
-                    Prompt {currentPrompt + 1} of 2
-                  </p>
-                  <h2 className="text-xl font-bold text-primary-foreground leading-snug">
-                    {topicPrompts[currentPrompt]}
-                  </h2>
-                  <p className="text-primary-foreground/30 text-xs">Write naturally — this trains your voice profile.</p>
-                </div>
-                <Textarea
-                  value={currentPrompt === 0 ? samplePost1 : samplePost2}
-                  onChange={(e) => currentPrompt === 0 ? setSamplePost1(e.target.value) : setSamplePost2(e.target.value)}
-                  placeholder="Write in your own voice…"
-                  rows={7}
-                  className="bg-primary-foreground/5 border-primary-foreground/10 text-primary-foreground placeholder:text-primary-foreground/15 resize-none text-sm leading-relaxed"
-                />
-                <div className="flex items-center justify-between">
-                  <p className="text-xs text-primary-foreground/20">{(currentPrompt === 0 ? samplePost1 : samplePost2).length} chars</p>
+                <p className="text-linkedin text-xs font-semibold tracking-widest uppercase">Prompt {currentPrompt + 1} of 2</p>
+                <h2 className="text-xl font-bold text-primary-foreground leading-snug">{promptForWedge}</h2>
+                <Textarea value={currentPrompt === 0 ? samplePost1 : samplePost2} onChange={(e) => currentPrompt === 0 ? setSamplePost1(e.target.value) : setSamplePost2(e.target.value)} placeholder="Write naturally…" rows={7} className={cn(inputCls, 'resize-none leading-relaxed')} />
+                <div className="flex justify-between">
+                  <Button variant="ghost" className="text-primary-foreground/40" onClick={() => setVoiceOption(null)}>Back</Button>
                   {currentPrompt === 0 ? (
-                    <Button variant="linkedin" disabled={!samplePost1} onClick={() => setCurrentPrompt(1)}>
-                      Next <ArrowRight className="h-3.5 w-3.5 ml-1" />
-                    </Button>
+                    <Button variant="linkedin" disabled={!samplePost1} onClick={() => setCurrentPrompt(1)}>Next<ArrowRight className="h-3.5 w-3.5 ml-1" /></Button>
                   ) : (
-                    <Button variant="linkedin" disabled={!samplePost2} onClick={handleAnalyzeVoice}>
-                      Analyze my voice
-                    </Button>
+                    <Button variant="linkedin" disabled={!samplePost2} onClick={handleAnalyzeVoice}>Analyze my voice</Button>
                   )}
                 </div>
               </div>
             ) : (
               <div className="space-y-6">
-                <div className="space-y-2">
-                  <h2 className="text-xl font-bold text-primary-foreground">Paste your LinkedIn posts</h2>
-                  <p className="text-primary-foreground/30 text-xs">3–5 posts separated by a blank line work best.</p>
+                <h2 className="text-xl font-bold text-primary-foreground">Paste your LinkedIn posts</h2>
+                <Textarea value={pastedPosts} onChange={(e) => setPastedPosts(e.target.value)} placeholder="Paste 3–5 posts here…" rows={8} className={cn(inputCls, 'resize-none leading-relaxed')} />
+                <div className="flex justify-between">
+                  <Button variant="ghost" className="text-primary-foreground/40" onClick={() => setVoiceOption(null)}>Back</Button>
+                  <Button variant="linkedin" disabled={!pastedPosts} onClick={handleAnalyzeVoice}>Analyze</Button>
                 </div>
-                <Textarea
-                  value={pastedPosts}
-                  onChange={(e) => setPastedPosts(e.target.value)}
-                  placeholder="Paste your posts here…"
-                  rows={8}
-                  className="bg-primary-foreground/5 border-primary-foreground/10 text-primary-foreground placeholder:text-primary-foreground/15 resize-none text-sm leading-relaxed"
-                />
-                <Button variant="linkedin" className="w-full" disabled={!pastedPosts} onClick={handleAnalyzeVoice}>
-                  Analyze my writing style
-                </Button>
               </div>
             )}
           </div>
         )}
 
-        {/* Step 3: Connect Document Sources */}
-        {step === 3 && (
+        {/* Step 5 — Strategy Brief review */}
+        {step === 5 && (
           <div className="animate-fade-in space-y-8">
-            <div className="space-y-3">
-              <p className="text-linkedin text-xs font-semibold tracking-widest uppercase">Step 4 of {totalSteps}</p>
-              <h2 className="text-3xl font-black text-primary-foreground tracking-tight">Connect your content</h2>
-              <p className="text-primary-foreground/40 text-sm">
-                We'll mine your existing documents for content gold — ideas only <span className="text-primary-foreground/70 font-medium">you</span> can write about.
-              </p>
-            </div>
+            <Header step={6} title="Your Strategy Brief" subtitle="Confirm or edit. This becomes the source of every post." />
 
-            {/* Connected sources */}
-            {connectedSources.length > 0 && (
+            <BriefBlock label="Preset" value={`${PRESET_MIX[preset].label} — ${PRESET_MIX[preset].description}`} />
+            <BriefBlock label="Positioning" value={briefDraft.positioning} />
+            <BriefBlock label="Category POV to own" value={briefDraft.categoryPov} />
+
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-semibold text-primary-foreground/40 uppercase tracking-wider flex items-center gap-1.5"><Sparkles className="h-3 w-3" /> POV Bank ({povBank.length})</p>
+              </div>
               <div className="space-y-2">
-                <p className="text-xs font-semibold text-primary-foreground/40 uppercase tracking-wider">Connected</p>
-                {connectedSources.map((source) => (
-                  <div
-                    key={source.id}
-                    className="flex items-center gap-3 p-4 rounded-xl border border-success/20 bg-success/5"
-                  >
-                    <span className="text-xl">{source.icon}</span>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-primary-foreground">{source.name}</p>
-                      <p className="text-xs text-primary-foreground/40">{source.documentCount} documents found</p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Check className="h-4 w-4 text-success" />
-                      <button
-                        onClick={() => handleDisconnectSource(source.id)}
-                        className="text-xs text-primary-foreground/30 hover:text-primary-foreground/60 transition-colors"
-                      >
-                        Remove
-                      </button>
-                    </div>
+                {povBank.map((p, idx) => (
+                  <div key={p.id} className="flex items-start gap-2 p-3 rounded-lg border border-primary-foreground/8 bg-primary-foreground/[0.02]">
+                    <span className="text-[10px] text-linkedin font-bold mt-1 w-5 shrink-0">#{idx + 1}</span>
+                    <Textarea
+                      value={p.text}
+                      onChange={(e) => {
+                        const next = [...povBank];
+                        next[idx] = { ...p, text: e.target.value, edited: true };
+                        setEditablePovBank(next);
+                      }}
+                      rows={2}
+                      className="bg-transparent border-none focus-visible:ring-0 text-sm text-primary-foreground/80 resize-none p-0 min-h-0 leading-snug"
+                    />
+                    <button onClick={() => setEditablePovBank(povBank.filter((_, i) => i !== idx))} className="text-primary-foreground/20 hover:text-primary-foreground/60"><X className="h-3.5 w-3.5" /></button>
                   </div>
                 ))}
               </div>
-            )}
+            </div>
 
-            {/* Available sources */}
-            <div className="space-y-2">
-              {connectedSources.length > 0 && (
-                <p className="text-xs font-semibold text-primary-foreground/40 uppercase tracking-wider">Add more</p>
-              )}
-              {documentSources
-                .filter((s) => !connectedSources.some((c) => c.id === s.id))
-                .map((source) => (
-                  <button
-                    key={source.id}
-                    onClick={() => handleConnectSource(source)}
-                    disabled={connectingSourceId === source.id}
-                    className={cn(
-                      'w-full flex items-center gap-3 p-4 rounded-xl border transition-all text-left group',
-                      connectingSourceId === source.id
-                        ? 'border-linkedin/30 bg-linkedin/5'
-                        : 'border-primary-foreground/8 hover:border-linkedin/30 hover:bg-linkedin/[0.03]'
-                    )}
-                  >
-                    <span className="text-xl">{source.icon}</span>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-primary-foreground">{source.name}</p>
-                      <p className="text-xs text-primary-foreground/30">{source.desc}</p>
+            <div className="space-y-3">
+              <p className="text-xs font-semibold text-primary-foreground/40 uppercase tracking-wider">Content Pillars</p>
+              <div className="space-y-2">
+                {briefDraft.pillars.map((p) => (
+                  <div key={p.id} className="p-3 rounded-lg border border-primary-foreground/8 bg-primary-foreground/[0.02]">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-sm font-semibold text-primary-foreground">{p.name}</span>
+                      <Badge variant="secondary" className="text-[10px] bg-primary-foreground/5 text-primary-foreground/40">{p.funnelTilt}</Badge>
                     </div>
-                    {connectingSourceId === source.id ? (
-                      <div className="h-5 w-5 rounded-full border-2 border-linkedin border-t-transparent animate-spin" />
-                    ) : (
-                      <Link2 className="h-4 w-4 text-primary-foreground/20 group-hover:text-linkedin transition-colors" />
-                    )}
-                  </button>
+                    <p className="text-xs text-primary-foreground/40">{p.exampleAngles.join(' · ')}</p>
+                  </div>
                 ))}
+              </div>
             </div>
 
             <div className="space-y-3">
-              <Button
-                variant="linkedin"
-                size="lg"
-                className="w-full h-12 text-base font-semibold"
-                disabled={connectedSources.length === 0}
-                onClick={handleDocsContinue}
-              >
-                Continue with {connectedSources.length} source{connectedSources.length !== 1 ? 's' : ''}
-                <ArrowRight className="h-4 w-4 ml-1" />
-              </Button>
-              <button
-                onClick={handleDocsContinue}
-                className="w-full text-center text-xs text-primary-foreground/30 hover:text-primary-foreground/50 transition-colors py-1"
-              >
-                Skip for now — I'll add sources later
-              </button>
+              <p className="text-xs font-semibold text-primary-foreground/40 uppercase tracking-wider">Asset Inventory</p>
+              <div className="space-y-1.5">
+                {briefDraft.assetInventory.map((a) => (
+                  <div key={a.id} className="flex items-center gap-2 text-xs">
+                    <span className={cn('h-1.5 w-1.5 rounded-full shrink-0', a.hasProof ? 'bg-success' : 'bg-warning')} />
+                    <span className="text-primary-foreground/60">{a.text}</span>
+                    {!a.hasProof && <span className="text-warning/80 text-[10px] uppercase">to source</span>}
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
 
-        {/* Step 4: Tailored Content Suggestions (exactly 4) */}
-        {step === 4 && (
-          <div className="animate-fade-in space-y-8">
-            <div className="space-y-3">
-              <p className="text-linkedin text-xs font-semibold tracking-widest uppercase">Step 5 of {totalSteps}</p>
-              <h2 className="text-3xl font-black text-primary-foreground tracking-tight">Your first content ideas</h2>
-              <p className="text-primary-foreground/40 text-sm">
-                4 ideas crafted from your niche, trending topics, and {connectedSources.length > 0 ? 'your documents' : 'your expertise'}. Pick the ones that spark something.
-              </p>
-            </div>
-            <div className="space-y-3">
-              {allSuggestions.map((s) => {
-                const SourceIcon = sourceIconMap[s.source] || Sparkles;
-                const sourceLabel =
-                  s.source === 'niche' ? 'Your niche' :
-                  s.source === 'trending' ? 'Trending on LinkedIn' :
-                  'Your documents';
-
-                return (
-                  <button
-                    key={s.id}
-                    onClick={() => toggleSuggestion(s.id)}
-                    className={cn(
-                      'w-full p-4 rounded-xl border text-left transition-all flex items-start gap-3 group',
-                      selectedSuggestions.has(s.id)
-                        ? 'border-linkedin bg-linkedin/8 shadow-glow'
-                        : 'border-primary-foreground/8 hover:border-primary-foreground/15 bg-primary-foreground/[0.02]'
-                    )}
-                  >
-                    <div className={cn(
-                      'h-5 w-5 rounded-md border-2 flex items-center justify-center shrink-0 mt-0.5 transition-all',
-                      selectedSuggestions.has(s.id)
-                        ? 'border-linkedin bg-linkedin'
-                        : 'border-primary-foreground/20'
-                    )}>
-                      {selectedSuggestions.has(s.id) && <Check className="h-3 w-3 text-white" />}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-1.5 mb-1.5">
-                        <SourceIcon className="h-3 w-3 text-primary-foreground/30" />
-                        <span className="text-[10px] uppercase tracking-wider text-primary-foreground/30 font-semibold">{sourceLabel}</span>
-                      </div>
-                      <p className="text-sm text-primary-foreground leading-relaxed font-medium">{s.excerpt}</p>
-                      <Badge variant="secondary" className="mt-2 text-[10px] uppercase tracking-wider font-semibold bg-primary-foreground/5 text-primary-foreground/40">{s.tag}</Badge>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-            <div className="space-y-3">
-              <Button variant="linkedin" size="lg" className="w-full h-12 text-base font-semibold" onClick={handleFinish}>
-                {selectedSuggestions.size > 0 ? `Start with ${selectedSuggestions.size} idea${selectedSuggestions.size > 1 ? 's' : ''}` : 'Skip & start building'}
-                <ArrowRight className="h-4 w-4 ml-1" />
-              </Button>
-              <p className="text-center text-xs text-primary-foreground/25">You can always generate more ideas later</p>
+            <div className="flex gap-3 pt-4">
+              <Button variant="ghost" className="text-primary-foreground/40" onClick={() => setOnboardingStep(4)}>Back</Button>
+              <Button variant="linkedin" size="lg" className="flex-1 h-12 font-semibold" onClick={handleFinish}>Approve & generate calendar<ArrowRight className="h-4 w-4 ml-1" /></Button>
             </div>
           </div>
         )}
@@ -605,5 +352,53 @@ const Onboarding = () => {
     </div>
   );
 };
+
+// ---------- helpers ----------
+const inputCls = 'bg-primary-foreground/5 border-primary-foreground/10 text-primary-foreground placeholder:text-primary-foreground/20 h-12';
+const cardCls = (active: boolean) => cn(
+  'w-full p-5 rounded-xl border text-left transition-all flex items-start gap-4 group',
+  active ? 'border-linkedin bg-linkedin/8 shadow-glow' : 'border-primary-foreground/8 hover:border-primary-foreground/15 bg-primary-foreground/[0.02]'
+);
+const iconBoxCls = (active: boolean) => cn(
+  'h-10 w-10 rounded-lg flex items-center justify-center shrink-0',
+  active ? 'bg-linkedin/20 text-linkedin' : 'bg-primary-foreground/5 text-primary-foreground/30'
+);
+
+function Header({ step, title, subtitle, center }: { step: number; title: string; subtitle: string; center?: boolean }) {
+  return (
+    <div className={cn('space-y-3', center && 'text-center')}>
+      <p className="text-linkedin text-xs font-semibold tracking-widest uppercase">Step {step} of {TOTAL_STEPS}</p>
+      <h2 className="text-3xl font-black text-primary-foreground tracking-tight">{title}</h2>
+      <p className="text-primary-foreground/40 text-sm">{subtitle}</p>
+    </div>
+  );
+}
+
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <label className="text-xs font-semibold text-primary-foreground/60 uppercase tracking-wider mb-2 block">{label}</label>
+      {children}
+    </div>
+  );
+}
+
+function Nav({ back, next, disabled, nextLabel }: { back: () => void; next: () => void; disabled?: boolean; nextLabel?: string }) {
+  return (
+    <div className="flex gap-3">
+      <Button variant="ghost" className="text-primary-foreground/40" onClick={back}>Back</Button>
+      <Button variant="linkedin" size="lg" className="flex-1 h-12 font-semibold" disabled={disabled} onClick={next}>{nextLabel || 'Continue'}<ArrowRight className="h-4 w-4 ml-1" /></Button>
+    </div>
+  );
+}
+
+function BriefBlock({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="space-y-1.5">
+      <p className="text-xs font-semibold text-primary-foreground/40 uppercase tracking-wider">{label}</p>
+      <p className="text-sm text-primary-foreground/85 leading-relaxed p-3 rounded-lg border border-primary-foreground/8 bg-primary-foreground/[0.02]">{value}</p>
+    </div>
+  );
+}
 
 export default Onboarding;

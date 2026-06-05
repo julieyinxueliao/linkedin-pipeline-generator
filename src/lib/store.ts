@@ -1,11 +1,6 @@
 import { create } from 'zustand';
-
-export interface ContentSuggestion {
-  id: string;
-  excerpt: string;
-  tag: string;
-  source: 'niche' | 'trending' | 'document';
-}
+import type { StrategyBrief } from './strategy';
+import type { ContentCalendar, CalendarSlot } from './calendar';
 
 export interface ConnectedSource {
   id: string;
@@ -23,17 +18,7 @@ export interface UserProfile {
   goalCustom?: string;
   voiceStyle: string[];
   samplePosts: string[];
-  contentSuggestions: ContentSuggestion[];
   connectedSources: ConnectedSource[];
-}
-
-export interface ScheduleSlot {
-  id: string;
-  date: string;
-  theme: string;
-  format: string;
-  status: 'not_started' | 'draft' | 'published';
-  content?: string;
 }
 
 export interface DraftPost {
@@ -41,28 +26,30 @@ export interface DraftPost {
   content: string;
   createdAt: string;
   status: 'draft' | 'scheduled' | 'published';
-  scheduleSlotId?: string;
+  slotId?: string;
+  archetypeId?: string;
 }
 
 interface AppState {
-  isAuthenticated: boolean;
   onboardingComplete: boolean;
   currentOnboardingStep: number;
   profile: UserProfile;
-  schedule: ScheduleSlot[];
+  brief: StrategyBrief | null;
+  calendar: ContentCalendar | null;
   drafts: DraftPost[];
-  setAuthenticated: (val: boolean) => void;
-  setOnboardingComplete: (val: boolean) => void;
-  setOnboardingStep: (step: number) => void;
-  updateProfile: (partial: Partial<UserProfile>) => void;
-  setSchedule: (schedule: ScheduleSlot[]) => void;
-  updateSlot: (id: string, partial: Partial<ScheduleSlot>) => void;
-  addDraft: (draft: DraftPost) => void;
-  updateDraft: (id: string, partial: Partial<DraftPost>) => void;
+  setOnboardingComplete: (v: boolean) => void;
+  setOnboardingStep: (s: number) => void;
+  updateProfile: (p: Partial<UserProfile>) => void;
+  setBrief: (b: StrategyBrief | null) => void;
+  updateBrief: (p: Partial<StrategyBrief>) => void;
+  setCalendar: (c: ContentCalendar | null) => void;
+  updateSlot: (id: string, p: Partial<CalendarSlot>) => void;
+  approveCalendar: () => void;
+  addDraft: (d: DraftPost) => void;
+  updateDraft: (id: string, p: Partial<DraftPost>) => void;
 }
 
 export const useAppStore = create<AppState>((set) => ({
-  isAuthenticated: false,
   onboardingComplete: false,
   currentOnboardingStep: 0,
   profile: {
@@ -72,26 +59,29 @@ export const useAppStore = create<AppState>((set) => ({
     goal: '',
     voiceStyle: [],
     samplePosts: [],
-    contentSuggestions: [],
     connectedSources: [],
   },
-  schedule: [],
+  brief: null,
+  calendar: null,
   drafts: [],
-  setAuthenticated: (val) => set({ isAuthenticated: val }),
-  setOnboardingComplete: (val) => set({ onboardingComplete: val }),
-  setOnboardingStep: (step) => set({ currentOnboardingStep: step }),
-  updateProfile: (partial) =>
-    set((s) => ({ profile: { ...s.profile, ...partial } })),
-  setSchedule: (schedule) => set({ schedule }),
-  updateSlot: (id, partial) =>
+  setOnboardingComplete: (v) => set({ onboardingComplete: v }),
+  setOnboardingStep: (s) => set({ currentOnboardingStep: s }),
+  updateProfile: (p) => set((s) => ({ profile: { ...s.profile, ...p } })),
+  setBrief: (b) => set({ brief: b }),
+  updateBrief: (p) =>
+    set((s) => ({ brief: s.brief ? { ...s.brief, ...p } : s.brief })),
+  setCalendar: (c) => set({ calendar: c }),
+  updateSlot: (id, p) =>
     set((s) => ({
-      schedule: s.schedule.map((sl) =>
-        sl.id === id ? { ...sl, ...partial } : sl
-      ),
+      calendar: s.calendar
+        ? { ...s.calendar, slots: s.calendar.slots.map((sl) => (sl.id === id ? { ...sl, ...p } : sl)) }
+        : s.calendar,
     })),
-  addDraft: (draft) => set((s) => ({ drafts: [...s.drafts, draft] })),
-  updateDraft: (id, partial) =>
+  approveCalendar: () =>
     set((s) => ({
-      drafts: s.drafts.map((d) => (d.id === id ? { ...d, ...partial } : d)),
+      calendar: s.calendar ? { ...s.calendar, approvedAt: new Date().toISOString() } : s.calendar,
     })),
+  addDraft: (d) => set((s) => ({ drafts: [...s.drafts, d] })),
+  updateDraft: (id, p) =>
+    set((s) => ({ drafts: s.drafts.map((d) => (d.id === id ? { ...d, ...p } : d)) })),
 }));

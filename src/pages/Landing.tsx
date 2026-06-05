@@ -1,15 +1,12 @@
 import { Button } from '@/components/ui/button';
-import { useAppStore } from '@/lib/store';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, Zap, Shield, Clock } from 'lucide-react';
 
 const Landing = () => {
-  const setAuthenticated = useAppStore((s) => s.setAuthenticated);
   const navigate = useNavigate();
 
   const handleLogin = () => {
-    setAuthenticated(true);
-    navigate('/onboarding');
+    navigate('/auth');
   };
 
   return (

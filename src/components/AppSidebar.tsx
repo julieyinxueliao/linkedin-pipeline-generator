@@ -16,8 +16,7 @@ import { Button } from '@/components/ui/button';
 
 const items = [
   { title: 'Dashboard', url: '/dashboard', icon: LayoutDashboard },
-  { title: 'My Schedule', url: '/schedule', icon: Calendar },
-  { title: 'Draft a Post', url: '/draft', icon: PenSquare },
+  { title: 'Calendar', url: '/schedule', icon: Calendar },
   { title: 'My Posts', url: '/posts', icon: FileText },
   { title: 'Settings', url: '/settings', icon: Settings },
 ];
