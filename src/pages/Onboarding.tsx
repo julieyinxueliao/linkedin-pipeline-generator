@@ -84,27 +84,34 @@ const Onboarding = () => {
 
   const promptForWedge = wedge ? `What's one thing most ${icpTitles || 'people in your space'} get wrong about ${wedge}?` : `What's one thing most people in your space get wrong?`;
 
-  const handleAutoPull = () => {
+  const [pullWarning, setPullWarning] = useState<string | null>(null);
+
+  const handleAutoPull = async () => {
     setIsPulling(true);
-    // Mock: simulate scraping the website + LinkedIn company page
-    setTimeout(() => {
-      // Derive a plausible company name from the website URL
-      let derivedName = 'Acme';
-      try {
-        const u = new URL(websiteUrl.startsWith('http') ? websiteUrl : `https://${websiteUrl}`);
-        derivedName = u.hostname.replace(/^www\./, '').split('.')[0];
-        derivedName = derivedName.charAt(0).toUpperCase() + derivedName.slice(1);
-      } catch { /* keep default */ }
-      setCompanyName(derivedName);
-      setCompanyOneLiner(`${derivedName} helps modern teams move faster with AI-native workflows`);
-      setWedge('AI-native workflow automation');
-      setIcpTitles('VP Ops, Head of RevOps, Founder');
-      setIcpCompanyType('Series A–C B2B SaaS, 50–500 employees');
-      setProofPointsRaw('Cut onboarding from 90 → 21 days for 12 customers\n3x pipeline velocity in Q1 with design-partner cohort\nReduced manual ops work by 60% on average');
-      setIsPulling(false);
+    setPullWarning(null);
+    try {
+      const { data, error } = await supabase.functions.invoke('pull-company-profile', {
+        body: { websiteUrl, linkedinCompanyUrl },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      const d = data?.data ?? {};
+      setCompanyName(d.companyName || '');
+      setCompanyOneLiner(d.oneLiner || '');
+      setWedge(d.wedge || '');
+      setIcpTitles(d.icpTitles || '');
+      setIcpCompanyType(d.icpCompanyType || '');
+      setProofPointsRaw(Array.isArray(d.proofPoints) ? d.proofPoints.join('\n') : '');
+      if (data?.warnings?.length) setPullWarning(data.warnings.join(' '));
       setPulled(true);
-    }, 1400);
+    } catch (e) {
+      const msg = (e as Error).message || 'Failed to pull company data';
+      toast.error(msg);
+    } finally {
+      setIsPulling(false);
+    }
   };
+
 
   const handleConnectSource = (s: typeof documentSources[0]) => {
     setConnectingSourceId(s.id);
