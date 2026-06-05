@@ -145,7 +145,7 @@ const DraftPost = () => {
           )}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-sm text-success">
-              <Check className="h-4 w-4" /> On-strategy ✓
+              <Check className="h-4 w-4" /> On-strategy
             </div>
             <span className="text-xs text-muted-foreground">{wordCount} words</span>
           </div>
