@@ -49,7 +49,7 @@ const CalendarPage = () => {
   }
 
   const presetMeta = PRESET_MIX[brief.preset];
-  const mix = computeMixCheck(calendar, brief.preset);
+  
 
   const weeks = Array.from({ length: calendar.weeks }, (_, i) => i + 1).map((w) => ({
     week: w,
@@ -89,33 +89,8 @@ const CalendarPage = () => {
         </div>
       </div>
 
-      {/* Mix Check */}
-      <Card className="mb-8">
-        <CardContent className="p-5">
-          <div className="flex items-center gap-2 mb-4">
-            <Sparkles className="h-4 w-4 text-linkedin" />
-            <h2 className="text-sm font-bold uppercase tracking-wider">Mix Check</h2>
-          </div>
-          <div className="grid md:grid-cols-2 gap-6">
-            <div>
-              <p className="text-xs font-semibold text-muted-foreground mb-3">Funnel stage</p>
-              <div className="space-y-2">
-                {(['TOFU', 'MOFU', 'BOFU'] as FunnelStage[]).map((k) => (
-                  <MixRow key={k} label={k} target={mix.funnel.target[k]} actual={mix.funnel.actual[k]} />
-                ))}
-              </div>
-            </div>
-            <div>
-              <p className="text-xs font-semibold text-muted-foreground mb-3">CTA cadence</p>
-              <div className="space-y-2">
-                {(['none', 'soft', 'comment-gated', 'hard'] as CtaType[]).map((k) => (
-                  <MixRow key={k} label={CTA_LABEL[k]} target={mix.cta.target[k]} actual={mix.cta.actual[k]} />
-                ))}
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Mix Check moved to Dashboard */}
+
 
       {/* Weeks */}
       <div className="space-y-8">
@@ -210,19 +185,5 @@ const CalendarPage = () => {
   );
 };
 
-function MixRow({ label, target, actual }: { label: string; target: number; actual: number }) {
-  const diff = actual - target;
-  const ok = Math.abs(diff) <= 10;
-  return (
-    <div className="flex items-center gap-3">
-      <span className="text-xs font-semibold text-foreground w-28 shrink-0">{label}</span>
-      <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden relative">
-        <div className="absolute inset-y-0 left-0 bg-linkedin/40" style={{ width: `${target}%` }} />
-        <div className={cn('absolute inset-y-0 left-0 border-r-2', ok ? 'border-success' : 'border-destructive')} style={{ width: `${actual}%` }} />
-      </div>
-      <span className={cn('text-[11px] font-mono w-16 text-right', ok ? 'text-muted-foreground' : 'text-destructive')}>{actual}% / {target}%</span>
-    </div>
-  );
-}
 
 export default CalendarPage;
