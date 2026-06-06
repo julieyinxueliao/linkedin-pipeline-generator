@@ -120,12 +120,12 @@ const Dashboard = () => {
           </Card>
           <Card>
             <CardContent className="p-5 space-y-2">
-              <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Ideal customer</p>
+              <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Who you sell to</p>
               <div className="space-y-3">
                 <div>
-                  <p className="text-[10px] uppercase text-muted-foreground mb-1">Titles</p>
+                  <p className="text-[10px] uppercase text-muted-foreground mb-1">Job titles</p>
                   <EditableField
-                    fieldLabel="ICP titles"
+                    fieldLabel="Job titles you sell to"
                     value={brief.icpTitles}
                     context={briefContext}
                     multiline={false}
@@ -135,9 +135,9 @@ const Dashboard = () => {
                   />
                 </div>
                 <div>
-                  <p className="text-[10px] uppercase text-muted-foreground mb-1">Company type</p>
+                  <p className="text-[10px] uppercase text-muted-foreground mb-1">Type of company they work at</p>
                   <EditableField
-                    fieldLabel="ICP company type"
+                    fieldLabel="Type of company they work at"
                     value={brief.icpCompanyType}
                     context={briefContext}
                     multiline={false}
