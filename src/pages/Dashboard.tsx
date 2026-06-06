@@ -6,7 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { PRESET_MIX, FUNNEL_STAGE_LABELS, type FunnelStage } from '@/lib/principles';
 import { generateCalendar, computeMixCheck } from '@/lib/calendar';
-import { CalendarDays, AlertCircle, Sparkles, Target, Upload, Link2, Plus } from 'lucide-react';
+import { CalendarDays, AlertCircle, Sparkles, Target, Upload, Link2, Plus, Settings as SettingsIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -81,58 +81,18 @@ const Dashboard = () => {
           <h2 className="text-sm font-bold uppercase tracking-wider">Content Plan</h2>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-4">
-          {/* Combined: What you are building + Who you sell to */}
-          <Card>
-            <CardContent className="p-5 space-y-4">
-              <div>
-                <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-2">WHAT YOU ARE BUILDING</p>
-                <EditableField
-                  fieldLabel="WHAT YOU ARE BUILDING"
-                  value={brief.wedge}
-                  context={briefContext}
-                  multiline={false}
-                  onSave={(v) => updateBrief({ wedge: v })}
-                  displayClassName="text-sm text-foreground leading-relaxed"
-                  placeholder="—"
-                />
-              </div>
-              <div className="pt-3 border-t border-border space-y-3">
-                <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Who you sell to</p>
-                <div>
-                  <p className="text-[10px] uppercase text-muted-foreground mb-1">Job titles</p>
-                  <EditableField
-                    fieldLabel="Job titles you sell to"
-                    value={brief.icpTitles}
-                    context={briefContext}
-                    multiline={false}
-                    onSave={(v) => updateBrief({ icpTitles: v })}
-                    displayClassName="text-sm text-foreground leading-relaxed"
-                    placeholder="—"
-                  />
-                </div>
-                <div>
-                  <p className="text-[10px] uppercase text-muted-foreground mb-1">Type of company they work at</p>
-                  <EditableField
-                    fieldLabel="Type of company they work at"
-                    value={brief.icpCompanyType}
-                    context={briefContext}
-                    multiline={false}
-                    onSave={(v) => updateBrief({ icpCompanyType: v })}
-                    displayClassName="text-sm text-foreground leading-relaxed"
-                    placeholder="—"
-                  />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Mix Check */}
+        <div>
+          {/* Content Balance (was: Mix Check) */}
           <Card>
             <CardContent className="p-5">
-              <div className="flex items-center gap-2 mb-4">
-                <Sparkles className="h-3.5 w-3.5 text-linkedin" />
-                <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Mix check — how balanced your plan is</p>
+              <div className="flex items-center justify-between gap-2 mb-4">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="h-3.5 w-3.5 text-linkedin" />
+                  <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Content balance — how your posts are split</p>
+                </div>
+                <Button variant="outline" size="sm" className="h-7 text-xs" onClick={() => navigate('/settings')}>
+                  <SettingsIcon className="h-3 w-3 mr-1" />Edit / adjust
+                </Button>
               </div>
               {(() => {
                 const mix = computeMixCheck(calendar, brief.preset);
