@@ -73,11 +73,11 @@ Output shape (return ONLY this JSON):
 }
 
 Constraints:
-- povBank MUST have 10 items, each a punchy 1-2 sentence point of view CUSTOMIZED to this company's wedge, ICP, and proof points. Reference real specifics from the inputs when possible. Avoid generic clichés.
+- povBank MUST have 6 items, each a punchy 1-2 sentence point of view CUSTOMIZED to this company's wedge, ICP, and proof points. Reference real specifics from the inputs when possible. Avoid generic clichés.
 - pillars MUST have exactly 5 items in this order: {Wedge} POV, Operator Playbook, Customer Proof, Narrative Product, Founder Lens. Names should use the actual wedge.
 - archetypeIds for each pillar must come from: ["contrarian-pov","frame-shift","customer-story","teardown","narrative-product","comment-gated","lesson-learned","data-drop"].
 - assetInventory: list all real proof points from the inputs (hasProof=true), all connectedSourceNames (hasProof=true, pillar 'pillar-playbook'), and flag obvious gaps with hasProof=false.
-- ids: use "pov-0".."pov-9" for povBank, and "pillar-pov","pillar-playbook","pillar-proof","pillar-product","pillar-founder" for pillars (in that order). Use "asset-<n>" for assets.
+- ids: use "pov-0".."pov-5" for povBank, and "pillar-pov","pillar-playbook","pillar-proof","pillar-product","pillar-founder" for pillars (in that order). Use "asset-<n>" for assets.
 - positioning: ONE sentence stating who they help, with what specifically, and what changes.
 - categoryPov: ONE bold sentence reframing the wedge. Not a description of the company.`;
 
@@ -90,16 +90,16 @@ Constraints:
       icpCompanyType: inputs.icpCompanyType,
       proofPoints: inputs.proofPoints,
       voiceTraits: inputs.voiceTraits,
-      samplePostsExcerpt: (inputs.samplePosts || []).map((s) => s.slice(0, 600)),
+      samplePostsExcerpt: (inputs.samplePosts || []).slice(0, 3).map((s) => s.slice(0, 300)),
       connectedSourceNames: inputs.connectedSourceNames,
-      additionalContextExcerpt: (inputs.additionalContext || '').slice(0, 6000),
+      additionalContextExcerpt: (inputs.additionalContext || '').slice(0, 2000),
     }, null, 2);
 
     const aiRes = await fetch(AI_GATEWAY, {
       method: 'POST',
       headers: { Authorization: `Bearer ${LOVABLE_API_KEY}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'google/gemini-2.5-flash',
+        model: 'google/gemini-2.5-flash-lite',
         response_format: { type: 'json_object' },
         messages: [
           { role: 'system', content: systemPrompt },
@@ -124,7 +124,7 @@ Constraints:
     const brief = {
       positioning: String(parsed.positioning ?? ''),
       categoryPov: String(parsed.categoryPov ?? ''),
-      povBank: Array.isArray(parsed.povBank) ? parsed.povBank.slice(0, 10).map((p: any, i: number) => ({ id: String(p?.id || `pov-${i}`), text: String(p?.text || '') })).filter((p: any) => p.text) : [],
+      povBank: Array.isArray(parsed.povBank) ? parsed.povBank.slice(0, 6).map((p: any, i: number) => ({ id: String(p?.id || `pov-${i}`), text: String(p?.text || '') })).filter((p: any) => p.text) : [],
       pillars: Array.isArray(parsed.pillars) ? parsed.pillars.slice(0, 5).map((p: any) => ({
         id: String(p?.id || ''),
         name: String(p?.name || ''),
