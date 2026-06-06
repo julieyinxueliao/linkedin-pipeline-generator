@@ -188,7 +188,7 @@ const Onboarding = () => {
       setBriefLoading(true);
       setBriefError(null);
       try {
-        const payload = { ...briefInputs, voiceTraits, additionalContext };
+        const payload = { ...briefInputs, voiceTraits: voiceTraits ?? [], additionalContext };
         const { data, error } = await supabase.functions.invoke('generate-strategy-brief', { body: payload });
         if (cancelled) return;
         if (error) throw error;

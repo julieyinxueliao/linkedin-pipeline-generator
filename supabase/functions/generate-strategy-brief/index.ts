@@ -12,7 +12,7 @@ interface BriefInputs {
   icpCompanyType: string;
   proofPoints: string[];
   samplePosts: string[];
-  voiceTraits: string[];
+  voiceTraits?: string[];
   connectedSourceNames: string[];
   additionalContext?: string;
 }
@@ -89,7 +89,7 @@ Constraints:
       icpTitles: inputs.icpTitles,
       icpCompanyType: inputs.icpCompanyType,
       proofPoints: inputs.proofPoints,
-      voiceTraits: inputs.voiceTraits,
+      voiceTraits: inputs.voiceTraits ?? [],
       samplePostsExcerpt: (inputs.samplePosts || []).slice(0, 3).map((s) => s.slice(0, 300)),
       connectedSourceNames: inputs.connectedSourceNames,
       additionalContextExcerpt: (inputs.additionalContext || '').slice(0, 2000),
