@@ -299,7 +299,135 @@ function MixRow({ label, target, actual }: { label: string; target: number; actu
   );
 }
 
+function MixEditor({
+  current,
+  actual,
+  preset,
+  onSave,
+  onReset,
+  isCustom,
+}: {
+  current: Record<FunnelStage, number>;
+  actual: Record<FunnelStage, number>;
+  preset: Record<FunnelStage, number>;
+  onSave: (next: Record<FunnelStage, number>) => void;
+  onReset: () => void;
+  isCustom: boolean;
+}) {
+  const [open, setOpen] = useState(false);
+  const [draft, setDraft] = useState<Record<FunnelStage, number>>(current);
 
+  useEffect(() => {
+    if (open) setDraft(current);
+  }, [open, current]);
 
+  const total = draft.TOFU + draft.MOFU + draft.BOFU;
+  const valid = total === 100;
+
+  // Drag one slider, redistribute the delta proportionally to the other two.
+  const handleChange = (key: FunnelStage, value: number) => {
+    const v = Math.max(0, Math.min(100, Math.round(value)));
+    const others = (['TOFU', 'MOFU', 'BOFU'] as FunnelStage[]).filter((k) => k !== key);
+    const remaining = 100 - v;
+    const othersTotal = draft[others[0]] + draft[others[1]];
+    let a: number, b: number;
+    if (othersTotal === 0) {
+      a = Math.round(remaining / 2);
+      b = remaining - a;
+    } else {
+      a = Math.round((draft[others[0]] / othersTotal) * remaining);
+      b = remaining - a;
+    }
+    setDraft({ ...draft, [key]: v, [others[0]]: a, [others[1]]: b } as Record<FunnelStage, number>);
+  };
+
+  const save = () => {
+    if (!valid) {
+      toast.error('Must total 100%');
+      return;
+    }
+    onSave(draft);
+    setOpen(false);
+    toast.success('Content balance updated');
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button variant="outline" size="sm" className="h-7 text-xs">
+          <SettingsIcon className="h-3 w-3 mr-1" />Edit / adjust
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Adjust content balance</DialogTitle>
+          <DialogDescription>
+            Drag each slider to set how much of your plan goes to each purpose. They always add up to 100%.
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="space-y-5 py-2">
+          {(['TOFU', 'MOFU', 'BOFU'] as FunnelStage[]).map((k) => {
+            const delta = draft[k] - current[k];
+            return (
+              <div key={k} className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-semibold text-foreground">{FUNNEL_STAGE_LABELS[k]}</span>
+                  <div className="flex items-center gap-2 text-xs font-mono">
+                    <span className="text-foreground">{draft[k]}%</span>
+                    {delta !== 0 && (
+                      <span className={cn('text-[10px]', delta > 0 ? 'text-success' : 'text-destructive')}>
+                        {delta > 0 ? '+' : ''}{delta}
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <Slider
+                  value={[draft[k]]}
+                  min={0}
+                  max={100}
+                  step={1}
+                  onValueChange={(v) => handleChange(k, v[0])}
+                />
+                <div className="flex justify-between text-[10px] text-muted-foreground">
+                  <span>Now: {current[k]}%</span>
+                  <span>Actual posts: {actual[k]}%</span>
+                </div>
+              </div>
+            );
+          })}
+
+          <div className="rounded-md border border-border bg-muted/30 p-3 space-y-2">
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Preview</p>
+            <div className="flex h-2 w-full overflow-hidden rounded-full bg-muted">
+              <div className="bg-linkedin" style={{ width: `${draft.TOFU}%` }} />
+              <div className="bg-linkedin/70" style={{ width: `${draft.MOFU}%` }} />
+              <div className="bg-linkedin/40" style={{ width: `${draft.BOFU}%` }} />
+            </div>
+            <div className="flex justify-between text-[10px] text-muted-foreground">
+              <span>Total: <span className={cn('font-mono', !valid && 'text-destructive')}>{total}%</span></span>
+              <span>Preset: {preset.TOFU}/{preset.MOFU}/{preset.BOFU}</span>
+            </div>
+          </div>
+        </div>
+
+        <DialogFooter className="gap-2 sm:gap-2">
+          {isCustom && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => { onReset(); setOpen(false); toast.success('Reset to preset'); }}
+            >
+              <RotateCcw className="h-3 w-3 mr-1" />Reset to preset
+            </Button>
+          )}
+          <Button type="button" variant="outline" size="sm" onClick={() => setOpen(false)}>Cancel</Button>
+          <Button type="button" variant="linkedin" size="sm" onClick={save} disabled={!valid}>Save changes</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
 
 export default Dashboard;
