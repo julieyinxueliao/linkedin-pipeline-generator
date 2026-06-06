@@ -81,20 +81,6 @@ const Dashboard = () => {
           <h2 className="text-sm font-bold uppercase tracking-wider">Content Plan</h2>
         </div>
 
-        <Card>
-          <CardContent className="p-5 space-y-2">
-            <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Your main point of view</p>
-            <EditableField
-              fieldLabel="Main point of view"
-              value={brief.categoryPov}
-              context={briefContext}
-              multiline={false}
-              onSave={(v) => updateBrief({ categoryPov: v })}
-              displayClassName="text-base font-semibold text-foreground leading-snug"
-            />
-          </CardContent>
-        </Card>
-
         <div className="grid md:grid-cols-2 gap-4">
           {/* Combined: What you are building + Who you sell to */}
           <Card>
