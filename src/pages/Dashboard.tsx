@@ -12,6 +12,7 @@ import { PenSquare, CalendarDays, FileText, CheckCircle2, AlertCircle, RotateCcw
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import { SEO } from '@/components/SEO';
 
 const funnelColor: Record<FunnelStage, string> = {
   TOFU: 'bg-linkedin/20 text-linkedin',

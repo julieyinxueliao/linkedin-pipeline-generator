@@ -9,6 +9,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Loader2, RotateCcw, Check, Copy, ArrowRight, AlertCircle, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
+import { SEO } from '@/components/SEO';
 
 type Step = 'loading' | 'editing' | 'preview';
 

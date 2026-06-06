@@ -8,6 +8,7 @@ import { Check, X, Plus, RotateCcw } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
+import { SEO } from '@/components/SEO';
 
 const SettingsPage = () => {
   const profile = useAppStore((s) => s.profile);

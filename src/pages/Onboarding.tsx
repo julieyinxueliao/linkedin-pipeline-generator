@@ -14,6 +14,7 @@ import {
   Globe, AlertTriangle, FolderOpen, BookOpen, Database, Library,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { SEO } from '@/components/SEO';
 
 const goals = [
   { id: 'sell', label: 'Sell my product or company', desc: 'Generate leads and close deals through content', icon: Target },

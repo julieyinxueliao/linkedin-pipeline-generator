@@ -5,6 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { lovable } from '@/integrations/lovable';
 import { ArrowRight, Zap, Mail, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { SEO } from '@/components/SEO';
 
 const Auth = () => {
   const [email, setEmail] = useState('');
@@ -53,6 +54,12 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen gradient-hero flex flex-col overflow-hidden">
+      <SEO
+        title={isSignUp ? 'Create your Brand Builder account' : 'Sign in to Brand Builder'}
+        description={isSignUp ? 'Create your Brand Builder account and start generating LinkedIn posts that drive real pipeline.' : 'Sign in to Brand Builder to manage your LinkedIn content strategy and 4-week calendar.'}
+        path="/auth"
+        noindex
+      />
       <header className="flex items-center justify-between px-6 py-5 md:px-12 relative z-10">
         <span className="text-lg font-bold text-primary-foreground tracking-tight">Brand Builder</span>
       </header>
@@ -63,11 +70,11 @@ const Auth = () => {
         <div className="max-w-md w-full relative z-10 space-y-8">
           <div className="animate-fade-in space-y-4 text-center">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-primary-foreground/10 bg-primary-foreground/5 text-primary-foreground/70 text-xs font-medium tracking-wide uppercase">
-              <Zap className="h-3 w-3" />
+              <Zap className="h-3 w-3" aria-hidden="true" />
               {isSignUp ? 'Create your account' : 'Welcome back'}
             </div>
             <h1 className="text-4xl font-black text-primary-foreground tracking-tight">
-              {isSignUp ? 'Get started' : 'Sign in'}
+              Brand Builder — {isSignUp ? 'create your account' : 'sign in to your account'}
             </h1>
           </div>
 
@@ -79,7 +86,7 @@ const Auth = () => {
               onClick={handleGoogleLogin}
               disabled={loading}
             >
-              <svg className="h-5 w-5 mr-2" viewBox="0 0 24 24">
+              <svg className="h-5 w-5 mr-2" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
                 <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" />
                 <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
                 <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
