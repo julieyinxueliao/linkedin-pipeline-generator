@@ -6,51 +6,63 @@
 
 @layer base {
   :root {
-    --background: 0 0% 99%;
-    --foreground: 230 25% 10%;
+    /* Page base #FFFFFF */
+    --background: 0 0% 100%;
+    /* Primary ink #0F1623 */
+    --foreground: 218 41% 10%;
 
     --card: 0 0% 100%;
-    --card-foreground: 230 25% 10%;
+    --card-foreground: 218 41% 10%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 230 25% 10%;
+    --popover-foreground: 218 41% 10%;
 
-    --primary: 230 40% 12%;
+    /* Primary = dark section #0B1628 */
+    --primary: 217 57% 10%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 230 15% 95%;
-    --secondary-foreground: 230 40% 12%;
+    /* Secondary = warm off-white #F7F5F0 */
+    --secondary: 40 33% 95%;
+    --secondary-foreground: 218 41% 10%;
 
-    --muted: 230 10% 94%;
-    --muted-foreground: 230 8% 50%;
+    --muted: 40 33% 95%;
+    /* Muted text #6B7A8D */
+    --muted-foreground: 213 14% 49%;
 
-    --accent: 16 85% 55%;
+    /* Accent = LinkedIn blue #0A66C2 */
+    --accent: 210 90% 40%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 230 12% 91%;
-    --input: 230 12% 91%;
-    --ring: 16 85% 55%;
+    /* Borders #E0DAD0 */
+    --border: 36 22% 85%;
+    --input: 36 22% 85%;
+    --ring: 210 90% 40%;
 
     --radius: 0.625rem;
 
-    --sidebar-background: 230 35% 8%;
-    --sidebar-foreground: 230 10% 78%;
-    --sidebar-primary: 16 85% 55%;
+    /* Sidebar — dark section palette */
+    --sidebar-background: 217 57% 10%;
+    --sidebar-foreground: 0 0% 88%;
+    --sidebar-primary: 210 90% 40%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 230 30% 14%;
+    --sidebar-accent: 217 50% 16%;
     --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 230 30% 16%;
-    --sidebar-ring: 16 85% 55%;
+    --sidebar-border: 217 30% 20%;
+    --sidebar-ring: 210 90% 40%;
 
-    --linkedin: 16 85% 55%;
+    /* LinkedIn blue accent */
+    --linkedin: 210 90% 40%;
     --linkedin-foreground: 0 0% 100%;
 
-    --navy: 230 40% 12%;
-    --navy-light: 230 30% 20%;
-    --navy-dark: 230 45% 6%;
+    --navy: 217 57% 10%;
+    --navy-light: 217 45% 18%;
+    --navy-dark: 218 60% 7%;
+
+    --cream: 40 33% 95%;
+    --cream-foreground: 218 41% 10%;
 
     --success: 160 84% 39%;
     --success-foreground: 0 0% 100%;
@@ -58,16 +70,18 @@
     --warning: 43 96% 56%;
     --warning-foreground: 0 0% 100%;
 
-    --gradient-hero: linear-gradient(160deg, hsl(230 45% 5%) 0%, hsl(230 40% 12%) 40%, hsl(16 30% 16%) 100%);
-    --gradient-accent: linear-gradient(135deg, hsl(16 85% 55%) 0%, hsl(24 90% 60%) 100%);
-    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(230 15% 98%) 100%);
-    --gradient-premium: linear-gradient(135deg, hsl(230 45% 5%) 0%, hsl(230 35% 14%) 50%, hsl(16 40% 18%) 100%);
+    --gradient-hero: linear-gradient(180deg, hsl(217 57% 10%) 0%, hsl(218 60% 7%) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(210 90% 40%) 0%, hsl(210 90% 48%) 100%);
+    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(40 33% 97%) 100%);
+    --gradient-premium: linear-gradient(135deg, hsl(218 60% 7%) 0%, hsl(217 57% 10%) 50%, hsl(217 45% 18%) 100%);
 
-    --shadow-sm: 0 1px 2px 0 hsl(230 40% 12% / 0.04);
-    --shadow-md: 0 4px 12px -2px hsl(230 40% 12% / 0.08);
-    --shadow-lg: 0 12px 32px -8px hsl(230 40% 12% / 0.12);
-    --shadow-glow: 0 0 24px hsl(16 85% 55% / 0.25);
-    --shadow-glow-lg: 0 0 48px hsl(16 85% 55% / 0.3);
+    --shadow-sm: 0 1px 2px 0 hsl(218 41% 10% / 0.04);
+    --shadow-md: 0 4px 12px -2px hsl(218 41% 10% / 0.08);
+    --shadow-lg: 0 12px 32px -8px hsl(218 41% 10% / 0.12);
+    --shadow-cta: 0 4px 16px hsl(210 90% 40% / 0.35);
+    --shadow-card-hover: 0 4px 24px hsl(210 90% 40% / 0.08);
+    --shadow-glow: 0 0 24px hsl(210 90% 40% / 0.2);
+    --shadow-glow-lg: 0 0 48px hsl(210 90% 40% / 0.25);
   }
 }
 
@@ -81,6 +95,16 @@
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 800;
+    letter-spacing: -0.035em;
+    line-height: 1.08;
+  }
+
+  p {
+    line-height: 1.65;
   }
 }
 
@@ -107,6 +131,26 @@
 
   .shadow-glow-lg {
     box-shadow: var(--shadow-glow-lg);
+  }
+
+  .shadow-cta {
+    box-shadow: var(--shadow-cta);
+  }
+
+  .shadow-card-hover {
+    box-shadow: var(--shadow-card-hover);
+  }
+
+  .bg-cream {
+    background-color: hsl(var(--cream));
+  }
+
+  .eyebrow {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: hsl(var(--linkedin));
   }
 
   .animate-fade-in {

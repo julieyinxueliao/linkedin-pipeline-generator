@@ -54,6 +54,10 @@ export default {
           DEFAULT: "hsl(var(--linkedin))",
           foreground: "hsl(var(--linkedin-foreground))",
         },
+        cream: {
+          DEFAULT: "hsl(var(--cream))",
+          foreground: "hsl(var(--cream-foreground))",
+        },
         navy: {
           DEFAULT: "hsl(var(--navy))",
           light: "hsl(var(--navy-light))",
