@@ -31,14 +31,14 @@ const OnboardedRoute = ({ children }: { children: React.ReactNode }) => {
 
 const OnboardingGate = ({ children }: { children: React.ReactNode }) => {
   const onboardingComplete = useAppStore((s) => s.onboardingComplete);
-  if (onboardingComplete) return <Navigate to="/dashboard" replace />;
+  if (onboardingComplete) return <Navigate to="/calendar" replace />;
   return <>{children}</>;
 };
 
 const PublicRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
   if (loading) return <div className="min-h-screen gradient-hero flex items-center justify-center"><div className="h-8 w-8 border-2 border-linkedin border-t-transparent rounded-full animate-spin" /></div>;
-  if (user) return <Navigate to="/dashboard" replace />;
+  if (user) return <Navigate to="/calendar" replace />;
   return <>{children}</>;
 };
 

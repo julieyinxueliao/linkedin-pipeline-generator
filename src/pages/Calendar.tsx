@@ -8,7 +8,7 @@ import { generateCalendar, computeMixCheck } from '@/lib/calendar';
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
-import { PenSquare, AlertCircle, CheckCircle2, RotateCcw, Sparkles, Globe } from 'lucide-react';
+import { PenSquare, AlertCircle, CheckCircle2, RotateCcw, Sparkles, Globe, CalendarDays, FileText } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -29,6 +29,7 @@ const CalendarPage = () => {
   const navigate = useNavigate();
   const brief = useAppStore((s) => s.brief);
   const calendar = useAppStore((s) => s.calendar);
+  const drafts = useAppStore((s) => s.drafts);
   const setCalendar = useAppStore((s) => s.setCalendar);
   const extendCalendar = useAppStore((s) => s.extendCalendar);
   const updateSlot = useAppStore((s) => s.updateSlot);
@@ -94,7 +95,23 @@ const CalendarPage = () => {
         </div>
       </div>
 
-      {/* Mix Check moved to Dashboard */}
+      {/* Metrics */}
+      {(() => {
+        const draftedCount = drafts.filter((d) => d.status === 'draft').length;
+        const publishedCount = drafts.filter((d) => d.status === 'published').length;
+        return (
+          <>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-3">
+              <StatCard label="Slots planned" value={calendar.slots.length} icon={CalendarDays} />
+              <StatCard label="In draft" value={draftedCount} icon={FileText} />
+              <StatCard label="Published" value={publishedCount} icon={PenSquare} />
+            </div>
+            <p className="text-[11px] text-muted-foreground mb-8">"Published" updates when you mark a draft as published — we don't connect to your LinkedIn account.</p>
+          </>
+        );
+      })()}
+
+
 
 
       {/* Weeks */}
@@ -190,5 +207,17 @@ const CalendarPage = () => {
   );
 };
 
+function StatCard({ label, value, icon: Icon }: { label: string; value: string | number; icon: any }) {
+  return (
+    <div className="bg-card border border-border rounded-xl p-4 flex items-center gap-3">
+      <div className="h-9 w-9 rounded-lg bg-muted flex items-center justify-center"><Icon className="h-4 w-4 text-muted-foreground" /></div>
+      <div className="min-w-0">
+        <p className="text-2xl font-black text-foreground">{value}</p>
+        <p className="text-[11px] text-muted-foreground">{label}</p>
+      </div>
+    </div>
+  );
+}
 
 export default CalendarPage;
+
