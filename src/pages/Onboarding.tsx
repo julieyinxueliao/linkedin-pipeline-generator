@@ -454,12 +454,8 @@ const Onboarding = () => {
           <div className="animate-fade-in space-y-8">
             <Header step={5} title="Your Strategy Brief" subtitle="Confirm or edit. This becomes the source of every post." />
 
-            {briefLoading && (
-              <div className="text-center py-12 space-y-4">
-                <div className="h-10 w-10 rounded-full border-2 border-linkedin border-t-transparent animate-spin mx-auto" />
-                <p className="text-sm text-primary-foreground/60">Generating a brief from your inputs…</p>
-              </div>
-            )}
+            {briefLoading && <BriefProgress />}
+
             {briefError && !briefLoading && (
               <div className="p-4 rounded-xl border border-destructive/30 bg-destructive/10 text-sm text-destructive">
                 {briefError}
@@ -582,5 +578,59 @@ function BriefBlock({ label, value }: { label: string; value: string }) {
     </div>
   );
 }
+
+const BRIEF_STEPS = [
+  'Synthesizing your wedge and ICP',
+  'Drafting a category POV',
+  'Generating your POV bank',
+  'Mapping content pillars',
+  'Compiling asset inventory',
+];
+
+function BriefProgress() {
+  const [active, setActive] = useState(0);
+  useEffect(() => {
+    const t = setInterval(() => setActive((v) => Math.min(v + 1, BRIEF_STEPS.length - 1)), 4500);
+    return () => clearInterval(t);
+  }, []);
+  return (
+    <div className="py-8 space-y-6">
+      <div className="flex items-center gap-3">
+        <div className="h-8 w-8 rounded-full border-2 border-linkedin border-t-transparent animate-spin" />
+        <div>
+          <p className="text-sm font-semibold text-primary-foreground">Generating your Strategy Brief</p>
+          <p className="text-xs text-primary-foreground/40">GPT-grade reasoning over your inputs — usually 15–25s.</p>
+        </div>
+      </div>
+      <div className="space-y-2.5">
+        {BRIEF_STEPS.map((label, i) => {
+          const state = i < active ? 'done' : i === active ? 'active' : 'pending';
+          return (
+            <div key={label} className="flex items-center gap-3 text-sm">
+              <span className={cn(
+                'h-5 w-5 rounded-full flex items-center justify-center shrink-0 transition-colors',
+                state === 'done' && 'bg-linkedin text-linkedin-foreground',
+                state === 'active' && 'border-2 border-linkedin',
+                state === 'pending' && 'border border-primary-foreground/15',
+              )}>
+                {state === 'done' && <Check className="h-3 w-3" />}
+                {state === 'active' && <span className="h-1.5 w-1.5 rounded-full bg-linkedin animate-pulse" />}
+              </span>
+              <span className={cn(
+                state === 'done' && 'text-primary-foreground/60',
+                state === 'active' && 'text-primary-foreground font-medium',
+                state === 'pending' && 'text-primary-foreground/30',
+              )}>{label}</span>
+            </div>
+          );
+        })}
+      </div>
+      <div className="h-1 w-full rounded-full bg-primary-foreground/5 overflow-hidden">
+        <div className="h-full bg-linkedin transition-all duration-700" style={{ width: `${((active + 1) / BRIEF_STEPS.length) * 100}%` }} />
+      </div>
+    </div>
+  );
+}
+
 
 export default Onboarding;
