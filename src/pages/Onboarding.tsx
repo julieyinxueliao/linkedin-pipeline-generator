@@ -221,7 +221,12 @@ const Onboarding = () => {
       setBriefLoading(true);
       setBriefError(null);
       try {
-        const payload = { ...briefInputs, voiceTraits: voiceTraits ?? [], additionalContext };
+        const kbBlock = [
+          kbLinks.trim() ? `--- Knowledge base links ---\n${kbLinks.trim()}` : '',
+          kbContext.trim() ? `--- Knowledge base files ---\n${kbContext.trim()}` : '',
+        ].filter(Boolean).join('\n\n');
+        const mergedContext = [additionalContext, kbBlock].filter(Boolean).join('\n\n');
+        const payload = { ...briefInputs, voiceTraits: voiceTraits ?? [], additionalContext: mergedContext };
         const invokePromise = supabase.functions.invoke('generate-strategy-brief', { body: payload });
         const abortPromise = new Promise<never>((_, reject) => {
           timeoutCtrl.signal.addEventListener('abort', () =>
