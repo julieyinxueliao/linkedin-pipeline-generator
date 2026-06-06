@@ -388,14 +388,10 @@ const Onboarding = () => {
                     </div>
                   )}
                   <Field label="Company name"><Input value={companyName} onChange={(e) => setCompanyName(e.target.value)} className={inputCls} /></Field>
-                  <Field label="One-line description"><Input value={companyOneLiner} onChange={(e) => setCompanyOneLiner(e.target.value)} className={inputCls} /></Field>
+                  
                   <Field label="YOUR PRODUCT"><Input value={wedge} onChange={(e) => setWedge(e.target.value)} className={inputCls} /></Field>
                   <Field label="YOUR TARGET USER (JOB TITLES)"><Input value={icpTitles} onChange={(e) => setIcpTitles(e.target.value)} className={inputCls} /></Field>
                   <Field label="YOUR TARGET COMPANY"><Input value={icpCompanyType} onChange={(e) => setIcpCompanyType(e.target.value)} className={inputCls} /></Field>
-                  <Field label="Customer wins & numbers (one per line)">
-                    <Textarea value={proofPointsRaw} onChange={(e) => setProofPointsRaw(e.target.value)} rows={4} className={cn(inputCls, 'resize-none leading-relaxed')} />
-                    <p className="text-[11px] text-primary-foreground/30 mt-1">We never make up numbers. Anything missing shows up as [INSERT METRIC] so you can fill it in.</p>
-                  </Field>
                 </div>
               )}
             </div>
