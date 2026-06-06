@@ -80,7 +80,7 @@ const Dashboard = () => {
         <StatCard label="In draft" value={draftedCount} icon={FileText} />
         <StatCard label="Published" value={publishedCount} icon={PenSquare} />
       </div>
-      <p className="text-[11px] text-muted-foreground mb-8">Published is tracked manually — mark a draft as published once you post it on LinkedIn. We don't read your LinkedIn account.</p>
+      <p className="text-[11px] text-muted-foreground mb-8">"Published" updates when you mark a draft as published — we don't connect to your LinkedIn account.</p>
 
       {/* STRATEGY BRIEF */}
       <div className="space-y-6">
