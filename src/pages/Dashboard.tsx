@@ -156,7 +156,7 @@ const Dashboard = () => {
             <CardContent className="p-5">
               <div className="flex items-center gap-2 mb-4">
                 <Sparkles className="h-3.5 w-3.5 text-linkedin" />
-                <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">POV Bank ({brief.povBank.length})</p>
+                <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Hot takes you can post ({brief.povBank.length})</p>
               </div>
               <div className="space-y-2">
                 {brief.povBank.map((p, idx) => (
@@ -164,7 +164,7 @@ const Dashboard = () => {
                     <span className="text-[10px] text-linkedin font-bold mt-0.5 w-5 shrink-0">#{idx + 1}</span>
                     <div className="flex-1 min-w-0">
                       <EditableField
-                        fieldLabel={`POV #${idx + 1}`}
+                        fieldLabel={`Hot take #${idx + 1}`}
                         value={p.text}
                         context={briefContext}
                         multiline
