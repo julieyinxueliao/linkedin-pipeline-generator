@@ -23,7 +23,7 @@ export interface CalendarSlot {
   workingAngle: string;
   ctaType: CtaType;
   assetNeeded: string;
-  status: 'planned' | 'drafted' | 'scheduled' | 'published';
+  status: 'planned' | 'drafted' | 'approved' | 'scheduled' | 'published';
   draftId?: string;
 }
 
