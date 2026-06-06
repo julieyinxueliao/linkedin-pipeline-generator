@@ -190,9 +190,9 @@ const Dashboard = () => {
                       <Badge variant="secondary" className="text-[10px]">{p.funnelTilt}</Badge>
                     </div>
                     <div>
-                      <p className="text-[10px] uppercase text-muted-foreground mb-1">Name</p>
+                      <p className="text-[10px] uppercase text-muted-foreground mb-1">Topic name</p>
                       <EditableField
-                        fieldLabel={`Pillar name (${p.funnelTilt})`}
+                        fieldLabel={`Topic name (${p.funnelTilt})`}
                         value={p.name}
                         context={briefContext}
                         multiline={false}
@@ -203,7 +203,7 @@ const Dashboard = () => {
                     <div>
                       <p className="text-[10px] uppercase text-muted-foreground mb-1">Example angles</p>
                       <EditableField
-                        fieldLabel={`Example angles for pillar "${p.name}" (separate with " · ")`}
+                        fieldLabel={`Example angles for topic "${p.name}" (separate with " · ")`}
                         value={p.exampleAngles.join(' · ')}
                         context={briefContext}
                         multiline
