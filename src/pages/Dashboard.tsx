@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useAppStore } from '@/lib/store';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -9,6 +9,7 @@ import { PenSquare, CalendarDays, FileText, AlertCircle, Sparkles, Target } from
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { SEO } from '@/components/SEO';
+import { EditableField } from '@/components/EditableField';
 
 const Dashboard = () => {
   const navigate = useNavigate();
