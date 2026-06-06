@@ -91,9 +91,9 @@ const Dashboard = () => {
 
         <Card>
           <CardContent className="p-5 space-y-2">
-            <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Category POV to own</p>
+            <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Your main point of view</p>
             <EditableField
-              fieldLabel="Category POV"
+              fieldLabel="Main point of view"
               value={brief.categoryPov}
               context={briefContext}
               multiline={false}
