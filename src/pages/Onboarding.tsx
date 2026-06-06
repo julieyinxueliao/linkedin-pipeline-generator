@@ -454,12 +454,8 @@ const Onboarding = () => {
           <div className="animate-fade-in space-y-8">
             <Header step={5} title="Your Strategy Brief" subtitle="Confirm or edit. This becomes the source of every post." />
 
-            {briefLoading && (
-              <div className="text-center py-12 space-y-4">
-                <div className="h-10 w-10 rounded-full border-2 border-linkedin border-t-transparent animate-spin mx-auto" />
-                <p className="text-sm text-primary-foreground/60">Generating a brief from your inputs…</p>
-              </div>
-            )}
+            {briefLoading && <BriefProgress />}
+
             {briefError && !briefLoading && (
               <div className="p-4 rounded-xl border border-destructive/30 bg-destructive/10 text-sm text-destructive">
                 {briefError}
