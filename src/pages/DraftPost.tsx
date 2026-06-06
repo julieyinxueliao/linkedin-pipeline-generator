@@ -102,6 +102,12 @@ const DraftPost = () => {
 
   return (
     <div className="p-6 md:p-8 max-w-3xl mx-auto">
+      <SEO
+        title="Draft post — write and refine your LinkedIn post | Brand Builder"
+        description="Edit your AI-drafted LinkedIn post, preview it in the LinkedIn layout, and copy it ready to publish."
+        path="/draft"
+        noindex
+      />
       <div className="mb-6">
         <p className="text-xs text-linkedin font-semibold uppercase tracking-wider mb-1">Week {slot.week} · {new Date(slot.scheduledFor).toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}</p>
         <h1 className="text-2xl font-black text-foreground leading-tight">{slot.workingAngle}</h1>
