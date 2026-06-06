@@ -67,7 +67,7 @@ const Dashboard = () => {
       <div className="flex items-start justify-between mb-6 gap-4 flex-wrap">
         <div>
           <h1 className="text-3xl font-black text-foreground tracking-tight">{brief.companyName || 'Strategy'} · {presetMeta.label}</h1>
-          <p className="text-muted-foreground text-sm mt-1">Your source of truth for every post.</p>
+          <p className="text-muted-foreground text-sm mt-1">Everything that shapes your posts, in one place.</p>
         </div>
         <Button variant="linkedin" size="sm" onClick={() => navigate('/calendar')}>
           <CalendarDays className="h-4 w-4 mr-1.5" />Open calendar
