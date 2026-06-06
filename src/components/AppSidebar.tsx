@@ -1,4 +1,4 @@
-import { LayoutDashboard, Settings, LogOut } from 'lucide-react';
+import { LayoutDashboard, CalendarDays, Settings, LogOut } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import {
   Sidebar,
@@ -16,6 +16,7 @@ import { Button } from '@/components/ui/button';
 
 const items = [
   { title: 'Dashboard', url: '/dashboard', icon: LayoutDashboard },
+  { title: 'Calendar', url: '/calendar', icon: CalendarDays },
   { title: 'Settings', url: '/settings', icon: Settings },
 ];
 

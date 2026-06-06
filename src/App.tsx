@@ -9,6 +9,7 @@ import Auth from "./pages/Auth";
 import Onboarding from "./pages/Onboarding";
 import DashboardLayout from "./layouts/DashboardLayout";
 import Dashboard from "./pages/Dashboard";
+import CalendarPage from "./pages/Calendar";
 import DraftPost from "./pages/DraftPost";
 import SettingsPage from "./pages/SettingsPage";
 import NotFound from "./pages/NotFound";
@@ -54,6 +55,7 @@ const App = () => (
             <Route path="/onboarding" element={<ProtectedRoute><OnboardingGate><Onboarding /></OnboardingGate></ProtectedRoute>} />
             <Route element={<ProtectedRoute><OnboardedRoute><DashboardLayout /></OnboardedRoute></ProtectedRoute>}>
               <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/calendar" element={<CalendarPage />} />
               <Route path="/draft" element={<DraftPost />} />
               <Route path="/settings" element={<SettingsPage />} />
             </Route>
