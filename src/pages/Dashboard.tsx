@@ -221,21 +221,21 @@ const Dashboard = () => {
         {brief.assetInventory && brief.assetInventory.length > 0 && (
           <Card>
             <CardContent className="p-5">
-              <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-3">Asset Inventory</p>
+              <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-3">Stories & proof to pull from</p>
               <div className="space-y-3">
                 {brief.assetInventory.map((a) => (
                   <div key={a.id} className="flex items-start gap-2">
                     <span className={cn('h-1.5 w-1.5 rounded-full shrink-0 mt-2', a.hasProof ? 'bg-success' : 'bg-warning')} />
                     <div className="flex-1 min-w-0">
                       <EditableField
-                        fieldLabel="Asset / proof point"
+                        fieldLabel="Story or proof point"
                         value={a.text}
                         context={briefContext}
                         multiline={false}
                         onSave={(v) => updateBrief({ assetInventory: brief.assetInventory.map((x) => x.id === a.id ? { ...x, text: v } : x) })}
                         displayClassName="text-xs text-foreground/70"
                       />
-                      {!a.hasProof && <span className="text-warning/80 text-[10px] uppercase">to source</span>}
+                      {!a.hasProof && <span className="text-warning/80 text-[10px] uppercase">add details</span>}
                     </div>
                   </div>
                 ))}
