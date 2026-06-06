@@ -240,7 +240,8 @@ function SourcesUploader() {
   if (!brief) return null;
 
   const addAsset = (text: string, hasProof = false) => {
-    const next = [...(brief.assetInventory || []), { id: `as-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`, text, hasProof }];
+    const pillarId = brief.pillars?.[0]?.id || '';
+    const next = [...(brief.assetInventory || []), { id: `as-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`, pillarId, text, hasProof }];
     updateBrief({ assetInventory: next });
   };
 
