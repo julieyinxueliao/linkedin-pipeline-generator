@@ -106,24 +106,23 @@ const Dashboard = () => {
         </Card>
 
         <div className="grid md:grid-cols-2 gap-4">
+          {/* Combined: What you are building + Who you sell to */}
           <Card>
-            <CardContent className="p-5 space-y-2">
-              <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">WHAT YOU ARE BUILDING</p>
-              <EditableField
-                fieldLabel="WHAT YOU ARE BUILDING"
-                value={brief.wedge}
-                context={briefContext}
-                multiline={false}
-                onSave={(v) => updateBrief({ wedge: v })}
-                displayClassName="text-sm text-foreground leading-relaxed"
-                placeholder="—"
-              />
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-5 space-y-2">
-              <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Who you sell to</p>
-              <div className="space-y-3">
+            <CardContent className="p-5 space-y-4">
+              <div>
+                <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-2">WHAT YOU ARE BUILDING</p>
+                <EditableField
+                  fieldLabel="WHAT YOU ARE BUILDING"
+                  value={brief.wedge}
+                  context={briefContext}
+                  multiline={false}
+                  onSave={(v) => updateBrief({ wedge: v })}
+                  displayClassName="text-sm text-foreground leading-relaxed"
+                  placeholder="—"
+                />
+              </div>
+              <div className="pt-3 border-t border-border space-y-3">
+                <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Who you sell to</p>
                 <div>
                   <p className="text-[10px] uppercase text-muted-foreground mb-1">Job titles</p>
                   <EditableField
@@ -151,20 +150,18 @@ const Dashboard = () => {
               </div>
             </CardContent>
           </Card>
-        </div>
 
-        {/* Mix Check (moved from Calendar) */}
-        <Card>
-          <CardContent className="p-5">
-            <div className="flex items-center gap-2 mb-4">
-              <Sparkles className="h-3.5 w-3.5 text-linkedin" />
-              <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Mix check — how balanced your plan is</p>
-            </div>
-            {(() => {
-              const mix = computeMixCheck(calendar, brief.preset);
-              const funnelLabel: Record<FunnelStage, string> = { TOFU: 'Maximize reach', MOFU: 'Build credibility', BOFU: 'Drive conversions' };
-              return (
-                <div className="grid md:grid-cols-2 gap-6">
+          {/* Mix Check */}
+          <Card>
+            <CardContent className="p-5">
+              <div className="flex items-center gap-2 mb-4">
+                <Sparkles className="h-3.5 w-3.5 text-linkedin" />
+                <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Mix check — how balanced your plan is</p>
+              </div>
+              {(() => {
+                const mix = computeMixCheck(calendar, brief.preset);
+                const funnelLabel: Record<FunnelStage, string> = { TOFU: 'Maximize reach', MOFU: 'Build credibility', BOFU: 'Drive conversions' };
+                return (
                   <div>
                     <p className="text-xs font-semibold text-muted-foreground mb-3">Post purpose</p>
                     <div className="space-y-2">
@@ -173,19 +170,12 @@ const Dashboard = () => {
                       ))}
                     </div>
                   </div>
-                  <div>
-                    <p className="text-xs font-semibold text-muted-foreground mb-3">How direct you ask</p>
-                    <div className="space-y-2">
-                      {(['none', 'soft', 'comment-gated', 'hard'] as CtaType[]).map((k) => (
-                        <MixRow key={k} label={CTA_LABEL[k]} target={mix.cta.target[k]} actual={mix.cta.actual[k]} />
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              );
-            })()}
-          </CardContent>
-        </Card>
+                );
+              })()}
+            </CardContent>
+          </Card>
+        </div>
+
 
         {brief.pillars && brief.pillars.length > 0 && (
           <Card>
