@@ -20,9 +20,9 @@ const funnelColor: Record<FunnelStage, string> = {
   BOFU: 'bg-success/20 text-success',
 };
 const funnelLabel: Record<FunnelStage, string> = {
-  TOFU: 'Get attention',
-  MOFU: 'Build trust',
-  BOFU: 'Drive action',
+  TOFU: 'Maximize reach',
+  MOFU: 'Build credibility',
+  BOFU: 'Drive conversions',
 };
 
 const CalendarPage = () => {
