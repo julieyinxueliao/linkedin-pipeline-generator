@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { PRESET_MIX } from '@/lib/principles';
 import { generateCalendar } from '@/lib/calendar';
-import { PenSquare, CalendarDays, FileText, CheckCircle2, AlertCircle, Sparkles, Target } from 'lucide-react';
+import { PenSquare, CalendarDays, FileText, CheckCircle2, AlertCircle, Sparkles, Target, ThumbsUp } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { SEO } from '@/components/SEO';
