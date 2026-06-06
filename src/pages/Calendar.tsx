@@ -153,16 +153,35 @@ const CalendarPage = () => {
                         </div>
                         <p className="text-[11px] text-muted-foreground">Asset: {slot.assetNeeded}</p>
                       </div>
-                      <Button
-                        size="sm"
-                        variant={slot.status === 'drafted' ? 'outline' : 'linkedin'}
-                        disabled={!calendar.approvedAt}
-                        onClick={() => navigate(`/draft?slot=${slot.id}`)}
-                        className="shrink-0"
-                      >
-                        <PenSquare className="h-3.5 w-3.5 mr-1.5" />
-                        {slot.status === 'drafted' ? 'Edit draft' : 'Draft'}
-                      </Button>
+                      <div className="flex flex-col gap-1.5 shrink-0">
+                        <Button
+                          size="sm"
+                          variant={slot.status === 'drafted' || slot.status === 'approved' ? 'outline' : 'linkedin'}
+                          disabled={!calendar.approvedAt}
+                          onClick={() => navigate(`/draft?slot=${slot.id}`)}
+                        >
+                          <PenSquare className="h-3.5 w-3.5 mr-1.5" />
+                          {slot.status === 'planned' ? 'Draft' : 'Edit draft'}
+                        </Button>
+                        {slot.status === 'drafted' && (
+                          <Button
+                            size="sm"
+                            variant="linkedin"
+                            onClick={() => {
+                              updateSlot(slot.id, { status: 'approved' });
+                              if (slot.draftId) updateDraft(slot.draftId, { status: 'approved' });
+                              toast.success('Draft approved');
+                            }}
+                          >
+                            <ThumbsUp className="h-3.5 w-3.5 mr-1.5" />Approve
+                          </Button>
+                        )}
+                        {slot.status === 'approved' && (
+                          <Badge className="bg-success/15 text-success border-success/30 justify-center h-7 text-[10px]">
+                            <CheckCircle2 className="h-3 w-3 mr-1" />Approved
+                          </Badge>
+                        )}
+                      </div>
                     </CardContent>
                   </Card>
                 );
