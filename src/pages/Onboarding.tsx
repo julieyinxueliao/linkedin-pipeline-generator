@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppStore, type ConnectedSource } from '@/lib/store';
 import { generateStrategyBrief, type BriefInputs, type PovItem, type StrategyBrief } from '@/lib/strategy';
-import { goalToPreset } from '@/lib/principles';
+import { goalToPreset, FUNNEL_STAGE_LABELS } from '@/lib/principles';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -504,7 +504,7 @@ const Onboarding = () => {
                       <div key={p.id} className="p-3 rounded-lg border border-primary-foreground/8 bg-primary-foreground/[0.02]">
                         <div className="flex items-center gap-2 mb-1">
                           <span className="text-sm font-semibold text-primary-foreground">{p.name}</span>
-                          <Badge variant="secondary" className="text-[10px] bg-primary-foreground/5 text-primary-foreground/40">{p.funnelTilt}</Badge>
+                          <Badge variant="secondary" className="text-[10px] bg-primary-foreground/5 text-primary-foreground/40">{FUNNEL_STAGE_LABELS[p.funnelTilt]}</Badge>
                         </div>
                         <p className="text-xs text-primary-foreground/40">{p.exampleAngles.join(' · ')}</p>
                       </div>

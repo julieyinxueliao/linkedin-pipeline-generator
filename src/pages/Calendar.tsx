@@ -3,7 +3,7 @@ import { useAppStore } from '@/lib/store';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { PRESET_MIX, CTA_LABEL, ARCHETYPES, type FunnelStage, type CtaType } from '@/lib/principles';
+import { PRESET_MIX, CTA_LABEL, ARCHETYPES, FUNNEL_STAGE_LABELS, type FunnelStage, type CtaType } from '@/lib/principles';
 import { generateCalendar, computeMixCheck } from '@/lib/calendar';
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
@@ -18,11 +18,6 @@ const funnelColor: Record<FunnelStage, string> = {
   TOFU: 'bg-linkedin/20 text-linkedin',
   MOFU: 'bg-warning/20 text-warning',
   BOFU: 'bg-success/20 text-success',
-};
-const funnelLabel: Record<FunnelStage, string> = {
-  TOFU: 'Maximize reach',
-  MOFU: 'Build credibility',
-  BOFU: 'Drive conversions',
 };
 
 const CalendarPage = () => {
@@ -133,7 +128,7 @@ const CalendarPage = () => {
                       <div className="flex-1 min-w-0 space-y-2">
                         <p className="text-sm font-semibold text-foreground leading-snug">{slot.workingAngle}</p>
                         <div className="flex flex-wrap gap-1.5 items-center">
-                          <Badge className={cn('text-[10px]', funnelColor[slot.funnelStage])}>{funnelLabel[slot.funnelStage]}</Badge>
+                          <Badge className={cn('text-[10px]', funnelColor[slot.funnelStage])}>{FUNNEL_STAGE_LABELS[slot.funnelStage]}</Badge>
                           <Badge variant="secondary" className="text-[10px]">{slot.pillarName}</Badge>
                           <Select value={slot.archetypeId} onValueChange={(v) => updateSlot(slot.id, { archetypeId: v, archetypeName: ARCHETYPES.find((a) => a.id === v)?.name || '' })}>
                             <SelectTrigger className="h-6 w-auto text-[10px] gap-1 px-2 py-0 bg-muted border-0"><SelectValue /></SelectTrigger>

@@ -2,6 +2,11 @@
 
 export type Preset = 'reach' | 'pipeline';
 export type FunnelStage = 'TOFU' | 'MOFU' | 'BOFU';
+export const FUNNEL_STAGE_LABELS: Record<FunnelStage, string> = {
+  TOFU: 'Maximize reach',
+  MOFU: 'Build credibility',
+  BOFU: 'Drive conversions',
+};
 export type CtaType = 'none' | 'soft' | 'comment-gated' | 'hard';
 
 export interface Archetype {
@@ -92,7 +97,7 @@ export const PRESET_MIX: Record<Preset, {
 }> = {
   reach: {
     label: 'Reach',
-    description: 'Optimize for audience, authority, inbound. Proof/BOFU is intentionally minimal.',
+    description: 'Optimize for audience, authority, inbound. Proof / Drive conversions posts are intentionally minimal.',
     funnel: { TOFU: 60, MOFU: 30, BOFU: 10 },
     cta: { none: 50, soft: 35, 'comment-gated': 10, hard: 5 },
   },
