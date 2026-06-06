@@ -336,7 +336,7 @@ const Onboarding = () => {
                   )}
                   <Field label="Company name"><Input value={companyName} onChange={(e) => setCompanyName(e.target.value)} className={inputCls} /></Field>
                   <Field label="One-line description"><Input value={companyOneLiner} onChange={(e) => setCompanyOneLiner(e.target.value)} className={inputCls} /></Field>
-                  <Field label="What you want to be known for"><Input value={wedge} onChange={(e) => setWedge(e.target.value)} className={inputCls} /></Field>
+                  <Field label="WHAT YOU ARE BUILDING"><Input value={wedge} onChange={(e) => setWedge(e.target.value)} className={inputCls} /></Field>
                   <Field label="Who you sell to (job titles)"><Input value={icpTitles} onChange={(e) => setIcpTitles(e.target.value)} className={inputCls} /></Field>
                   <Field label="What kind of companies they work at"><Input value={icpCompanyType} onChange={(e) => setIcpCompanyType(e.target.value)} className={inputCls} /></Field>
                   <Field label="Customer wins & numbers (one per line)">

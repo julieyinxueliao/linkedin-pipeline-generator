@@ -108,9 +108,9 @@ const Dashboard = () => {
         <div className="grid md:grid-cols-2 gap-4">
           <Card>
             <CardContent className="p-5 space-y-2">
-              <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">What you want to be known for</p>
+              <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">WHAT YOU ARE BUILDING</p>
               <EditableField
-                fieldLabel="What you want to be known for"
+                fieldLabel="WHAT YOU ARE BUILDING"
                 value={brief.wedge}
                 context={briefContext}
                 multiline={false}
