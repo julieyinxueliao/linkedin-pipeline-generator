@@ -498,7 +498,7 @@ const Onboarding = () => {
                 </div>
 
                 <div className="space-y-3">
-                  <p className="text-xs font-semibold text-primary-foreground/40 uppercase tracking-wider">Content Pillars</p>
+                  <p className="text-xs font-semibold text-primary-foreground/40 uppercase tracking-wider">Topics you'll post about</p>
                   <div className="space-y-2">
                     {brief.pillars.map((p) => (
                       <div key={p.id} className="p-3 rounded-lg border border-primary-foreground/8 bg-primary-foreground/[0.02]">
