@@ -269,9 +269,11 @@ const DraftPost = () => {
               <div className="text-sm text-foreground whitespace-pre-line leading-relaxed">{content}</div>
             </CardContent>
           </Card>
-          <div className="flex gap-3 justify-center">
+          <div className="flex flex-wrap gap-3 justify-center">
+            <Button variant="outline" onClick={() => setStep('editing')}><Pencil className="h-4 w-4 mr-2" />Edit draft</Button>
+            <Button variant="outline" onClick={handleRegenerate}><RotateCcw className="h-4 w-4 mr-2" />Regenerate</Button>
             <Button variant="outline" onClick={handleCopy}><Copy className="h-4 w-4 mr-2" />Copy</Button>
-            <Button variant="linkedin" onClick={() => navigate('/dashboard')}>Back to calendar</Button>
+            <Button variant="linkedin" onClick={() => navigate('/calendar')}>Back to calendar</Button>
           </div>
         </div>
       )}
