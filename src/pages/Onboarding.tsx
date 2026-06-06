@@ -17,9 +17,9 @@ import { cn } from '@/lib/utils';
 import { SEO } from '@/components/SEO';
 
 const goals = [
-  { id: 'sell', label: 'Sell my product or company', desc: 'Generate leads and close deals through content', icon: Target },
-  { id: 'brand', label: 'Build thought leadership', desc: 'Become the go-to voice in your space', icon: User },
-  { id: 'other', label: 'Something else', desc: 'Tell us your unique goal', icon: FileText },
+  { id: 'sell', label: 'Get leads for my product', desc: 'Use posts to bring in customers and close deals', icon: Target },
+  { id: 'brand', label: 'Get known in my space', desc: 'Become a recognized voice in your industry', icon: User },
+  { id: 'other', label: 'Something else', desc: 'Tell us what you want to get out of posting', icon: FileText },
 ];
 
 const documentSources = [
@@ -258,10 +258,10 @@ const Onboarding = () => {
             <div className="rounded-xl border border-linkedin/20 bg-linkedin/[0.04] p-4">
               <p className="text-[0.7rem] font-semibold tracking-[0.08em] uppercase text-linkedin mb-1.5">The playbook</p>
               <p className="text-sm text-primary-foreground/70 leading-[1.6]">
-                You're a founder with real expertise. We turn it into posts that land — using the tried-and-true playbook built on what already works for Clay, Unify, and AirOps.
+                You're a founder with real expertise. We turn it into posts people actually read — using the same approach that's worked for teams like Clay, Unify, and AirOps.
               </p>
             </div>
-            <Header step={1} title="What's your goal?" subtitle="Pick what matters most — this sets your entire content mix." />
+            <Header step={1} title="What's your goal?" subtitle="Pick what matters most — this shapes what we'll help you post." />
             <div className="space-y-3">
               {goals.map((g) => (
                 <button key={g.id} onClick={() => setSelectedGoal(g.id)} className={cardCls(selectedGoal === g.id)}>
@@ -283,7 +283,7 @@ const Onboarding = () => {
         {/* Step 1 — Website + sources */}
         {step === 1 && (
           <div className="animate-fade-in space-y-8">
-            <Header step={2} title="About your company" subtitle="Paste your website and add any source materials — pitch deck, business plan, company overview. We'll extract the rest." />
+            <Header step={2} title="About your company" subtitle="Paste your website and drop in any docs — pitch deck, business plan, one-pager. We'll pull out the essentials." />
             <div className="space-y-4">
               <Field label="Company website">
                 <div className="relative">
@@ -292,11 +292,11 @@ const Onboarding = () => {
                 </div>
               </Field>
 
-              <Field label="Source materials (pitch deck, business plan, company doc)">
+              <Field label="Company docs (pitch deck, business plan, one-pager)">
                 <Textarea
                   value={additionalContext}
                   onChange={(e) => setAdditionalContext(e.target.value)}
-                  placeholder="Paste content from your pitch deck, business plan, one-pager, or any internal doc that describes your company, ICP, and proof points."
+                  placeholder="Paste anything that explains what you do, who you sell to, and your customer wins — pitch deck, business plan, one-pager, internal doc."
                   rows={6}
                   className={cn(inputCls, 'resize-none leading-relaxed')}
                 />
@@ -321,12 +321,12 @@ const Onboarding = () => {
                   disabled={(!websiteUrl && !additionalContext.trim()) || isPulling}
                   onClick={handleAutoPull}
                 >
-                  {isPulling ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Extracting from your sources…</> : <>Extract company profile<Sparkles className="h-4 w-4 ml-1" /></>}
+                  {isPulling ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Reading your docs…</> : <>Pull company info<Sparkles className="h-4 w-4 ml-1" /></>}
                 </Button>
               ) : (
                 <div className="space-y-4 p-4 rounded-xl border border-success/20 bg-success/5">
                   <div className="flex items-center gap-2 text-success text-xs font-semibold">
-                    <Check className="h-3.5 w-3.5" /> Extracted — edit anything that's off
+                    <Check className="h-3.5 w-3.5" /> Done — fix anything that looks off
                   </div>
                   {pullWarning && (
                     <div className="flex items-start gap-2 p-3 rounded-lg border border-warning/20 bg-warning/5 text-xs text-primary-foreground/70">
@@ -336,12 +336,12 @@ const Onboarding = () => {
                   )}
                   <Field label="Company name"><Input value={companyName} onChange={(e) => setCompanyName(e.target.value)} className={inputCls} /></Field>
                   <Field label="One-line description"><Input value={companyOneLiner} onChange={(e) => setCompanyOneLiner(e.target.value)} className={inputCls} /></Field>
-                  <Field label="Category / wedge you want to own"><Input value={wedge} onChange={(e) => setWedge(e.target.value)} className={inputCls} /></Field>
-                  <Field label="Buyer titles"><Input value={icpTitles} onChange={(e) => setIcpTitles(e.target.value)} className={inputCls} /></Field>
-                  <Field label="Company type (ICP)"><Input value={icpCompanyType} onChange={(e) => setIcpCompanyType(e.target.value)} className={inputCls} /></Field>
-                  <Field label="Proof points (one per line)">
+                  <Field label="What you want to be known for"><Input value={wedge} onChange={(e) => setWedge(e.target.value)} className={inputCls} /></Field>
+                  <Field label="Who you sell to (job titles)"><Input value={icpTitles} onChange={(e) => setIcpTitles(e.target.value)} className={inputCls} /></Field>
+                  <Field label="What kind of companies they work at"><Input value={icpCompanyType} onChange={(e) => setIcpCompanyType(e.target.value)} className={inputCls} /></Field>
+                  <Field label="Customer wins & numbers (one per line)">
                     <Textarea value={proofPointsRaw} onChange={(e) => setProofPointsRaw(e.target.value)} rows={4} className={cn(inputCls, 'resize-none leading-relaxed')} />
-                    <p className="text-[11px] text-primary-foreground/30 mt-1">We never invent metrics. Anything missing becomes [INSERT METRIC].</p>
+                    <p className="text-[11px] text-primary-foreground/30 mt-1">We never make up numbers. Anything missing shows up as [INSERT METRIC] so you can fill it in.</p>
                   </Field>
                 </div>
               )}
@@ -353,7 +353,7 @@ const Onboarding = () => {
         {/* Step 2 — Connect document sources */}
         {step === 2 && (
           <div className="animate-fade-in space-y-8">
-            <Header step={3} title="Connect your content" subtitle="We mine your real materials so suggestions are not generic." />
+            <Header step={3} title="Connect your docs" subtitle="We pull from your real materials so suggestions feel like you — not generic AI fluff." />
             {connectedSources.length > 0 && (
               <div className="space-y-2">
                 <p className="text-xs font-semibold text-primary-foreground/40 uppercase tracking-wider">Connected</p>
@@ -396,7 +396,7 @@ const Onboarding = () => {
             {isAnalyzing ? (
               <div className="text-center space-y-5 py-16">
                 <div className="h-12 w-12 rounded-full border-2 border-linkedin border-t-transparent animate-spin mx-auto" />
-                <h2 className="text-xl font-bold text-primary-foreground">Analyzing your voice…</h2>
+                <h2 className="text-xl font-bold text-primary-foreground">Learning your voice…</h2>
               </div>
             ) : voiceReady && !voiceSkipped ? (
               <div className="text-center space-y-8">
@@ -405,28 +405,28 @@ const Onboarding = () => {
                 <div className="bg-primary-foreground/[0.03] border border-primary-foreground/8 rounded-xl p-5 space-y-3 text-left">
                   {voiceTraits.map((trait, i) => (<div key={i} className="flex items-center gap-3"><div className="h-1.5 w-1.5 rounded-full bg-linkedin shrink-0" /><span className="text-sm text-primary-foreground/70">{trait}</span></div>))}
                 </div>
-                <Nav back={() => { setVoiceReady(false); setVoiceOption(null); setVoiceTraits([]); }} next={() => setOnboardingStep(4)} nextLabel="Build my brief" />
+                <Nav back={() => { setVoiceReady(false); setVoiceOption(null); setVoiceTraits([]); }} next={() => setOnboardingStep(4)} nextLabel="Build my plan" />
               </div>
             ) : voiceReady && voiceSkipped ? (
               <div className="text-center space-y-8">
                 <div className="h-16 w-16 rounded-2xl bg-warning/15 flex items-center justify-center mx-auto"><AlertTriangle className="h-8 w-8 text-warning" /></div>
-                <Header step={4} title="Voice calibration skipped" subtitle="We can't generate a voice profile without samples. Drafts will use generic phrasing until you add samples in Settings." center />
+                <Header step={4} title="Voice setup skipped" subtitle="Without writing samples, we can't match your voice. Drafts will sound generic until you add samples in Settings." center />
                 <Nav back={() => { setVoiceReady(false); setVoiceSkipped(false); setVoiceOption(null); }} next={() => setOnboardingStep(4)} nextLabel="Continue without voice" />
               </div>
             ) : !voiceOption ? (
               <>
-                <Header step={4} title="Capture your voice" subtitle="So every post sounds like you — not a chatbot." />
+                <Header step={4} title="Teach us your voice" subtitle="So every post sounds like you wrote it — not a chatbot." />
                 <div className="grid grid-cols-2 gap-3">
                   <button onClick={() => setVoiceOption('write')} className="p-6 rounded-xl border border-primary-foreground/8 hover:border-linkedin/30 hover:bg-linkedin/[0.03] transition-all text-center space-y-4 group">
                     <div className="h-12 w-12 rounded-xl bg-linkedin/10 flex items-center justify-center mx-auto"><FileText className="h-6 w-6 text-linkedin" /></div>
-                    <div><div className="font-semibold text-primary-foreground text-sm">Write 2 posts</div><p className="text-xs text-primary-foreground/30 mt-1">On a wedge-relevant prompt</p></div>
+                    <div><div className="font-semibold text-primary-foreground text-sm">Answer 2 prompts</div><p className="text-xs text-primary-foreground/30 mt-1">Quick written replies</p></div>
                   </button>
                   <button onClick={() => setVoiceOption('upload')} className="p-6 rounded-xl border border-primary-foreground/8 hover:border-linkedin/30 hover:bg-linkedin/[0.03] transition-all text-center space-y-4 group">
                     <div className="h-12 w-12 rounded-xl bg-linkedin/10 flex items-center justify-center mx-auto"><FileUp className="h-6 w-6 text-linkedin" /></div>
-                    <div><div className="font-semibold text-primary-foreground text-sm">Paste past posts</div><p className="text-xs text-primary-foreground/30 mt-1">We extract your style</p></div>
+                    <div><div className="font-semibold text-primary-foreground text-sm">Paste old posts</div><p className="text-xs text-primary-foreground/30 mt-1">We learn your style</p></div>
                   </button>
                 </div>
-                <Nav back={() => setOnboardingStep(2)} next={handleSkipVoice} nextLabel="Skip — calibrate later" />
+                <Nav back={() => setOnboardingStep(2)} next={handleSkipVoice} nextLabel="Skip — set up later" />
               </>
             ) : voiceOption === 'write' ? (
               <div className="space-y-6">
@@ -438,7 +438,7 @@ const Onboarding = () => {
                   {currentPrompt === 0 ? (
                     <Button variant="linkedin" disabled={!samplePost1} onClick={() => setCurrentPrompt(1)}>Next<ArrowRight className="h-3.5 w-3.5 ml-1" /></Button>
                   ) : (
-                    <Button variant="linkedin" disabled={!samplePost2} onClick={handleAnalyzeVoice}>Analyze my voice</Button>
+                    <Button variant="linkedin" disabled={!samplePost2} onClick={handleAnalyzeVoice}>Learn my voice</Button>
                   )}
                 </div>
               </div>
@@ -458,7 +458,7 @@ const Onboarding = () => {
         {/* Step 4 — Strategy Brief review */}
         {step === 4 && (
           <div className="animate-fade-in space-y-8">
-            <Header step={5} title="Your Strategy Brief" subtitle="Confirm or edit. This becomes the source of every post." />
+            <Header step={5} title="Your content plan" subtitle="Check it over and tweak anything. Every post we draft starts here." />
 
             {briefLoading && <BriefProgress />}
 
@@ -471,11 +471,11 @@ const Onboarding = () => {
 
             {!briefLoading && brief && (
               <>
-                <BriefBlock label="Category POV to own" value={brief.categoryPov} />
+                <BriefBlock label="Your main point of view" value={brief.categoryPov} />
 
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <p className="text-xs font-semibold text-primary-foreground/40 uppercase tracking-wider flex items-center gap-1.5"><Sparkles className="h-3 w-3" /> POV Bank ({povBank.length})</p>
+                    <p className="text-xs font-semibold text-primary-foreground/40 uppercase tracking-wider flex items-center gap-1.5"><Sparkles className="h-3 w-3" /> Hot takes you can post ({povBank.length})</p>
                   </div>
                   <div className="space-y-2">
                     {povBank.map((p, idx) => (
@@ -498,7 +498,7 @@ const Onboarding = () => {
                 </div>
 
                 <div className="space-y-3">
-                  <p className="text-xs font-semibold text-primary-foreground/40 uppercase tracking-wider">Content Pillars</p>
+                  <p className="text-xs font-semibold text-primary-foreground/40 uppercase tracking-wider">Topics you'll post about</p>
                   <div className="space-y-2">
                     {brief.pillars.map((p) => (
                       <div key={p.id} className="p-3 rounded-lg border border-primary-foreground/8 bg-primary-foreground/[0.02]">
@@ -513,13 +513,13 @@ const Onboarding = () => {
                 </div>
 
                 <div className="space-y-3">
-                  <p className="text-xs font-semibold text-primary-foreground/40 uppercase tracking-wider">Asset Inventory</p>
+                  <p className="text-xs font-semibold text-primary-foreground/40 uppercase tracking-wider">Stories & proof to pull from</p>
                   <div className="space-y-1.5">
                     {brief.assetInventory.map((a) => (
                       <div key={a.id} className="flex items-center gap-2 text-xs">
                         <span className={cn('h-1.5 w-1.5 rounded-full shrink-0', a.hasProof ? 'bg-success' : 'bg-warning')} />
                         <span className="text-primary-foreground/60">{a.text}</span>
-                        {!a.hasProof && <span className="text-warning/80 text-[10px] uppercase">to source</span>}
+                        {!a.hasProof && <span className="text-warning/80 text-[10px] uppercase">add details</span>}
                       </div>
                     ))}
                   </div>
@@ -527,7 +527,7 @@ const Onboarding = () => {
 
                 <div className="flex gap-3 pt-4">
                   <Button variant="ghost" className="text-primary-foreground/40" onClick={() => setOnboardingStep(3)}>Back</Button>
-                  <Button variant="linkedin" size="lg" className="flex-1 h-12 font-semibold" onClick={handleFinish}>Approve & generate calendar<ArrowRight className="h-4 w-4 ml-1" /></Button>
+                  <Button variant="linkedin" size="lg" className="flex-1 h-12 font-semibold" onClick={handleFinish}>Looks good — build my calendar<ArrowRight className="h-4 w-4 ml-1" /></Button>
                 </div>
               </>
             )}
@@ -586,11 +586,11 @@ function BriefBlock({ label, value }: { label: string; value: string }) {
 }
 
 const BRIEF_STEPS = [
-  'Synthesizing your wedge and ICP',
-  'Drafting a category POV',
-  'Generating your POV bank',
-  'Mapping content pillars',
-  'Compiling asset inventory',
+  'Figuring out what you stand for and who you sell to',
+  'Writing your main point of view',
+  'Brainstorming hot takes you can post',
+  'Picking the topics you should post about',
+  'Listing your stories and customer proof',
 ];
 
 function BriefProgress() {
@@ -604,8 +604,8 @@ function BriefProgress() {
       <div className="flex items-center gap-3">
         <div className="h-8 w-8 rounded-full border-2 border-linkedin border-t-transparent animate-spin" />
         <div>
-          <p className="text-sm font-semibold text-primary-foreground">Generating your Strategy Brief</p>
-          <p className="text-xs text-primary-foreground/40">GPT-grade reasoning over your inputs — usually 15–25s.</p>
+          <p className="text-sm font-semibold text-primary-foreground">Building your content plan</p>
+          <p className="text-xs text-primary-foreground/40">AI is working through what you shared — usually 15–25s.</p>
         </div>
       </div>
       <div className="space-y-2.5">

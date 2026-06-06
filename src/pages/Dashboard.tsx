@@ -28,9 +28,9 @@ const Dashboard = () => {
     return (
       <div className="p-8 max-w-2xl mx-auto text-center space-y-4">
         <AlertCircle className="h-10 w-10 text-muted-foreground mx-auto" />
-        <h2 className="text-2xl font-black tracking-tight">Turn your expertise into pipeline.</h2>
+        <h2 className="text-2xl font-black tracking-tight">Turn what you know into LinkedIn posts.</h2>
         <p className="text-muted-foreground text-sm max-w-md mx-auto leading-relaxed">
-          A proven content strategy, built around your company. Tell us about your product, voice, and goals — we'll generate your strategy brief, 4-week calendar, and drafts in your voice.
+          A simple content plan, built around your company. Tell us about your product, voice, and goals — we'll generate a 4-week calendar and post drafts that sound like you.
         </p>
         <Button variant="linkedin" onClick={() => navigate('/onboarding')}>Start onboarding</Button>
       </div>
@@ -67,7 +67,7 @@ const Dashboard = () => {
       <div className="flex items-start justify-between mb-6 gap-4 flex-wrap">
         <div>
           <h1 className="text-3xl font-black text-foreground tracking-tight">{brief.companyName || 'Strategy'} · {presetMeta.label}</h1>
-          <p className="text-muted-foreground text-sm mt-1">Your source of truth for every post.</p>
+          <p className="text-muted-foreground text-sm mt-1">Everything that shapes your posts, in one place.</p>
         </div>
         <Button variant="linkedin" size="sm" onClick={() => navigate('/calendar')}>
           <CalendarDays className="h-4 w-4 mr-1.5" />Open calendar
@@ -80,20 +80,20 @@ const Dashboard = () => {
         <StatCard label="In draft" value={draftedCount} icon={FileText} />
         <StatCard label="Published" value={publishedCount} icon={PenSquare} />
       </div>
-      <p className="text-[11px] text-muted-foreground mb-8">Published is tracked manually — mark a draft as published once you post it on LinkedIn. We don't read your LinkedIn account.</p>
+      <p className="text-[11px] text-muted-foreground mb-8">"Published" updates when you mark a draft as published — we don't connect to your LinkedIn account.</p>
 
       {/* STRATEGY BRIEF */}
       <div className="space-y-6">
         <div className="flex items-center gap-2">
           <Target className="h-4 w-4 text-linkedin" />
-          <h2 className="text-sm font-bold uppercase tracking-wider">Strategy Brief</h2>
+          <h2 className="text-sm font-bold uppercase tracking-wider">Content Plan</h2>
         </div>
 
         <Card>
           <CardContent className="p-5 space-y-2">
-            <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Category POV to own</p>
+            <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Your main point of view</p>
             <EditableField
-              fieldLabel="Category POV"
+              fieldLabel="Main point of view"
               value={brief.categoryPov}
               context={briefContext}
               multiline={false}
@@ -106,9 +106,9 @@ const Dashboard = () => {
         <div className="grid md:grid-cols-2 gap-4">
           <Card>
             <CardContent className="p-5 space-y-2">
-              <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Wedge</p>
+              <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">What you want to be known for</p>
               <EditableField
-                fieldLabel="Wedge / category they own"
+                fieldLabel="What you want to be known for"
                 value={brief.wedge}
                 context={briefContext}
                 multiline={false}
@@ -120,12 +120,12 @@ const Dashboard = () => {
           </Card>
           <Card>
             <CardContent className="p-5 space-y-2">
-              <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Ideal customer</p>
+              <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Who you sell to</p>
               <div className="space-y-3">
                 <div>
-                  <p className="text-[10px] uppercase text-muted-foreground mb-1">Titles</p>
+                  <p className="text-[10px] uppercase text-muted-foreground mb-1">Job titles</p>
                   <EditableField
-                    fieldLabel="ICP titles"
+                    fieldLabel="Job titles you sell to"
                     value={brief.icpTitles}
                     context={briefContext}
                     multiline={false}
@@ -135,9 +135,9 @@ const Dashboard = () => {
                   />
                 </div>
                 <div>
-                  <p className="text-[10px] uppercase text-muted-foreground mb-1">Company type</p>
+                  <p className="text-[10px] uppercase text-muted-foreground mb-1">Type of company they work at</p>
                   <EditableField
-                    fieldLabel="ICP company type"
+                    fieldLabel="Type of company they work at"
                     value={brief.icpCompanyType}
                     context={briefContext}
                     multiline={false}
@@ -156,7 +156,7 @@ const Dashboard = () => {
             <CardContent className="p-5">
               <div className="flex items-center gap-2 mb-4">
                 <Sparkles className="h-3.5 w-3.5 text-linkedin" />
-                <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">POV Bank ({brief.povBank.length})</p>
+                <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Hot takes you can post ({brief.povBank.length})</p>
               </div>
               <div className="space-y-2">
                 {brief.povBank.map((p, idx) => (
@@ -164,7 +164,7 @@ const Dashboard = () => {
                     <span className="text-[10px] text-linkedin font-bold mt-0.5 w-5 shrink-0">#{idx + 1}</span>
                     <div className="flex-1 min-w-0">
                       <EditableField
-                        fieldLabel={`POV #${idx + 1}`}
+                        fieldLabel={`Hot take #${idx + 1}`}
                         value={p.text}
                         context={briefContext}
                         multiline
@@ -182,7 +182,7 @@ const Dashboard = () => {
         {brief.pillars && brief.pillars.length > 0 && (
           <Card>
             <CardContent className="p-5">
-              <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-4">Content Pillars</p>
+              <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-4">Topics you'll post about</p>
               <div className="grid md:grid-cols-2 gap-2">
                 {brief.pillars.map((p) => (
                   <div key={p.id} className="p-3 rounded-lg border border-border bg-muted/30 space-y-2">
@@ -190,9 +190,9 @@ const Dashboard = () => {
                       <Badge variant="secondary" className="text-[10px]">{p.funnelTilt}</Badge>
                     </div>
                     <div>
-                      <p className="text-[10px] uppercase text-muted-foreground mb-1">Name</p>
+                      <p className="text-[10px] uppercase text-muted-foreground mb-1">Topic name</p>
                       <EditableField
-                        fieldLabel={`Pillar name (${p.funnelTilt})`}
+                        fieldLabel={`Topic name (${p.funnelTilt})`}
                         value={p.name}
                         context={briefContext}
                         multiline={false}
@@ -203,7 +203,7 @@ const Dashboard = () => {
                     <div>
                       <p className="text-[10px] uppercase text-muted-foreground mb-1">Example angles</p>
                       <EditableField
-                        fieldLabel={`Example angles for pillar "${p.name}" (separate with " · ")`}
+                        fieldLabel={`Example angles for topic "${p.name}" (separate with " · ")`}
                         value={p.exampleAngles.join(' · ')}
                         context={briefContext}
                         multiline
@@ -221,21 +221,21 @@ const Dashboard = () => {
         {brief.assetInventory && brief.assetInventory.length > 0 && (
           <Card>
             <CardContent className="p-5">
-              <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-3">Asset Inventory</p>
+              <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-3">Stories & proof to pull from</p>
               <div className="space-y-3">
                 {brief.assetInventory.map((a) => (
                   <div key={a.id} className="flex items-start gap-2">
                     <span className={cn('h-1.5 w-1.5 rounded-full shrink-0 mt-2', a.hasProof ? 'bg-success' : 'bg-warning')} />
                     <div className="flex-1 min-w-0">
                       <EditableField
-                        fieldLabel="Asset / proof point"
+                        fieldLabel="Story or proof point"
                         value={a.text}
                         context={briefContext}
                         multiline={false}
                         onSave={(v) => updateBrief({ assetInventory: brief.assetInventory.map((x) => x.id === a.id ? { ...x, text: v } : x) })}
                         displayClassName="text-xs text-foreground/70"
                       />
-                      {!a.hasProof && <span className="text-warning/80 text-[10px] uppercase">to source</span>}
+                      {!a.hasProof && <span className="text-warning/80 text-[10px] uppercase">add details</span>}
                     </div>
                   </div>
                 ))}
