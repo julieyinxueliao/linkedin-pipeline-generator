@@ -98,11 +98,17 @@ const Onboarding = () => {
 
   const handleAutoPull = async () => {
     setIsPulling(true);
+    setPullWarningSafe: {}
     setPullWarning(null);
     try {
+      let normalizedUrl = websiteUrl.trim();
+      if (normalizedUrl && !/^https?:\/\//i.test(normalizedUrl)) {
+        normalizedUrl = `https://${normalizedUrl}`;
+      }
       const { data, error } = await supabase.functions.invoke('pull-company-profile', {
-        body: { websiteUrl, additionalContext },
+        body: { websiteUrl: normalizedUrl, additionalContext },
       });
+
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
       const d = data?.data ?? {};
