@@ -98,8 +98,8 @@ const Onboarding = () => {
 
   const handleAutoPull = async () => {
     setIsPulling(true);
-    setPullWarningSafe: {}
     setPullWarning(null);
+
     try {
       let normalizedUrl = websiteUrl.trim();
       if (normalizedUrl && !/^https?:\/\//i.test(normalizedUrl)) {
