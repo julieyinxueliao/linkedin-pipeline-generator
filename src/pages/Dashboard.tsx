@@ -6,12 +6,14 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { PRESET_MIX, FUNNEL_STAGE_LABELS, type FunnelStage } from '@/lib/principles';
 import { generateCalendar, computeMixCheck } from '@/lib/calendar';
-import { CalendarDays, AlertCircle, Sparkles, Target, Upload, Link2, Plus, Settings as SettingsIcon } from 'lucide-react';
+import { CalendarDays, AlertCircle, Sparkles, Target, Upload, Link2, Plus, Settings as SettingsIcon, RotateCcw } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { SEO } from '@/components/SEO';
 import { EditableField } from '@/components/EditableField';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
+import { Slider } from '@/components/ui/slider';
 
 const Dashboard = () => {
   const navigate = useNavigate();
