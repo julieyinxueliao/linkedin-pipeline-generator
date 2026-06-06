@@ -513,7 +513,7 @@ const Onboarding = () => {
                 </div>
 
                 <div className="space-y-3">
-                  <p className="text-xs font-semibold text-primary-foreground/40 uppercase tracking-wider">Asset Inventory</p>
+                  <p className="text-xs font-semibold text-primary-foreground/40 uppercase tracking-wider">Stories & proof to pull from</p>
                   <div className="space-y-1.5">
                     {brief.assetInventory.map((a) => (
                       <div key={a.id} className="flex items-center gap-2 text-xs">
