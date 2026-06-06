@@ -214,15 +214,15 @@ const DraftPost = () => {
 
       {step === 'loading' && (
         <div className="text-center space-y-4 py-16 animate-fade-in">
-          <Loader2 className="h-10 w-10 text-linkedin animate-spin mx-auto" />
+          <Sparkles className="h-10 w-10 text-linkedin mx-auto animate-pulse" />
           <h2 className="text-lg font-semibold text-foreground">Drafting from {arch.name}…</h2>
-          <p className="text-sm text-muted-foreground">Using your proof points and voice.</p>
+          <p className="text-sm text-muted-foreground">GPT-5 is writing in your voice. First tokens in a few seconds.</p>
         </div>
       )}
 
       {step === 'editing' && (
         <div className="space-y-4 animate-fade-in">
-          {hasMetricGap && (
+          {hasMetricGap && !isStreaming && (
             <div className="p-3 rounded-lg border border-warning/30 bg-warning/10 text-xs text-warning flex items-center gap-2">
               <AlertTriangle className="h-4 w-4 shrink-0" />
               <span>Contains <code className="font-mono">[INSERT METRIC]</code> — never publish until you replace with a real number.</span>
@@ -230,17 +230,22 @@ const DraftPost = () => {
           )}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-sm text-success">
-              <Check className="h-4 w-4" /> On-strategy
+              {isStreaming ? (
+                <><Loader2 className="h-4 w-4 animate-spin text-linkedin" /> <span className="text-linkedin">Streaming…</span></>
+              ) : (
+                <><Check className="h-4 w-4" /> On-strategy</>
+              )}
             </div>
             <span className="text-xs text-muted-foreground">{wordCount} words</span>
           </div>
-          <Textarea value={content} onChange={(e) => setContent(e.target.value)} rows={18} className="resize-none text-sm leading-relaxed font-mono" />
+          <Textarea value={content} onChange={(e) => setContent(e.target.value)} rows={18} className="resize-none text-sm leading-relaxed font-mono" readOnly={isStreaming} />
           <div className="flex gap-3">
-            <Button variant="outline" onClick={handleRegenerate}><RotateCcw className="h-4 w-4 mr-2" />Regenerate</Button>
-            <Button variant="linkedin" className="flex-1" onClick={handleSaveDraft}>Save draft<ArrowRight className="h-4 w-4 ml-2" /></Button>
+            <Button variant="outline" onClick={handleRegenerate} disabled={isStreaming}><RotateCcw className="h-4 w-4 mr-2" />Regenerate</Button>
+            <Button variant="linkedin" className="flex-1" onClick={handleSaveDraft} disabled={isStreaming || !content.trim()}>Save draft<ArrowRight className="h-4 w-4 ml-2" /></Button>
           </div>
         </div>
       )}
+
 
       {step === 'preview' && (
         <div className="space-y-6 animate-fade-in">
