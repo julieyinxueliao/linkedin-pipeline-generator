@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { PRESET_MIX, CTA_LABEL, type FunnelStage, type CtaType } from '@/lib/principles';
+import { PRESET_MIX, type FunnelStage } from '@/lib/principles';
 import { generateCalendar, computeMixCheck } from '@/lib/calendar';
 import { PenSquare, CalendarDays, FileText, AlertCircle, Sparkles, Target, Upload, Link2, Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
