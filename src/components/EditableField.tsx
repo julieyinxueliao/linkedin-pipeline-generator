@@ -16,6 +16,7 @@ interface EditableFieldProps {
   className?: string;
   displayClassName?: string;
   placeholder?: string;
+  showActions?: boolean;
 }
 
 export function EditableField({
@@ -27,6 +28,7 @@ export function EditableField({
   className,
   displayClassName,
   placeholder,
+  showActions = true,
 }: EditableFieldProps) {
   const [mode, setMode] = useState<'view' | 'edit' | 'refine'>('view');
   const [draft, setDraft] = useState(value);
@@ -76,14 +78,16 @@ export function EditableField({
     return (
       <div className={cn('group relative', className)}>
         <div className={cn('whitespace-pre-wrap', displayClassName)}>{value || <span className="text-muted-foreground italic">{placeholder || 'Empty'}</span>}</div>
-        <div className="flex gap-1.5 mt-2 opacity-60 group-hover:opacity-100 transition">
-          <Button size="sm" variant="ghost" className="h-7 px-2 text-[11px]" onClick={openEdit}>
-            <Pencil className="h-3 w-3 mr-1" />Edit
-          </Button>
-          <Button size="sm" variant="ghost" className="h-7 px-2 text-[11px] text-linkedin hover:text-linkedin" onClick={openRefine}>
-            <Sparkles className="h-3 w-3 mr-1" />Refine with AI
-          </Button>
-        </div>
+        {showActions && (
+          <div className="flex gap-1.5 mt-2 opacity-60 group-hover:opacity-100 transition">
+            <Button size="sm" variant="ghost" className="h-7 px-2 text-[11px]" onClick={openEdit}>
+              <Pencil className="h-3 w-3 mr-1" />Edit
+            </Button>
+            <Button size="sm" variant="ghost" className="h-7 px-2 text-[11px] text-linkedin hover:text-linkedin" onClick={openRefine}>
+              <Sparkles className="h-3 w-3 mr-1" />Refine with AI
+            </Button>
+          </div>
+        )}
       </div>
     );
   }

@@ -150,6 +150,7 @@ const Dashboard = () => {
                                   multiline
                                   onSave={(v) => updateBrief({ povBank: (brief.povBank || []).map((x) => x.id === pov.id ? { ...x, text: v, edited: true } : x) })}
                                   displayClassName="text-xs text-foreground/80 leading-relaxed"
+                                  showActions={false}
                                 />
                               </li>
                             ))}
