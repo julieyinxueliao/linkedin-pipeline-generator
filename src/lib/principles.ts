@@ -105,10 +105,10 @@ export const PRESET_MIX: Record<Preset, {
 };
 
 export const CTA_LABEL: Record<CtaType, string> = {
-  none: 'No CTA',
-  soft: 'Soft ask',
-  'comment-gated': 'Comment-gated',
-  hard: 'Hard CTA',
+  none: 'Just share',
+  soft: 'Gentle nudge',
+  'comment-gated': 'Reply to get it',
+  hard: 'Direct ask',
 };
 
 /** Map the existing onboarding goal id to the SKILL preset. */
