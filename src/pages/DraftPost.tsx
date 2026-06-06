@@ -14,11 +14,14 @@ import { SEO } from '@/components/SEO';
 type Step = 'loading' | 'editing' | 'preview';
 
 
+const DRAFT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/draft-post`;
+
 const DraftPost = () => {
   const [params] = useSearchParams();
   const slotId = params.get('slot');
   const navigate = useNavigate();
   const brief = useAppStore((s) => s.brief);
+  const profile = useAppStore((s) => s.profile);
   const calendar = useAppStore((s) => s.calendar);
   const addDraft = useAppStore((s) => s.addDraft);
   const updateSlot = useAppStore((s) => s.updateSlot);
@@ -26,16 +29,95 @@ const DraftPost = () => {
   const slot = slotId && calendar ? calendar.slots.find((s) => s.id === slotId) : null;
   const [step, setStep] = useState<Step>('loading');
   const [content, setContent] = useState('');
+  const [isStreaming, setIsStreaming] = useState(false);
+  const abortRef = useRef<AbortController | null>(null);
+
+  const runStream = async () => {
+    if (!slot || !brief) return;
+    abortRef.current?.abort();
+    const ctrl = new AbortController();
+    abortRef.current = ctrl;
+    setStep('loading');
+    setContent('');
+    setIsStreaming(true);
+    const arch = ARCHETYPE_BY_ID[slot.archetypeId];
+    try {
+      const resp = await fetch(DRAFT_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        },
+        signal: ctrl.signal,
+        body: JSON.stringify({
+          archetypeId: slot.archetypeId,
+          archetypeName: arch.name,
+          archetypeDescription: arch.description,
+          skeleton: arch.skeleton,
+          funnelStage: slot.funnelStage,
+          ctaType: slot.ctaType,
+          pillarName: slot.pillarName,
+          workingAngle: slot.workingAngle,
+          brief: {
+            companyName: brief.companyName,
+            companyOneLiner: brief.companyOneLiner,
+            wedge: brief.wedge,
+            icpTitles: brief.icpTitles,
+            icpCompanyType: brief.icpCompanyType,
+            proofPoints: brief.proofPoints,
+            categoryPov: brief.categoryPov,
+            positioning: brief.positioning,
+          },
+          voiceTraits: profile.voiceStyle || [],
+          samplePosts: brief.samplePosts || [],
+        }),
+      });
+      if (!resp.ok || !resp.body) {
+        if (resp.status === 429) throw new Error('Rate limit hit. Try again shortly.');
+        if (resp.status === 402) throw new Error('AI credits exhausted. Add credits in workspace settings.');
+        throw new Error('Draft generation failed');
+      }
+      setStep('editing');
+      const reader = resp.body.getReader();
+      const decoder = new TextDecoder();
+      let buf = '';
+      let acc = '';
+      let done = false;
+      while (!done) {
+        const { done: d, value } = await reader.read();
+        if (d) break;
+        buf += decoder.decode(value, { stream: true });
+        let nl: number;
+        while ((nl = buf.indexOf('\n')) !== -1) {
+          let line = buf.slice(0, nl);
+          buf = buf.slice(nl + 1);
+          if (line.endsWith('\r')) line = line.slice(0, -1);
+          if (!line.startsWith('data: ')) continue;
+          const j = line.slice(6).trim();
+          if (j === '[DONE]') { done = true; break; }
+          try {
+            const p = JSON.parse(j);
+            const delta = p.choices?.[0]?.delta?.content as string | undefined;
+            if (delta) { acc += delta; setContent(acc); }
+          } catch { buf = line + '\n' + buf; break; }
+        }
+      }
+    } catch (e: any) {
+      if (e.name !== 'AbortError') {
+        toast.error(e.message || 'Could not draft post');
+        setStep('editing');
+      }
+    } finally {
+      setIsStreaming(false);
+    }
+  };
 
   useEffect(() => {
     if (!slot || !brief) return;
-    setStep('loading');
-    const t = setTimeout(() => {
-      setContent(generateDraftForSlot(slot, brief));
-      setStep('editing');
-    }, 1200);
-    return () => clearTimeout(t);
-  }, [slotId, slot, brief]);
+    runStream();
+    return () => abortRef.current?.abort();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [slotId]);
 
   if (!brief) {
     return (
@@ -73,13 +155,7 @@ const DraftPost = () => {
   const wordCount = content.trim().split(/\s+/).filter(Boolean).length;
   const hasVoice = brief.samplePosts.length > 0;
 
-  const handleRegenerate = () => {
-    setStep('loading');
-    setTimeout(() => {
-      setContent(generateDraftForSlot(slot, brief));
-      setStep('editing');
-    }, 1000);
-  };
+  const handleRegenerate = () => runStream();
 
   const handleSaveDraft = () => {
     const draftId = `draft-${Date.now()}`;
@@ -100,6 +176,7 @@ const DraftPost = () => {
     navigator.clipboard.writeText(content);
     toast.success('Copied to clipboard');
   };
+
 
   return (
     <div className="p-6 md:p-8 max-w-3xl mx-auto">
