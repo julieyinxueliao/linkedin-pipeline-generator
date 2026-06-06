@@ -527,7 +527,7 @@ const Onboarding = () => {
 
                 <div className="flex gap-3 pt-4">
                   <Button variant="ghost" className="text-primary-foreground/40" onClick={() => setOnboardingStep(3)}>Back</Button>
-                  <Button variant="linkedin" size="lg" className="flex-1 h-12 font-semibold" onClick={handleFinish}>Approve & generate calendar<ArrowRight className="h-4 w-4 ml-1" /></Button>
+                  <Button variant="linkedin" size="lg" className="flex-1 h-12 font-semibold" onClick={handleFinish}>Looks good — build my calendar<ArrowRight className="h-4 w-4 ml-1" /></Button>
                 </div>
               </>
             )}
