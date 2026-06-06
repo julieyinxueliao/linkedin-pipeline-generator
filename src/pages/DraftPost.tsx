@@ -166,6 +166,12 @@ const DraftPost = () => {
   const handleRegenerate = () => runStream();
 
   const handleSaveDraft = () => {
+    if (existingDraft) {
+      updateDraft(existingDraft.id, { content });
+      toast.success('Draft updated');
+      setStep('preview');
+      return;
+    }
     const draftId = `draft-${Date.now()}`;
     addDraft({
       id: draftId,
