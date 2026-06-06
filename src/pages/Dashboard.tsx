@@ -17,6 +17,8 @@ const Dashboard = () => {
   const calendar = useAppStore((s) => s.calendar);
   const drafts = useAppStore((s) => s.drafts);
   const setCalendar = useAppStore((s) => s.setCalendar);
+  const updateBrief = useAppStore((s) => s.updateBrief);
+
 
   useEffect(() => {
     if (brief && !calendar) setCalendar(generateCalendar(brief));
