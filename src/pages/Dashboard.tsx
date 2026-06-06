@@ -86,7 +86,7 @@ const Dashboard = () => {
       <div className="space-y-6">
         <div className="flex items-center gap-2">
           <Target className="h-4 w-4 text-linkedin" />
-          <h2 className="text-sm font-bold uppercase tracking-wider">Strategy Brief</h2>
+          <h2 className="text-sm font-bold uppercase tracking-wider">Content Plan</h2>
         </div>
 
         <Card>
