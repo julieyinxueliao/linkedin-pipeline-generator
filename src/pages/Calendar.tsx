@@ -19,6 +19,11 @@ const funnelColor: Record<FunnelStage, string> = {
   MOFU: 'bg-warning/20 text-warning',
   BOFU: 'bg-success/20 text-success',
 };
+const funnelLabel: Record<FunnelStage, string> = {
+  TOFU: 'Get attention',
+  MOFU: 'Build trust',
+  BOFU: 'Drive action',
+};
 
 const CalendarPage = () => {
   const navigate = useNavigate();
