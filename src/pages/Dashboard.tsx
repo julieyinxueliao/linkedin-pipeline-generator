@@ -153,33 +153,38 @@ const Dashboard = () => {
           </Card>
         </div>
 
-        {brief.povBank && brief.povBank.length > 0 && (
-          <Card>
-            <CardContent className="p-5">
-              <div className="flex items-center gap-2 mb-4">
-                <Sparkles className="h-3.5 w-3.5 text-linkedin" />
-                <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Hot takes you can post ({brief.povBank.length})</p>
-              </div>
-              <div className="space-y-2">
-                {brief.povBank.map((p, idx) => (
-                  <div key={p.id} className="flex items-start gap-3 p-3 rounded-lg border border-border bg-muted/30">
-                    <span className="text-[10px] text-linkedin font-bold mt-0.5 w-5 shrink-0">#{idx + 1}</span>
-                    <div className="flex-1 min-w-0">
-                      <EditableField
-                        fieldLabel={`Hot take #${idx + 1}`}
-                        value={p.text}
-                        context={briefContext}
-                        multiline
-                        onSave={(v) => updateBrief({ povBank: brief.povBank.map((x) => x.id === p.id ? { ...x, text: v, edited: true } : x) })}
-                        displayClassName="text-sm text-foreground/85 leading-snug"
-                      />
+        {/* Mix Check (moved from Calendar) */}
+        <Card>
+          <CardContent className="p-5">
+            <div className="flex items-center gap-2 mb-4">
+              <Sparkles className="h-3.5 w-3.5 text-linkedin" />
+              <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Mix check — how balanced your plan is</p>
+            </div>
+            {(() => {
+              const mix = computeMixCheck(calendar, brief.preset);
+              return (
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div>
+                    <p className="text-xs font-semibold text-muted-foreground mb-3">Funnel stage</p>
+                    <div className="space-y-2">
+                      {(['TOFU', 'MOFU', 'BOFU'] as FunnelStage[]).map((k) => (
+                        <MixRow key={k} label={k} target={mix.funnel.target[k]} actual={mix.funnel.actual[k]} />
+                      ))}
                     </div>
                   </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        )}
+                  <div>
+                    <p className="text-xs font-semibold text-muted-foreground mb-3">CTA cadence</p>
+                    <div className="space-y-2">
+                      {(['none', 'soft', 'comment-gated', 'hard'] as CtaType[]).map((k) => (
+                        <MixRow key={k} label={CTA_LABEL[k]} target={mix.cta.target[k]} actual={mix.cta.actual[k]} />
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
+          </CardContent>
+        </Card>
 
         {brief.pillars && brief.pillars.length > 0 && (
           <Card>
