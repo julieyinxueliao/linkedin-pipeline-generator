@@ -1,17 +1,18 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAppStore } from '@/lib/store';
-import { generateDraftForSlot, METRIC_PLACEHOLDER } from '@/lib/drafting';
+import { METRIC_PLACEHOLDER } from '@/lib/drafting';
 import { ARCHETYPE_BY_ID, CTA_LABEL } from '@/lib/principles';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, RotateCcw, Check, Copy, ArrowRight, AlertCircle, AlertTriangle } from 'lucide-react';
+import { Loader2, RotateCcw, Check, Copy, ArrowRight, AlertCircle, AlertTriangle, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 import { SEO } from '@/components/SEO';
 
 type Step = 'loading' | 'editing' | 'preview';
+
 
 const DraftPost = () => {
   const [params] = useSearchParams();
