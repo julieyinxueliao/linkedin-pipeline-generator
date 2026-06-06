@@ -84,37 +84,21 @@ const Dashboard = () => {
         </div>
 
         <div>
-          {/* Content Balance (was: Mix Check) */}
+          {/* Content Balance — inline draggable sliders */}
           <Card>
             <CardContent className="p-5">
               {(() => {
                 const mix = computeMixCheck(calendar, brief.preset);
                 const target = brief.customMix || mix.funnel.target;
                 return (
-                  <>
-                    <div className="flex items-center justify-between gap-2 mb-4">
-                      <div className="flex items-center gap-2">
-                        <Sparkles className="h-3.5 w-3.5 text-linkedin" />
-                        <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Content balance — how your posts are split</p>
-                      </div>
-                      <MixEditor
-                        current={target}
-                        actual={mix.funnel.actual}
-                        preset={mix.funnel.target}
-                        onSave={(next) => updateBrief({ customMix: next })}
-                        onReset={() => updateBrief({ customMix: undefined })}
-                        isCustom={!!brief.customMix}
-                      />
-                    </div>
-                    <div>
-                      <p className="text-xs font-semibold text-muted-foreground mb-3">Post purpose</p>
-                      <div className="space-y-2">
-                        {(['TOFU', 'MOFU', 'BOFU'] as FunnelStage[]).map((k) => (
-                          <MixRow key={k} label={FUNNEL_STAGE_LABELS[k]} target={target[k]} actual={mix.funnel.actual[k]} />
-                        ))}
-                      </div>
-                    </div>
-                  </>
+                  <InlineMixEditor
+                    current={target}
+                    actual={mix.funnel.actual}
+                    preset={mix.funnel.target}
+                    onSave={(next) => updateBrief({ customMix: next })}
+                    onReset={() => updateBrief({ customMix: undefined })}
+                    isCustom={!!brief.customMix}
+                  />
                 );
               })()}
             </CardContent>
