@@ -117,6 +117,11 @@ const DraftPost = () => {
 
   useEffect(() => {
     if (!slot || !brief) return;
+    if (existingDraft) {
+      setContent(existingDraft.content);
+      setStep('preview');
+      return;
+    }
     runStream();
     return () => abortRef.current?.abort();
     // eslint-disable-next-line react-hooks/exhaustive-deps
