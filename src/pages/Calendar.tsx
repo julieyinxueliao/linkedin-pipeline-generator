@@ -20,9 +20,9 @@ const funnelColor: Record<FunnelStage, string> = {
   BOFU: 'bg-success/20 text-success',
 };
 const funnelLabel: Record<FunnelStage, string> = {
-  TOFU: 'Get attention',
-  MOFU: 'Build trust',
-  BOFU: 'Drive action',
+  TOFU: 'Maximize reach',
+  MOFU: 'Build credibility',
+  BOFU: 'Drive conversions',
 };
 
 const CalendarPage = () => {
@@ -75,7 +75,7 @@ const CalendarPage = () => {
     <div className="p-6 md:p-8 max-w-6xl mx-auto">
       <SEO
         title="Calendar — your LinkedIn content plan | Brand Builder"
-        description="Review your 4-week LinkedIn content calendar, draft posts, and track post purpose balance across attention, trust, and action."
+        description="Review your 4-week LinkedIn content calendar, draft posts, and track post purpose balance across reach, credibility, and conversions."
         path="/calendar"
         noindex
       />

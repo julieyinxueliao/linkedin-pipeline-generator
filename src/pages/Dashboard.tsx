@@ -162,7 +162,7 @@ const Dashboard = () => {
             </div>
             {(() => {
               const mix = computeMixCheck(calendar, brief.preset);
-              const funnelLabel: Record<FunnelStage, string> = { TOFU: 'Get attention', MOFU: 'Build trust', BOFU: 'Drive action' };
+              const funnelLabel: Record<FunnelStage, string> = { TOFU: 'Maximize reach', MOFU: 'Build credibility', BOFU: 'Drive conversions' };
               return (
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
