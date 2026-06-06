@@ -162,18 +162,19 @@ const Dashboard = () => {
             </div>
             {(() => {
               const mix = computeMixCheck(calendar, brief.preset);
+              const funnelLabel: Record<FunnelStage, string> = { TOFU: 'Get attention', MOFU: 'Build trust', BOFU: 'Drive action' };
               return (
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
-                    <p className="text-xs font-semibold text-muted-foreground mb-3">Funnel stage</p>
+                    <p className="text-xs font-semibold text-muted-foreground mb-3">Post purpose</p>
                     <div className="space-y-2">
                       {(['TOFU', 'MOFU', 'BOFU'] as FunnelStage[]).map((k) => (
-                        <MixRow key={k} label={k} target={mix.funnel.target[k]} actual={mix.funnel.actual[k]} />
+                        <MixRow key={k} label={funnelLabel[k]} target={mix.funnel.target[k]} actual={mix.funnel.actual[k]} />
                       ))}
                     </div>
                   </div>
                   <div>
-                    <p className="text-xs font-semibold text-muted-foreground mb-3">CTA cadence</p>
+                    <p className="text-xs font-semibold text-muted-foreground mb-3">How direct you ask</p>
                     <div className="space-y-2">
                       {(['none', 'soft', 'comment-gated', 'hard'] as CtaType[]).map((k) => (
                         <MixRow key={k} label={CTA_LABEL[k]} target={mix.cta.target[k]} actual={mix.cta.actual[k]} />
