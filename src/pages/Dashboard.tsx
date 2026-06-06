@@ -182,7 +182,7 @@ const Dashboard = () => {
         {brief.pillars && brief.pillars.length > 0 && (
           <Card>
             <CardContent className="p-5">
-              <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-4">Content Pillars</p>
+              <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-4">Topics you'll post about</p>
               <div className="grid md:grid-cols-2 gap-2">
                 {brief.pillars.map((p) => (
                   <div key={p.id} className="p-3 rounded-lg border border-border bg-muted/30 space-y-2">
