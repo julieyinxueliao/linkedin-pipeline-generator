@@ -180,7 +180,7 @@ const Dashboard = () => {
                       </div>
                       <div className="border-t border-border bg-background/40 p-4 space-y-2">
                         <div className="flex items-center justify-between">
-                          <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">POV bank</p>
+                          <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Angles</p>
                           <span className="text-[10px] text-muted-foreground">{pillarPovs.length} sharp takes</span>
                         </div>
                         {pillarPovs.length === 0 ? (
