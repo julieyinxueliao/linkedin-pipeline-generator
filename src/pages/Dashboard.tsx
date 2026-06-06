@@ -177,17 +177,6 @@ const Dashboard = () => {
                             />
                           </div>
                         </div>
-                        <div>
-                          <p className="text-[10px] uppercase text-muted-foreground mb-1">Example angles</p>
-                          <EditableField
-                            fieldLabel={`Example angles for topic "${p.name}" (separate with " · ")`}
-                            value={p.exampleAngles.join(' · ')}
-                            context={briefContext}
-                            multiline
-                            onSave={(v) => updateBrief({ pillars: brief.pillars.map((x) => x.id === p.id ? { ...x, exampleAngles: v.split(/\s*·\s*|\n+/).map((s) => s.trim()).filter(Boolean) } : x) })}
-                            displayClassName="text-xs text-muted-foreground"
-                          />
-                        </div>
                       </div>
                       <div className="border-t border-border bg-background/40 p-4 space-y-2">
                         <div className="flex items-center justify-between">
