@@ -56,9 +56,13 @@ const Onboarding = () => {
   const [proofPointsRaw, setProofPointsRaw] = useState('');
   const [pullWarning, setPullWarning] = useState<string | null>(null);
 
-  // Step 2 — Connect document sources
+  // Step 2 — Knowledge base (separate from step 1 company docs)
   const [connectedSources, setConnectedSources] = useState<ConnectedSource[]>([]);
   const [connectingSourceId, setConnectingSourceId] = useState<string | null>(null);
+  const [kbFileNames, setKbFileNames] = useState<string[]>([]);
+  const [kbContext, setKbContext] = useState('');
+  const [kbLinks, setKbLinks] = useState('');
+  const [kbDragging, setKbDragging] = useState(false);
 
   // Step 3 — Voice
   const [voiceOption, setVoiceOption] = useState<'write' | 'upload' | null>(null);
@@ -143,6 +147,31 @@ const Onboarding = () => {
     }
   };
 
+  const handleKbFiles = async (files: FileList | null) => {
+    if (!files || !files.length) return;
+    const accepted = ['text/plain', 'text/markdown'];
+    const additions: string[] = [];
+    const names: string[] = [];
+    for (const f of Array.from(files)) {
+      const ok = accepted.includes(f.type) || /\.(txt|md|markdown)$/i.test(f.name);
+      if (!ok) {
+        toast.error(`${f.name}: only .txt and .md files can be parsed in-browser. Paste a link instead for PDFs / decks.`);
+        continue;
+      }
+      try {
+        const text = await f.text();
+        additions.push(`--- ${f.name} ---\n${text}`);
+        names.push(f.name);
+      } catch {
+        toast.error(`Could not read ${f.name}`);
+      }
+    }
+    if (additions.length) {
+      setKbContext((prev) => (prev ? prev + '\n\n' : '') + additions.join('\n\n'));
+      setKbFileNames((prev) => [...prev, ...names]);
+    }
+  };
+
   const handleConnectSource = (s: typeof documentSources[0]) => {
     setConnectingSourceId(s.id);
     setTimeout(() => {
@@ -192,7 +221,12 @@ const Onboarding = () => {
       setBriefLoading(true);
       setBriefError(null);
       try {
-        const payload = { ...briefInputs, voiceTraits: voiceTraits ?? [], additionalContext };
+        const kbBlock = [
+          kbLinks.trim() ? `--- Knowledge base links ---\n${kbLinks.trim()}` : '',
+          kbContext.trim() ? `--- Knowledge base files ---\n${kbContext.trim()}` : '',
+        ].filter(Boolean).join('\n\n');
+        const mergedContext = [additionalContext, kbBlock].filter(Boolean).join('\n\n');
+        const payload = { ...briefInputs, voiceTraits: voiceTraits ?? [], additionalContext: mergedContext };
         const invokePromise = supabase.functions.invoke('generate-strategy-brief', { body: payload });
         const abortPromise = new Promise<never>((_, reject) => {
           timeoutCtrl.signal.addEventListener('abort', () =>
@@ -399,45 +433,72 @@ const Onboarding = () => {
           </div>
         )}
 
-        {/* Step 2 — Connect document sources */}
+        {/* Step 2 — Knowledge base for tailored content */}
         {step === 2 && (
           <div className="animate-fade-in space-y-8">
-            <Header step={3} title="Connect your docs" subtitle="We pull from your real materials so suggestions feel like you — not generic AI fluff." />
-            {connectedSources.length > 0 && (
-              <div className="space-y-2">
-                <p className="text-xs font-semibold text-primary-foreground/40 uppercase tracking-wider">Connected</p>
-                {connectedSources.map((s) => {
-                  const Source = documentSources.find((d) => d.id === s.id);
-                  const Icon = Source?.Icon ?? FolderOpen;
-                  return (
-                    <div key={s.id} className="flex items-center gap-3 p-4 rounded-xl border border-success/20 bg-success/5">
-                      <Icon className="h-5 w-5 text-success" />
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-semibold text-primary-foreground">{s.name}</p>
-                        <p className="text-xs text-primary-foreground/40">{s.documentCount} documents found</p>
-                      </div>
-                      <Check className="h-4 w-4 text-success" />
-                      <button onClick={() => setConnectedSources((prev) => prev.filter((x) => x.id !== s.id))} className="text-xs text-primary-foreground/30 hover:text-primary-foreground/60"><X className="h-3.5 w-3.5" /></button>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-            <div className="space-y-2">
-              {documentSources.filter((s) => !connectedSources.some((c) => c.id === s.id)).map((s) => (
-                <button key={s.id} onClick={() => handleConnectSource(s)} disabled={connectingSourceId === s.id} className={cn('w-full flex items-center gap-3 p-4 rounded-xl border transition-all text-left group', connectingSourceId === s.id ? 'border-linkedin/30 bg-linkedin/5' : 'border-primary-foreground/8 hover:border-linkedin/30 hover:bg-linkedin/[0.03]')}>
-                  <s.Icon className="h-5 w-5 text-primary-foreground/60" />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-primary-foreground">{s.name}</p>
-                    <p className="text-xs text-primary-foreground/30">{s.desc}</p>
-                  </div>
-                  {connectingSourceId === s.id ? <div className="h-5 w-5 rounded-full border-2 border-linkedin border-t-transparent animate-spin" /> : <Link2 className="h-4 w-4 text-primary-foreground/20 group-hover:text-linkedin" />}
-                </button>
-              ))}
-            </div>
-            <Nav back={() => setOnboardingStep(1)} next={() => setOnboardingStep(3)} nextLabel={connectedSources.length ? `Continue with ${connectedSources.length}` : 'Skip for now'} />
+            <Header
+              step={3}
+              title="Add your knowledge base"
+              subtitle="Whitepapers, meeting notes, business plans, pitch decks — anything you want us to mine for tailored content. Separate from the company docs you uploaded earlier."
+            />
+
+            <Field label="Paste links to docs, articles, or shared files">
+              <Textarea
+                value={kbLinks}
+                onChange={(e) => setKbLinks(e.target.value)}
+                placeholder={"One link per line — Google Doc, Notion page, blog post, PDF URL…"}
+                rows={4}
+                className={cn(inputCls, 'resize-none leading-relaxed')}
+              />
+            </Field>
+
+            <Field label="Upload knowledge base files">
+              <label
+                onDragOver={(e) => { e.preventDefault(); setKbDragging(true); }}
+                onDragLeave={() => setKbDragging(false)}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  setKbDragging(false);
+                  handleKbFiles(e.dataTransfer.files);
+                }}
+                className={cn(
+                  'flex flex-col items-center justify-center gap-3 px-6 py-10 rounded-xl border-2 border-dashed cursor-pointer transition-all text-center',
+                  kbDragging
+                    ? 'border-linkedin bg-linkedin/[0.06]'
+                    : 'border-primary-foreground/15 hover:border-linkedin/40 hover:bg-linkedin/[0.03]'
+                )}
+              >
+                <div className="h-12 w-12 rounded-xl bg-linkedin/10 flex items-center justify-center">
+                  <UploadCloud className="h-6 w-6 text-linkedin" />
+                </div>
+                <div>
+                  <div className="font-semibold text-primary-foreground text-sm">Drop files here or click to upload</div>
+                  <p className="text-xs text-primary-foreground/40 mt-1">.txt or .md files · For PDFs/decks, paste a shareable link above</p>
+                </div>
+                <input
+                  type="file"
+                  multiple
+                  accept=".txt,.md,.markdown,text/plain,text/markdown"
+                  className="hidden"
+                  onChange={(e) => handleKbFiles(e.target.files)}
+                />
+              </label>
+              {kbFileNames.length > 0 && (
+                <p className="mt-2 text-[11px] text-primary-foreground/50">
+                  {kbFileNames.length} file{kbFileNames.length === 1 ? '' : 's'} attached: {kbFileNames.join(', ')}
+                </p>
+              )}
+            </Field>
+
+            <Nav
+              back={() => setOnboardingStep(1)}
+              next={() => setOnboardingStep(3)}
+              nextLabel={(kbFileNames.length || kbLinks.trim()) ? 'Continue' : 'Skip for now'}
+            />
           </div>
         )}
+
+
 
         {/* Step 3 — Voice */}
         {step === 3 && (
