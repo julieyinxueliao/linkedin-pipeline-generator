@@ -5,19 +5,19 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-semibold ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-40 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 cursor-pointer",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-[10px] text-sm font-bold ring-offset-background transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-40 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 cursor-pointer",
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90",
+        default: "bg-primary text-primary-foreground hover:bg-primary/90 hover:-translate-y-px",
         destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
-        outline: "border border-input bg-background hover:bg-muted text-foreground",
+        outline: "border border-input bg-background hover:bg-muted text-foreground hover:-translate-y-px",
         secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-muted text-foreground",
-        link: "text-primary underline-offset-4 hover:underline",
-        linkedin: "bg-linkedin text-linkedin-foreground hover:brightness-110 shadow-glow active:scale-[0.98]",
-        hero: "bg-linkedin text-linkedin-foreground hover:brightness-110 text-base font-bold shadow-glow-lg active:scale-[0.98]",
-        heroOutline: "border border-primary-foreground/15 text-primary-foreground/80 bg-transparent hover:bg-primary-foreground/5 text-base font-semibold",
+        link: "text-linkedin underline-offset-4 hover:underline",
+        linkedin: "bg-linkedin text-linkedin-foreground hover:brightness-110 hover:-translate-y-px shadow-cta active:scale-[0.98]",
+        hero: "bg-linkedin text-linkedin-foreground hover:brightness-110 hover:-translate-y-px text-base shadow-cta active:scale-[0.98]",
+        heroOutline: "border border-primary-foreground/15 text-primary-foreground/80 bg-transparent hover:bg-primary-foreground/5 text-base",
       },
       size: {
         default: "h-10 px-4 py-2",
