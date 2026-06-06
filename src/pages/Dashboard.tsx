@@ -157,36 +157,66 @@ const Dashboard = () => {
           <Card>
             <CardContent className="p-5">
               <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-4">Topics you'll post about</p>
-              <div className="grid md:grid-cols-2 gap-2">
-                {brief.pillars.map((p) => (
-                  <div key={p.id} className="p-3 rounded-lg border border-border bg-muted/30 space-y-2">
-                    <div className="flex items-center gap-2">
-                      <Badge variant="secondary" className="text-[10px]">{p.funnelTilt}</Badge>
+              <div className="space-y-3">
+                {brief.pillars.map((p, idx) => {
+                  const pillarCount = brief.pillars.length;
+                  const pillarPovs = (brief.povBank || []).filter((_, i) => i % pillarCount === idx);
+                  return (
+                    <div key={p.id} className="rounded-lg border border-border bg-muted/30 overflow-hidden">
+                      <div className="p-4 space-y-3">
+                        <div className="flex items-start gap-3">
+                          <Badge variant="secondary" className="text-[10px] mt-0.5 shrink-0">{p.funnelTilt}</Badge>
+                          <div className="flex-1 min-w-0">
+                            <EditableField
+                              fieldLabel={`Topic name (${p.funnelTilt})`}
+                              value={p.name}
+                              context={briefContext}
+                              multiline={false}
+                              onSave={(v) => updateBrief({ pillars: brief.pillars.map((x) => x.id === p.id ? { ...x, name: v } : x) })}
+                              displayClassName="text-sm font-semibold text-foreground"
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <p className="text-[10px] uppercase text-muted-foreground mb-1">Example angles</p>
+                          <EditableField
+                            fieldLabel={`Example angles for topic "${p.name}" (separate with " · ")`}
+                            value={p.exampleAngles.join(' · ')}
+                            context={briefContext}
+                            multiline
+                            onSave={(v) => updateBrief({ pillars: brief.pillars.map((x) => x.id === p.id ? { ...x, exampleAngles: v.split(/\s*·\s*|\n+/).map((s) => s.trim()).filter(Boolean) } : x) })}
+                            displayClassName="text-xs text-muted-foreground"
+                          />
+                        </div>
+                      </div>
+                      <div className="border-t border-border bg-background/40 p-4 space-y-2">
+                        <div className="flex items-center justify-between">
+                          <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">POV bank</p>
+                          <span className="text-[10px] text-muted-foreground">{pillarPovs.length} sharp takes</span>
+                        </div>
+                        {pillarPovs.length === 0 ? (
+                          <p className="text-xs text-muted-foreground italic">No POVs yet for this topic.</p>
+                        ) : (
+                          <ul className="space-y-1.5">
+                            {pillarPovs.map((pov) => (
+                              <li key={pov.id} className="flex items-start gap-2 text-xs text-foreground/80 leading-relaxed">
+                                <span className="text-linkedin mt-1 shrink-0">›</span>
+                                <EditableField
+                                  fieldLabel="POV"
+                                  value={pov.text}
+                                  context={briefContext}
+                                  multiline
+                                  onSave={(v) => updateBrief({ povBank: (brief.povBank || []).map((x) => x.id === pov.id ? { ...x, text: v, edited: true } : x) })}
+                                  displayClassName="text-xs text-foreground/80 leading-relaxed"
+                                />
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-[10px] uppercase text-muted-foreground mb-1">Topic name</p>
-                      <EditableField
-                        fieldLabel={`Topic name (${p.funnelTilt})`}
-                        value={p.name}
-                        context={briefContext}
-                        multiline={false}
-                        onSave={(v) => updateBrief({ pillars: brief.pillars.map((x) => x.id === p.id ? { ...x, name: v } : x) })}
-                        displayClassName="text-sm font-semibold text-foreground"
-                      />
-                    </div>
-                    <div>
-                      <p className="text-[10px] uppercase text-muted-foreground mb-1">Example angles</p>
-                      <EditableField
-                        fieldLabel={`Example angles for topic "${p.name}" (separate with " · ")`}
-                        value={p.exampleAngles.join(' · ')}
-                        context={briefContext}
-                        multiline
-                        onSave={(v) => updateBrief({ pillars: brief.pillars.map((x) => x.id === p.id ? { ...x, exampleAngles: v.split(/\s*·\s*|\n+/).map((s) => s.trim()).filter(Boolean) } : x) })}
-                        displayClassName="text-xs text-muted-foreground"
-                      />
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </CardContent>
           </Card>
