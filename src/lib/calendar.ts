@@ -102,15 +102,18 @@ export function generateCalendar(
   const preset: Preset = brief.preset;
   const rotation = ARCHETYPE_ROTATION[preset];
 
+  // Posting rules: never post on weekends, Monday morning, or Friday afternoon.
+  // Allowed AM slots (08:30): Tue, Wed, Thu, Fri. Allowed PM slot (15:30): Mon.
   const dayPattern = cadencePerWeek === 5
-    ? [1, 2, 3, 4, 5]
+    ? [1, 2, 3, 4, 5]   // Mon (PM), Tue, Wed, Thu, Fri (AM)
     : cadencePerWeek === 4
-    ? [1, 2, 4, 5]
+    ? [1, 2, 4, 5]      // Mon (PM), Tue, Thu, Fri (AM)
     : cadencePerWeek === 3
-    ? [1, 3, 5]
-    : [1, 5];
+    ? [2, 3, 4]         // Tue, Wed, Thu
+    : [2, 4];           // Tue, Thu
 
-  const timeForDay = (dow: number) => (dow === 5 ? '15:30' : '08:30');
+  // Mon -> afternoon (avoid Mon AM). Fri -> morning (avoid Fri PM). Others -> morning.
+  const timeForDay = (dow: number) => (dow === 1 ? '15:30' : '08:30');
 
   let cursor = opts.startDate ? new Date(opts.startDate) : new Date();
   while (cursor.getDay() !== 1) cursor = nextBusinessDay(cursor);
