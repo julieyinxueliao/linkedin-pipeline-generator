@@ -405,28 +405,28 @@ const Onboarding = () => {
                 <div className="bg-primary-foreground/[0.03] border border-primary-foreground/8 rounded-xl p-5 space-y-3 text-left">
                   {voiceTraits.map((trait, i) => (<div key={i} className="flex items-center gap-3"><div className="h-1.5 w-1.5 rounded-full bg-linkedin shrink-0" /><span className="text-sm text-primary-foreground/70">{trait}</span></div>))}
                 </div>
-                <Nav back={() => { setVoiceReady(false); setVoiceOption(null); setVoiceTraits([]); }} next={() => setOnboardingStep(4)} nextLabel="Build my brief" />
+                <Nav back={() => { setVoiceReady(false); setVoiceOption(null); setVoiceTraits([]); }} next={() => setOnboardingStep(4)} nextLabel="Build my plan" />
               </div>
             ) : voiceReady && voiceSkipped ? (
               <div className="text-center space-y-8">
                 <div className="h-16 w-16 rounded-2xl bg-warning/15 flex items-center justify-center mx-auto"><AlertTriangle className="h-8 w-8 text-warning" /></div>
-                <Header step={4} title="Voice calibration skipped" subtitle="We can't generate a voice profile without samples. Drafts will use generic phrasing until you add samples in Settings." center />
+                <Header step={4} title="Voice setup skipped" subtitle="Without writing samples, we can't match your voice. Drafts will sound generic until you add samples in Settings." center />
                 <Nav back={() => { setVoiceReady(false); setVoiceSkipped(false); setVoiceOption(null); }} next={() => setOnboardingStep(4)} nextLabel="Continue without voice" />
               </div>
             ) : !voiceOption ? (
               <>
-                <Header step={4} title="Capture your voice" subtitle="So every post sounds like you — not a chatbot." />
+                <Header step={4} title="Teach us your voice" subtitle="So every post sounds like you wrote it — not a chatbot." />
                 <div className="grid grid-cols-2 gap-3">
                   <button onClick={() => setVoiceOption('write')} className="p-6 rounded-xl border border-primary-foreground/8 hover:border-linkedin/30 hover:bg-linkedin/[0.03] transition-all text-center space-y-4 group">
                     <div className="h-12 w-12 rounded-xl bg-linkedin/10 flex items-center justify-center mx-auto"><FileText className="h-6 w-6 text-linkedin" /></div>
-                    <div><div className="font-semibold text-primary-foreground text-sm">Write 2 posts</div><p className="text-xs text-primary-foreground/30 mt-1">On a wedge-relevant prompt</p></div>
+                    <div><div className="font-semibold text-primary-foreground text-sm">Answer 2 prompts</div><p className="text-xs text-primary-foreground/30 mt-1">Quick written replies</p></div>
                   </button>
                   <button onClick={() => setVoiceOption('upload')} className="p-6 rounded-xl border border-primary-foreground/8 hover:border-linkedin/30 hover:bg-linkedin/[0.03] transition-all text-center space-y-4 group">
                     <div className="h-12 w-12 rounded-xl bg-linkedin/10 flex items-center justify-center mx-auto"><FileUp className="h-6 w-6 text-linkedin" /></div>
-                    <div><div className="font-semibold text-primary-foreground text-sm">Paste past posts</div><p className="text-xs text-primary-foreground/30 mt-1">We extract your style</p></div>
+                    <div><div className="font-semibold text-primary-foreground text-sm">Paste old posts</div><p className="text-xs text-primary-foreground/30 mt-1">We learn your style</p></div>
                   </button>
                 </div>
-                <Nav back={() => setOnboardingStep(2)} next={handleSkipVoice} nextLabel="Skip — calibrate later" />
+                <Nav back={() => setOnboardingStep(2)} next={handleSkipVoice} nextLabel="Skip — set up later" />
               </>
             ) : voiceOption === 'write' ? (
               <div className="space-y-6">
