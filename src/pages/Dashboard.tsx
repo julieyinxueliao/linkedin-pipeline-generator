@@ -6,7 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { PRESET_MIX, type FunnelStage } from '@/lib/principles';
 import { generateCalendar, computeMixCheck } from '@/lib/calendar';
-import { PenSquare, CalendarDays, FileText, AlertCircle, Sparkles, Target, Upload, Link2, Plus } from 'lucide-react';
+import { CalendarDays, AlertCircle, Sparkles, Target, Upload, Link2, Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -17,7 +17,6 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const brief = useAppStore((s) => s.brief);
   const calendar = useAppStore((s) => s.calendar);
-  const drafts = useAppStore((s) => s.drafts);
   const setCalendar = useAppStore((s) => s.setCalendar);
   const updateBrief = useAppStore((s) => s.updateBrief);
 
@@ -44,8 +43,6 @@ const Dashboard = () => {
   }
 
   const presetMeta = PRESET_MIX[brief.preset];
-  const draftedCount = drafts.filter((d) => d.status === 'draft').length;
-  const publishedCount = drafts.filter((d) => d.status === 'published').length;
 
   const briefContext = useMemo(() => {
     if (!brief) return '';
@@ -61,28 +58,21 @@ const Dashboard = () => {
   return (
     <div className="p-6 md:p-8 max-w-6xl mx-auto">
       <SEO
-        title="Dashboard — your LinkedIn strategy brief | Brand Builder"
-        description="Your tailored LinkedIn strategy brief, key metrics, content pillars, and POV bank — all in one place."
+        title="Strategy & Plans — your LinkedIn strategy brief | Brand Builder"
+        description="Your tailored LinkedIn strategy, content pillars, mix check, and sources — all in one place."
         path="/dashboard"
         noindex
       />
-      <div className="flex items-start justify-between mb-6 gap-4 flex-wrap">
+      <div className="flex items-start justify-between mb-8 gap-4 flex-wrap">
         <div>
-          <h1 className="text-3xl font-black text-foreground tracking-tight">{brief.companyName || 'Strategy'} · {presetMeta.label}</h1>
-          <p className="text-muted-foreground text-sm mt-1">Everything that shapes your posts, in one place.</p>
+          <h1 className="text-3xl font-black text-foreground tracking-tight">Strategy & Plans</h1>
+          <p className="text-muted-foreground text-sm mt-1">{brief.companyName || 'Strategy'} · {presetMeta.label} — everything that shapes your posts.</p>
         </div>
         <Button variant="linkedin" size="sm" onClick={() => navigate('/calendar')}>
           <CalendarDays className="h-4 w-4 mr-1.5" />Open calendar
         </Button>
       </div>
 
-      {/* Metrics */}
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-3">
-        <StatCard label="Slots planned" value={calendar.slots.length} icon={CalendarDays} />
-        <StatCard label="In draft" value={draftedCount} icon={FileText} />
-        <StatCard label="Published" value={publishedCount} icon={PenSquare} />
-      </div>
-      <p className="text-[11px] text-muted-foreground mb-8">"Published" updates when you mark a draft as published — we don't connect to your LinkedIn account.</p>
 
       {/* STRATEGY BRIEF */}
       <div className="space-y-6">
