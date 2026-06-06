@@ -292,11 +292,11 @@ const Onboarding = () => {
                 </div>
               </Field>
 
-              <Field label="Source materials (pitch deck, business plan, company doc)">
+              <Field label="Company docs (pitch deck, business plan, one-pager)">
                 <Textarea
                   value={additionalContext}
                   onChange={(e) => setAdditionalContext(e.target.value)}
-                  placeholder="Paste content from your pitch deck, business plan, one-pager, or any internal doc that describes your company, ICP, and proof points."
+                  placeholder="Paste anything that explains what you do, who you sell to, and your customer wins — pitch deck, business plan, one-pager, internal doc."
                   rows={6}
                   className={cn(inputCls, 'resize-none leading-relaxed')}
                 />
