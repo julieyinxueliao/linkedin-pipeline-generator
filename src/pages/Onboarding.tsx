@@ -353,7 +353,7 @@ const Onboarding = () => {
         {/* Step 2 — Connect document sources */}
         {step === 2 && (
           <div className="animate-fade-in space-y-8">
-            <Header step={3} title="Connect your content" subtitle="We mine your real materials so suggestions are not generic." />
+            <Header step={3} title="Connect your docs" subtitle="We pull from your real materials so suggestions feel like you — not generic AI fluff." />
             {connectedSources.length > 0 && (
               <div className="space-y-2">
                 <p className="text-xs font-semibold text-primary-foreground/40 uppercase tracking-wider">Connected</p>
