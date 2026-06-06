@@ -8,7 +8,7 @@ import { generateCalendar, computeMixCheck } from '@/lib/calendar';
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
-import { PenSquare, AlertCircle, CheckCircle2, RotateCcw, Sparkles, ThumbsUp } from 'lucide-react';
+import { PenSquare, AlertCircle, CheckCircle2, RotateCcw, Sparkles, Globe } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
