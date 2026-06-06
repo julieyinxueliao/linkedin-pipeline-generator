@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { PRESET_MIX } from '@/lib/principles';
 import { generateCalendar } from '@/lib/calendar';
-import { PenSquare, CalendarDays, FileText, CheckCircle2, AlertCircle, Sparkles, Target } from 'lucide-react';
+import { PenSquare, CalendarDays, FileText, AlertCircle, Sparkles, Target } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { SEO } from '@/components/SEO';
@@ -61,11 +61,10 @@ const Dashboard = () => {
       </div>
 
       {/* Metrics */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-3">
         <StatCard label="Slots planned" value={calendar.slots.length} icon={CalendarDays} />
         <StatCard label="In draft" value={draftedCount} icon={FileText} />
         <StatCard label="Published" value={publishedCount} icon={PenSquare} />
-        <StatCard label="Calendar" value={calendar.approvedAt ? 'Approved' : 'Pending'} icon={CheckCircle2} small />
       </div>
       <p className="text-[11px] text-muted-foreground mb-8">Published is tracked manually — mark a draft as published once you post it on LinkedIn. We don't read your LinkedIn account.</p>
 
