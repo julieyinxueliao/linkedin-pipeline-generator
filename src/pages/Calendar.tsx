@@ -156,7 +156,7 @@ const CalendarPage = () => {
                       <div className="flex flex-col gap-1.5 shrink-0">
                         <Button
                           size="sm"
-                          variant={slot.status === 'drafted' || slot.status === 'approved' ? 'outline' : 'linkedin'}
+                          variant={slot.status === 'drafted' || slot.status === 'approved' || slot.status === 'published' ? 'outline' : 'linkedin'}
                           disabled={!calendar.approvedAt}
                           onClick={() => navigate(`/draft?slot=${slot.id}`)}
                         >
@@ -168,17 +168,17 @@ const CalendarPage = () => {
                             size="sm"
                             variant="linkedin"
                             onClick={() => {
-                              updateSlot(slot.id, { status: 'approved' });
-                              if (slot.draftId) updateDraft(slot.draftId, { status: 'approved' });
-                              toast.success('Draft approved');
+                              updateSlot(slot.id, { status: 'published' });
+                              if (slot.draftId) updateDraft(slot.draftId, { status: 'published' });
+                              toast.success('Marked as published');
                             }}
                           >
-                            <ThumbsUp className="h-3.5 w-3.5 mr-1.5" />Approve
+                            <Globe className="h-3.5 w-3.5 mr-1.5" />Mark as published
                           </Button>
                         )}
-                        {slot.status === 'approved' && (
+                        {(slot.status === 'approved' || slot.status === 'published') && (
                           <Badge className="bg-success/15 text-success border-success/30 justify-center h-7 text-[10px]">
-                            <CheckCircle2 className="h-3 w-3 mr-1" />Approved
+                            <CheckCircle2 className="h-3 w-3 mr-1" />Published
                           </Badge>
                         )}
                       </div>

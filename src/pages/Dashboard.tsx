@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { PRESET_MIX } from '@/lib/principles';
 import { generateCalendar } from '@/lib/calendar';
-import { PenSquare, CalendarDays, FileText, CheckCircle2, AlertCircle, Sparkles, Target, ThumbsUp } from 'lucide-react';
+import { PenSquare, CalendarDays, FileText, CheckCircle2, AlertCircle, Sparkles, Target } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { SEO } from '@/components/SEO';
@@ -40,7 +40,6 @@ const Dashboard = () => {
 
   const presetMeta = PRESET_MIX[brief.preset];
   const draftedCount = drafts.filter((d) => d.status === 'draft').length;
-  const approvedCount = drafts.filter((d) => d.status === 'approved' || d.status === 'published').length;
   const publishedCount = drafts.filter((d) => d.status === 'published').length;
 
   return (
@@ -62,10 +61,9 @@ const Dashboard = () => {
       </div>
 
       {/* Metrics */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-3">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
         <StatCard label="Slots planned" value={calendar.slots.length} icon={CalendarDays} />
         <StatCard label="In draft" value={draftedCount} icon={FileText} />
-        <StatCard label="Approved" value={approvedCount} icon={ThumbsUp} />
         <StatCard label="Published" value={publishedCount} icon={PenSquare} />
         <StatCard label="Calendar" value={calendar.approvedAt ? 'Approved' : 'Pending'} icon={CheckCircle2} small />
       </div>
