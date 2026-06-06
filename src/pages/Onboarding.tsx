@@ -17,9 +17,9 @@ import { cn } from '@/lib/utils';
 import { SEO } from '@/components/SEO';
 
 const goals = [
-  { id: 'sell', label: 'Sell my product or company', desc: 'Generate leads and close deals through content', icon: Target },
-  { id: 'brand', label: 'Build thought leadership', desc: 'Become the go-to voice in your space', icon: User },
-  { id: 'other', label: 'Something else', desc: 'Tell us your unique goal', icon: FileText },
+  { id: 'sell', label: 'Get leads for my product', desc: 'Use posts to bring in customers and close deals', icon: Target },
+  { id: 'brand', label: 'Get known in my space', desc: 'Become a recognized voice in your industry', icon: User },
+  { id: 'other', label: 'Something else', desc: 'Tell us what you want to get out of posting', icon: FileText },
 ];
 
 const documentSources = [
