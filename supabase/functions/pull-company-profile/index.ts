@@ -88,7 +88,7 @@ Rules:
 - Prefer specificity over marketing fluff.
 - If a field cannot be determined, return an empty string (or empty array for proofPoints).
 - icpTitles MUST be a comma-separated list of specific job titles the company sells to (e.g. "VP of Sales, Head of RevOps, CRO, Sales Enablement Manager"). Do not return descriptions, personas, or company types here — only job titles. If the source only hints at a function or persona, infer the 2–5 most likely concrete titles.
-- icpCompanyType describes target companies (size, industry, stage, geography), not people.
+- icpCompanyType MUST be a comma-separated description of the target companies including at least size, industry, stage, and geography (e.g. "Mid-market SaaS companies, 200-2,000 employees, Series A-C, North America & Europe"). Never return job titles or personas here.
 - proofPoints must each be grounded in the source. Include the metric verbatim when present; do not invent numbers.`;
 
     const aiRes = await fetch(AI_GATEWAY, {
