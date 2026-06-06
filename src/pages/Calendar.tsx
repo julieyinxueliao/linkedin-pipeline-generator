@@ -70,7 +70,7 @@ const CalendarPage = () => {
     <div className="p-6 md:p-8 max-w-6xl mx-auto">
       <SEO
         title="Calendar — your LinkedIn content plan | Brand Builder"
-        description="Review your 4-week LinkedIn content calendar, draft posts, and track funnel balance across TOFU, MOFU, and BOFU stages."
+        description="Review your 4-week LinkedIn content calendar, draft posts, and track post purpose balance across attention, trust, and action."
         path="/calendar"
         noindex
       />
