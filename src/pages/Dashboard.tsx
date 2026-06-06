@@ -84,37 +84,21 @@ const Dashboard = () => {
         </div>
 
         <div>
-          {/* Content Balance (was: Mix Check) */}
+          {/* Content Balance — inline draggable sliders */}
           <Card>
             <CardContent className="p-5">
               {(() => {
                 const mix = computeMixCheck(calendar, brief.preset);
                 const target = brief.customMix || mix.funnel.target;
                 return (
-                  <>
-                    <div className="flex items-center justify-between gap-2 mb-4">
-                      <div className="flex items-center gap-2">
-                        <Sparkles className="h-3.5 w-3.5 text-linkedin" />
-                        <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Content balance — how your posts are split</p>
-                      </div>
-                      <MixEditor
-                        current={target}
-                        actual={mix.funnel.actual}
-                        preset={mix.funnel.target}
-                        onSave={(next) => updateBrief({ customMix: next })}
-                        onReset={() => updateBrief({ customMix: undefined })}
-                        isCustom={!!brief.customMix}
-                      />
-                    </div>
-                    <div>
-                      <p className="text-xs font-semibold text-muted-foreground mb-3">Post purpose</p>
-                      <div className="space-y-2">
-                        {(['TOFU', 'MOFU', 'BOFU'] as FunnelStage[]).map((k) => (
-                          <MixRow key={k} label={FUNNEL_STAGE_LABELS[k]} target={target[k]} actual={mix.funnel.actual[k]} />
-                        ))}
-                      </div>
-                    </div>
-                  </>
+                  <InlineMixEditor
+                    current={target}
+                    actual={mix.funnel.actual}
+                    preset={mix.funnel.target}
+                    onSave={(next) => updateBrief({ customMix: next })}
+                    onReset={() => updateBrief({ customMix: undefined })}
+                    isCustom={!!brief.customMix}
+                  />
                 );
               })()}
             </CardContent>
@@ -299,7 +283,7 @@ function MixRow({ label, target, actual }: { label: string; target: number; actu
   );
 }
 
-function MixEditor({
+function InlineMixEditor({
   current,
   actual,
   preset,
@@ -314,17 +298,19 @@ function MixEditor({
   onReset: () => void;
   isCustom: boolean;
 }) {
-  const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState<Record<FunnelStage, number>>(current);
 
+  // Keep draft in sync when the saved value changes externally.
   useEffect(() => {
-    if (open) setDraft(current);
-  }, [open, current]);
+    setDraft(current);
+  }, [current.TOFU, current.MOFU, current.BOFU]);
 
   const total = draft.TOFU + draft.MOFU + draft.BOFU;
   const valid = total === 100;
+  const dirty =
+    draft.TOFU !== current.TOFU || draft.MOFU !== current.MOFU || draft.BOFU !== current.BOFU;
 
-  // Drag one slider, redistribute the delta proportionally to the other two.
+  // Drag one slider — redistribute the delta proportionally to the other two.
   const handleChange = (key: FunnelStage, value: number) => {
     const v = Math.max(0, Math.min(100, Math.round(value)));
     const others = (['TOFU', 'MOFU', 'BOFU'] as FunnelStage[]).filter((k) => k !== key);
@@ -347,86 +333,90 @@ function MixEditor({
       return;
     }
     onSave(draft);
-    setOpen(false);
     toast.success('Content balance updated');
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button variant="outline" size="sm" className="h-7 text-xs">
-          <SettingsIcon className="h-3 w-3 mr-1" />Edit / adjust
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>Adjust content balance</DialogTitle>
-          <DialogDescription>
-            Drag each slider to set how much of your plan goes to each purpose. They always add up to 100%.
-          </DialogDescription>
-        </DialogHeader>
+    <div>
+      <div className="flex items-center justify-between gap-2 mb-4">
+        <div className="flex items-center gap-2">
+          <Sparkles className="h-3.5 w-3.5 text-linkedin" />
+          <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+            Content balance — drag to adjust how your posts are split
+          </p>
+        </div>
+        {isCustom && !dirty && (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-7 text-xs"
+            onClick={() => { onReset(); toast.success('Reset to preset'); }}
+          >
+            <RotateCcw className="h-3 w-3 mr-1" />Reset to preset
+          </Button>
+        )}
+      </div>
 
-        <div className="space-y-5 py-2">
-          {(['TOFU', 'MOFU', 'BOFU'] as FunnelStage[]).map((k) => {
-            const delta = draft[k] - current[k];
-            return (
-              <div key={k} className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-semibold text-foreground">{FUNNEL_STAGE_LABELS[k]}</span>
-                  <div className="flex items-center gap-2 text-xs font-mono">
-                    <span className="text-foreground">{draft[k]}%</span>
-                    {delta !== 0 && (
-                      <span className={cn('text-[10px]', delta > 0 ? 'text-success' : 'text-destructive')}>
-                        {delta > 0 ? '+' : ''}{delta}
-                      </span>
-                    )}
-                  </div>
-                </div>
-                <Slider
-                  value={[draft[k]]}
-                  min={0}
-                  max={100}
-                  step={1}
-                  onValueChange={(v) => handleChange(k, v[0])}
-                />
-                <div className="flex justify-between text-[10px] text-muted-foreground">
-                  <span>Now: {current[k]}%</span>
-                  <span>Actual posts: {actual[k]}%</span>
+      <div className="space-y-5">
+        {(['TOFU', 'MOFU', 'BOFU'] as FunnelStage[]).map((k) => {
+          const delta = draft[k] - current[k];
+          const diff = actual[k] - draft[k];
+          const ok = Math.abs(diff) <= 10;
+          return (
+            <div key={k} className="space-y-1.5">
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-sm font-semibold text-foreground">{FUNNEL_STAGE_LABELS[k]}</span>
+                <div className="flex items-center gap-2">
+                  {delta !== 0 && (
+                    <span className={cn('text-[10px] font-mono', delta > 0 ? 'text-success' : 'text-destructive')}>
+                      {delta > 0 ? '+' : ''}{delta}
+                    </span>
+                  )}
+                  <span className="text-xs font-mono text-foreground w-10 text-right">{draft[k]}%</span>
                 </div>
               </div>
-            );
-          })}
+              <Slider
+                value={[draft[k]]}
+                min={0}
+                max={100}
+                step={1}
+                onValueChange={(v) => handleChange(k, v[0])}
+              />
+              <div className="flex justify-between text-[10px] text-muted-foreground">
+                <span>Preset {preset[k]}%</span>
+                <span className={cn(ok ? 'text-muted-foreground' : 'text-destructive')}>
+                  Actual posts: {actual[k]}%
+                </span>
+              </div>
+            </div>
+          );
+        })}
+      </div>
 
-          <div className="rounded-md border border-border bg-muted/30 p-3 space-y-2">
-            <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Preview</p>
-            <div className="flex h-2 w-full overflow-hidden rounded-full bg-muted">
-              <div className="bg-linkedin" style={{ width: `${draft.TOFU}%` }} />
-              <div className="bg-linkedin/70" style={{ width: `${draft.MOFU}%` }} />
-              <div className="bg-linkedin/40" style={{ width: `${draft.BOFU}%` }} />
-            </div>
-            <div className="flex justify-between text-[10px] text-muted-foreground">
-              <span>Total: <span className={cn('font-mono', !valid && 'text-destructive')}>{total}%</span></span>
-              <span>Preset: {preset.TOFU}/{preset.MOFU}/{preset.BOFU}</span>
-            </div>
-          </div>
+      {/* Preview bar */}
+      <div className="mt-5 rounded-md border border-border bg-muted/30 p-3 space-y-2">
+        <div className="flex items-center justify-between">
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+            {dirty ? 'Preview of new split' : 'Current split'}
+          </p>
+          <span className={cn('text-[10px] font-mono', valid ? 'text-muted-foreground' : 'text-destructive')}>
+            Total {total}%
+          </span>
         </div>
+        <div className="flex h-2 w-full overflow-hidden rounded-full bg-muted">
+          <div className="bg-linkedin" style={{ width: `${draft.TOFU}%` }} />
+          <div className="bg-linkedin/70" style={{ width: `${draft.MOFU}%` }} />
+          <div className="bg-linkedin/40" style={{ width: `${draft.BOFU}%` }} />
+        </div>
+      </div>
 
-        <DialogFooter className="gap-2 sm:gap-2">
-          {isCustom && (
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={() => { onReset(); setOpen(false); toast.success('Reset to preset'); }}
-            >
-              <RotateCcw className="h-3 w-3 mr-1" />Reset to preset
-            </Button>
-          )}
-          <Button type="button" variant="outline" size="sm" onClick={() => setOpen(false)}>Cancel</Button>
-          <Button type="button" variant="linkedin" size="sm" onClick={save} disabled={!valid}>Save changes</Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+      {dirty && (
+        <div className="mt-4 flex items-center justify-end gap-2">
+          <Button variant="ghost" size="sm" onClick={() => setDraft(current)}>Cancel</Button>
+          <Button variant="linkedin" size="sm" onClick={save} disabled={!valid}>Save changes</Button>
+        </div>
+      )}
+    </div>
   );
 }
 
