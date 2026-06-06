@@ -1,13 +1,15 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useAppStore } from '@/lib/store';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { PRESET_MIX } from '@/lib/principles';
-import { generateCalendar } from '@/lib/calendar';
-import { PenSquare, CalendarDays, FileText, AlertCircle, Sparkles, Target } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { PRESET_MIX, CTA_LABEL, type FunnelStage, type CtaType } from '@/lib/principles';
+import { generateCalendar, computeMixCheck } from '@/lib/calendar';
+import { PenSquare, CalendarDays, FileText, AlertCircle, Sparkles, Target, Upload, Link2, Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 import { SEO } from '@/components/SEO';
 import { EditableField } from '@/components/EditableField';
 
