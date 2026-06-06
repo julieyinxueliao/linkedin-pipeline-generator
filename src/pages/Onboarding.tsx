@@ -56,9 +56,13 @@ const Onboarding = () => {
   const [proofPointsRaw, setProofPointsRaw] = useState('');
   const [pullWarning, setPullWarning] = useState<string | null>(null);
 
-  // Step 2 — Connect document sources
+  // Step 2 — Knowledge base (separate from step 1 company docs)
   const [connectedSources, setConnectedSources] = useState<ConnectedSource[]>([]);
   const [connectingSourceId, setConnectingSourceId] = useState<string | null>(null);
+  const [kbFileNames, setKbFileNames] = useState<string[]>([]);
+  const [kbContext, setKbContext] = useState('');
+  const [kbLinks, setKbLinks] = useState('');
+  const [kbDragging, setKbDragging] = useState(false);
 
   // Step 3 — Voice
   const [voiceOption, setVoiceOption] = useState<'write' | 'upload' | null>(null);
