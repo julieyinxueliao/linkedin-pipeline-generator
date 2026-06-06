@@ -8,6 +8,7 @@ import { Check, X, Plus, RotateCcw } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
+import { SEO } from '@/components/SEO';
 
 const SettingsPage = () => {
   const profile = useAppStore((s) => s.profile);
@@ -48,6 +49,12 @@ const SettingsPage = () => {
 
   return (
     <div className="p-6 md:p-8 max-w-2xl mx-auto space-y-6">
+      <SEO
+        title="Settings — profile, voice, and company | Brand Builder"
+        description="Manage your profile, voice traits, and company context. Update anything captured during onboarding."
+        path="/settings"
+        noindex
+      />
       <h1 className="text-2xl font-bold text-foreground">Settings</h1>
 
       <Card>

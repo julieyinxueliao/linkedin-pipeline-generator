@@ -14,6 +14,7 @@ import {
   Globe, AlertTriangle, FolderOpen, BookOpen, Database, Library,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { SEO } from '@/components/SEO';
 
 const goals = [
   { id: 'sell', label: 'Sell my product or company', desc: 'Generate leads and close deals through content', icon: Target },
@@ -236,6 +237,12 @@ const Onboarding = () => {
 
   return (
     <div className="min-h-screen gradient-hero flex flex-col items-center justify-center px-4 py-10 relative overflow-hidden">
+      <SEO
+        title="Onboarding — set up your LinkedIn strategy | Brand Builder"
+        description="Tell us your goal, voice, and company context. Brand Builder generates a customized LinkedIn content strategy in minutes."
+        path="/onboarding"
+        noindex
+      />
       <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-linkedin/4 blur-[100px] pointer-events-none" />
       <div className="w-full max-w-xl relative z-10">
         {/* Progress */}

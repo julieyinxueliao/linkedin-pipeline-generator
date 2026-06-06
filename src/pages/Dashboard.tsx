@@ -12,6 +12,7 @@ import { PenSquare, CalendarDays, FileText, CheckCircle2, AlertCircle, RotateCcw
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import { SEO } from '@/components/SEO';
 
 const funnelColor: Record<FunnelStage, string> = {
   TOFU: 'bg-linkedin/20 text-linkedin',
@@ -70,6 +71,12 @@ const Dashboard = () => {
 
   return (
     <div className="p-6 md:p-8 max-w-6xl mx-auto">
+      <SEO
+        title="Dashboard — your LinkedIn content calendar | Brand Builder"
+        description="Review your 4-week LinkedIn content calendar, draft posts, and track funnel balance across TOFU, MOFU, and BOFU stages."
+        path="/dashboard"
+        noindex
+      />
       <div className="flex items-start justify-between mb-6 gap-4 flex-wrap">
         <div>
           <h1 className="text-3xl font-black text-foreground tracking-tight">{brief.companyName || 'Strategy'} · {presetMeta.label}</h1>

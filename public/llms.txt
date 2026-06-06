@@ -1,0 +1,10 @@
+# Brand Builder
+
+> AI-powered LinkedIn pipeline generator that turns founder expertise into voice-matched posts on a 30-day plan.
+
+Brand Builder helps founders and B2B executives build their personal brand on LinkedIn. It captures their voice from writing samples, ingests company context from a website and source materials (pitch decks, business plans), and generates a customized strategy brief plus a 4-week content calendar of drafted posts.
+
+## Pages
+
+- [Home](/): Sign in or create an account to start building your LinkedIn pipeline.
+- [Sign in](/auth): Authenticate with email or Google to access the app.
