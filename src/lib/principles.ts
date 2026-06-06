@@ -2,6 +2,11 @@
 
 export type Preset = 'reach' | 'pipeline';
 export type FunnelStage = 'TOFU' | 'MOFU' | 'BOFU';
+export const FUNNEL_STAGE_LABELS: Record<FunnelStage, string> = {
+  TOFU: 'Maximize reach',
+  MOFU: 'Build credibility',
+  BOFU: 'Drive conversions',
+};
 export type CtaType = 'none' | 'soft' | 'comment-gated' | 'hard';
 
 export interface Archetype {
