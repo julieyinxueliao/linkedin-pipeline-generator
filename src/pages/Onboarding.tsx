@@ -255,6 +255,12 @@ const Onboarding = () => {
         {/* Step 0 — Goal */}
         {step === 0 && (
           <div className="animate-fade-in space-y-8">
+            <div className="rounded-xl border border-linkedin/20 bg-linkedin/[0.04] p-4">
+              <p className="text-[0.7rem] font-semibold tracking-[0.08em] uppercase text-linkedin mb-1.5">The playbook</p>
+              <p className="text-sm text-primary-foreground/70 leading-[1.6]">
+                You're a founder with real expertise. We turn it into posts that land — using the tried-and-true playbook built on what already works for Clay, Unify, and AirOps.
+              </p>
+            </div>
             <Header step={1} title="What's your goal?" subtitle="Pick what matters most — this sets your entire content mix." />
             <div className="space-y-3">
               {goals.map((g) => (
