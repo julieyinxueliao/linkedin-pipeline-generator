@@ -342,10 +342,7 @@ function MixRow({ label, target, actual }: { label: string; target: number; actu
     </div>
   );
 }
-      </div>
-    </div>
-  );
-};
+
 
 
 function StatCard({ label, value, icon: Icon, small }: { label: string; value: string | number; icon: any; small?: boolean }) {
