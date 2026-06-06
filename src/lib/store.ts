@@ -28,7 +28,7 @@ export interface DraftPost {
   id: string;
   content: string;
   createdAt: string;
-  status: 'draft' | 'scheduled' | 'published';
+  status: 'draft' | 'approved' | 'scheduled' | 'published';
   slotId?: string;
   archetypeId?: string;
 }
