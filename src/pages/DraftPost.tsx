@@ -23,10 +23,13 @@ const DraftPost = () => {
   const brief = useAppStore((s) => s.brief);
   const profile = useAppStore((s) => s.profile);
   const calendar = useAppStore((s) => s.calendar);
+  const drafts = useAppStore((s) => s.drafts);
   const addDraft = useAppStore((s) => s.addDraft);
+  const updateDraft = useAppStore((s) => s.updateDraft);
   const updateSlot = useAppStore((s) => s.updateSlot);
 
   const slot = slotId && calendar ? calendar.slots.find((s) => s.id === slotId) : null;
+  const existingDraft = slot?.draftId ? drafts.find((d) => d.id === slot.draftId) : null;
   const [step, setStep] = useState<Step>('loading');
   const [content, setContent] = useState('');
   const [isStreaming, setIsStreaming] = useState(false);
