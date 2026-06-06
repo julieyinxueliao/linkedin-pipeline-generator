@@ -16,6 +16,7 @@ interface EditableFieldProps {
   className?: string;
   displayClassName?: string;
   placeholder?: string;
+  showActions?: boolean;
 }
 
 export function EditableField({
