@@ -136,13 +136,13 @@ const Dashboard = () => {
               </div>
               {(() => {
                 const mix = computeMixCheck(calendar, brief.preset);
-                const funnelLabel: Record<FunnelStage, string> = { TOFU: 'Maximize reach', MOFU: 'Build credibility', BOFU: 'Drive conversions' };
+                
                 return (
                   <div>
                     <p className="text-xs font-semibold text-muted-foreground mb-3">Post purpose</p>
                     <div className="space-y-2">
                       {(['TOFU', 'MOFU', 'BOFU'] as FunnelStage[]).map((k) => (
-                        <MixRow key={k} label={funnelLabel[k]} target={mix.funnel.target[k]} actual={mix.funnel.actual[k]} />
+                        <MixRow key={k} label={FUNNEL_STAGE_LABELS[k]} target={mix.funnel.target[k]} actual={mix.funnel.actual[k]} />
                       ))}
                     </div>
                   </div>
@@ -165,10 +165,10 @@ const Dashboard = () => {
                     <div key={p.id} className="rounded-lg border border-border bg-muted/30 overflow-hidden">
                       <div className="p-4 space-y-3">
                         <div className="flex items-start gap-3">
-                          <Badge variant="secondary" className="text-[10px] mt-0.5 shrink-0">{p.funnelTilt}</Badge>
+                          <Badge variant="secondary" className="text-[10px] mt-0.5 shrink-0">{FUNNEL_STAGE_LABELS[p.funnelTilt]}</Badge>
                           <div className="flex-1 min-w-0">
                             <EditableField
-                              fieldLabel={`Topic name (${p.funnelTilt})`}
+                              fieldLabel={`Topic name (${FUNNEL_STAGE_LABELS[p.funnelTilt]})`}
                               value={p.name}
                               context={briefContext}
                               multiline={false}
