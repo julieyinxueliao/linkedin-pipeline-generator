@@ -586,11 +586,11 @@ function BriefBlock({ label, value }: { label: string; value: string }) {
 }
 
 const BRIEF_STEPS = [
-  'Synthesizing your wedge and ICP',
-  'Drafting a category POV',
-  'Generating your POV bank',
-  'Mapping content pillars',
-  'Compiling asset inventory',
+  'Figuring out what you stand for and who you sell to',
+  'Writing your main point of view',
+  'Brainstorming hot takes you can post',
+  'Picking the topics you should post about',
+  'Listing your stories and customer proof',
 ];
 
 function BriefProgress() {
@@ -604,8 +604,8 @@ function BriefProgress() {
       <div className="flex items-center gap-3">
         <div className="h-8 w-8 rounded-full border-2 border-linkedin border-t-transparent animate-spin" />
         <div>
-          <p className="text-sm font-semibold text-primary-foreground">Generating your Strategy Brief</p>
-          <p className="text-xs text-primary-foreground/40">GPT-grade reasoning over your inputs — usually 15–25s.</p>
+          <p className="text-sm font-semibold text-primary-foreground">Building your content plan</p>
+          <p className="text-xs text-primary-foreground/40">AI is working through what you shared — usually 15–25s.</p>
         </div>
       </div>
       <div className="space-y-2.5">
