@@ -471,11 +471,11 @@ const Onboarding = () => {
 
             {!briefLoading && brief && (
               <>
-                <BriefBlock label="Category POV to own" value={brief.categoryPov} />
+                <BriefBlock label="Your main point of view" value={brief.categoryPov} />
 
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <p className="text-xs font-semibold text-primary-foreground/40 uppercase tracking-wider flex items-center gap-1.5"><Sparkles className="h-3 w-3" /> POV Bank ({povBank.length})</p>
+                    <p className="text-xs font-semibold text-primary-foreground/40 uppercase tracking-wider flex items-center gap-1.5"><Sparkles className="h-3 w-3" /> Hot takes you can post ({povBank.length})</p>
                   </div>
                   <div className="space-y-2">
                     {povBank.map((p, idx) => (
