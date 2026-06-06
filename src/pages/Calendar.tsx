@@ -89,33 +89,8 @@ const CalendarPage = () => {
         </div>
       </div>
 
-      {/* Mix Check */}
-      <Card className="mb-8">
-        <CardContent className="p-5">
-          <div className="flex items-center gap-2 mb-4">
-            <Sparkles className="h-4 w-4 text-linkedin" />
-            <h2 className="text-sm font-bold uppercase tracking-wider">Mix Check</h2>
-          </div>
-          <div className="grid md:grid-cols-2 gap-6">
-            <div>
-              <p className="text-xs font-semibold text-muted-foreground mb-3">Funnel stage</p>
-              <div className="space-y-2">
-                {(['TOFU', 'MOFU', 'BOFU'] as FunnelStage[]).map((k) => (
-                  <MixRow key={k} label={k} target={mix.funnel.target[k]} actual={mix.funnel.actual[k]} />
-                ))}
-              </div>
-            </div>
-            <div>
-              <p className="text-xs font-semibold text-muted-foreground mb-3">CTA cadence</p>
-              <div className="space-y-2">
-                {(['none', 'soft', 'comment-gated', 'hard'] as CtaType[]).map((k) => (
-                  <MixRow key={k} label={CTA_LABEL[k]} target={mix.cta.target[k]} actual={mix.cta.actual[k]} />
-                ))}
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Mix Check moved to Dashboard */}
+
 
       {/* Weeks */}
       <div className="space-y-8">
