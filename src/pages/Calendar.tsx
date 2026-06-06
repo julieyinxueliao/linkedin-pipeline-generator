@@ -116,7 +116,7 @@ const CalendarPage = () => {
                       <div className="flex-1 min-w-0 space-y-2">
                         <p className="text-sm font-semibold text-foreground leading-snug">{slot.workingAngle}</p>
                         <div className="flex flex-wrap gap-1.5 items-center">
-                          <Badge className={cn('text-[10px]', funnelColor[slot.funnelStage])}>{slot.funnelStage}</Badge>
+                          <Badge className={cn('text-[10px]', funnelColor[slot.funnelStage])}>{funnelLabel[slot.funnelStage]}</Badge>
                           <Badge variant="secondary" className="text-[10px]">{slot.pillarName}</Badge>
                           <Select value={slot.archetypeId} onValueChange={(v) => updateSlot(slot.id, { archetypeId: v, archetypeName: ARCHETYPES.find((a) => a.id === v)?.name || '' })}>
                             <SelectTrigger className="h-6 w-auto text-[10px] gap-1 px-2 py-0 bg-muted border-0"><SelectValue /></SelectTrigger>
