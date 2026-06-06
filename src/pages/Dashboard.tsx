@@ -45,6 +45,17 @@ const Dashboard = () => {
   const draftedCount = drafts.filter((d) => d.status === 'draft').length;
   const publishedCount = drafts.filter((d) => d.status === 'published').length;
 
+  const briefContext = useMemo(() => {
+    if (!brief) return '';
+    return [
+      `Company: ${brief.companyName} — ${brief.companyOneLiner}`,
+      `Wedge: ${brief.wedge}`,
+      `ICP: ${brief.icpTitles} at ${brief.icpCompanyType}`,
+      `Category POV: ${brief.categoryPov}`,
+      brief.proofPoints?.length ? `Proof points: ${brief.proofPoints.join('; ')}` : '',
+    ].filter(Boolean).join('\n');
+  }, [brief]);
+
   return (
     <div className="p-6 md:p-8 max-w-6xl mx-auto">
       <SEO
