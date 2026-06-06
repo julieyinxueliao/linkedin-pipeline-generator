@@ -79,9 +79,16 @@ const Dashboard = () => {
         </div>
 
         <Card>
-          <CardContent className="p-5 space-y-1">
+          <CardContent className="p-5 space-y-2">
             <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Category POV to own</p>
-            <p className="text-base font-semibold text-foreground leading-snug">{brief.categoryPov}</p>
+            <EditableField
+              fieldLabel="Category POV"
+              value={brief.categoryPov}
+              context={briefContext}
+              multiline={false}
+              onSave={(v) => updateBrief({ categoryPov: v })}
+              displayClassName="text-base font-semibold text-foreground leading-snug"
+            />
           </CardContent>
         </Card>
 
@@ -89,15 +96,46 @@ const Dashboard = () => {
           <Card>
             <CardContent className="p-5 space-y-2">
               <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Wedge</p>
-              <p className="text-sm text-foreground leading-relaxed">{brief.wedge || '—'}</p>
+              <EditableField
+                fieldLabel="Wedge / category they own"
+                value={brief.wedge}
+                context={briefContext}
+                multiline={false}
+                onSave={(v) => updateBrief({ wedge: v })}
+                displayClassName="text-sm text-foreground leading-relaxed"
+                placeholder="—"
+              />
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-5 space-y-2">
               <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Ideal customer</p>
-              <p className="text-sm text-foreground leading-relaxed">
-                {brief.icpTitles || '—'}{brief.icpCompanyType ? ` · ${brief.icpCompanyType}` : ''}
-              </p>
+              <div className="space-y-3">
+                <div>
+                  <p className="text-[10px] uppercase text-muted-foreground mb-1">Titles</p>
+                  <EditableField
+                    fieldLabel="ICP titles"
+                    value={brief.icpTitles}
+                    context={briefContext}
+                    multiline={false}
+                    onSave={(v) => updateBrief({ icpTitles: v })}
+                    displayClassName="text-sm text-foreground leading-relaxed"
+                    placeholder="—"
+                  />
+                </div>
+                <div>
+                  <p className="text-[10px] uppercase text-muted-foreground mb-1">Company type</p>
+                  <EditableField
+                    fieldLabel="ICP company type"
+                    value={brief.icpCompanyType}
+                    context={briefContext}
+                    multiline={false}
+                    onSave={(v) => updateBrief({ icpCompanyType: v })}
+                    displayClassName="text-sm text-foreground leading-relaxed"
+                    placeholder="—"
+                  />
+                </div>
+              </div>
             </CardContent>
           </Card>
         </div>
@@ -113,7 +151,16 @@ const Dashboard = () => {
                 {brief.povBank.map((p, idx) => (
                   <div key={p.id} className="flex items-start gap-3 p-3 rounded-lg border border-border bg-muted/30">
                     <span className="text-[10px] text-linkedin font-bold mt-0.5 w-5 shrink-0">#{idx + 1}</span>
-                    <p className="text-sm text-foreground/85 leading-snug flex-1">{p.text}</p>
+                    <div className="flex-1 min-w-0">
+                      <EditableField
+                        fieldLabel={`POV #${idx + 1}`}
+                        value={p.text}
+                        context={briefContext}
+                        multiline
+                        onSave={(v) => updateBrief({ povBank: brief.povBank.map((x) => x.id === p.id ? { ...x, text: v, edited: true } : x) })}
+                        displayClassName="text-sm text-foreground/85 leading-snug"
+                      />
+                    </div>
                   </div>
                 ))}
               </div>
@@ -127,12 +174,32 @@ const Dashboard = () => {
               <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-4">Content Pillars</p>
               <div className="grid md:grid-cols-2 gap-2">
                 {brief.pillars.map((p) => (
-                  <div key={p.id} className="p-3 rounded-lg border border-border bg-muted/30">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-sm font-semibold text-foreground">{p.name}</span>
+                  <div key={p.id} className="p-3 rounded-lg border border-border bg-muted/30 space-y-2">
+                    <div className="flex items-center gap-2">
                       <Badge variant="secondary" className="text-[10px]">{p.funnelTilt}</Badge>
                     </div>
-                    <p className="text-xs text-muted-foreground">{p.exampleAngles.join(' · ')}</p>
+                    <div>
+                      <p className="text-[10px] uppercase text-muted-foreground mb-1">Name</p>
+                      <EditableField
+                        fieldLabel={`Pillar name (${p.funnelTilt})`}
+                        value={p.name}
+                        context={briefContext}
+                        multiline={false}
+                        onSave={(v) => updateBrief({ pillars: brief.pillars.map((x) => x.id === p.id ? { ...x, name: v } : x) })}
+                        displayClassName="text-sm font-semibold text-foreground"
+                      />
+                    </div>
+                    <div>
+                      <p className="text-[10px] uppercase text-muted-foreground mb-1">Example angles</p>
+                      <EditableField
+                        fieldLabel={`Example angles for pillar "${p.name}" (separate with " · ")`}
+                        value={p.exampleAngles.join(' · ')}
+                        context={briefContext}
+                        multiline
+                        onSave={(v) => updateBrief({ pillars: brief.pillars.map((x) => x.id === p.id ? { ...x, exampleAngles: v.split(/\s*·\s*|\n+/).map((s) => s.trim()).filter(Boolean) } : x) })}
+                        displayClassName="text-xs text-muted-foreground"
+                      />
+                    </div>
                   </div>
                 ))}
               </div>
@@ -144,12 +211,21 @@ const Dashboard = () => {
           <Card>
             <CardContent className="p-5">
               <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-3">Asset Inventory</p>
-              <div className="space-y-1.5">
+              <div className="space-y-3">
                 {brief.assetInventory.map((a) => (
-                  <div key={a.id} className="flex items-center gap-2 text-xs">
-                    <span className={cn('h-1.5 w-1.5 rounded-full shrink-0', a.hasProof ? 'bg-success' : 'bg-warning')} />
-                    <span className="text-foreground/70">{a.text}</span>
-                    {!a.hasProof && <span className="text-warning/80 text-[10px] uppercase">to source</span>}
+                  <div key={a.id} className="flex items-start gap-2">
+                    <span className={cn('h-1.5 w-1.5 rounded-full shrink-0 mt-2', a.hasProof ? 'bg-success' : 'bg-warning')} />
+                    <div className="flex-1 min-w-0">
+                      <EditableField
+                        fieldLabel="Asset / proof point"
+                        value={a.text}
+                        context={briefContext}
+                        multiline={false}
+                        onSave={(v) => updateBrief({ assetInventory: brief.assetInventory.map((x) => x.id === a.id ? { ...x, text: v } : x) })}
+                        displayClassName="text-xs text-foreground/70"
+                      />
+                      {!a.hasProof && <span className="text-warning/80 text-[10px] uppercase">to source</span>}
+                    </div>
                   </div>
                 ))}
               </div>
@@ -160,6 +236,7 @@ const Dashboard = () => {
     </div>
   );
 };
+
 
 function StatCard({ label, value, icon: Icon, small }: { label: string; value: string | number; icon: any; small?: boolean }) {
   return (
