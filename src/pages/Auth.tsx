@@ -142,22 +142,6 @@ const Auth = () => {
             </p>
           </div>
 
-          {/* What you get */}
-          <div className="animate-fade-in pt-6 border-t border-primary-foreground/8 space-y-4">
-            <p className="text-[0.7rem] font-semibold tracking-[0.08em] uppercase text-linkedin text-center">What you get</p>
-            <div className="grid grid-cols-1 gap-3">
-              {[
-                { h: 'Proven posts, not guesswork', p: 'The same playbook Clay, Unify, and AirOps used to grow pipeline.' },
-                { h: 'Never stare at a blank page', p: '10+ repeatable content themes drawn from your own story and product.' },
-                { h: 'Strategy to drafts — one system', p: 'A posting plan tied to your goals, plus ready-to-paste drafts in your voice.' },
-              ].map((b) => (
-                <div key={b.h} className="rounded-xl border border-primary-foreground/8 bg-primary-foreground/[0.03] p-4">
-                  <p className="text-sm font-semibold text-primary-foreground tracking-tight">{b.h}</p>
-                  <p className="text-xs text-primary-foreground/45 leading-[1.6] mt-1">{b.p}</p>
-                </div>
-              ))}
-            </div>
-          </div>
         </div>
       </main>
     </div>
