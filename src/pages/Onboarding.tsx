@@ -519,7 +519,7 @@ const Onboarding = () => {
                       <div key={a.id} className="flex items-center gap-2 text-xs">
                         <span className={cn('h-1.5 w-1.5 rounded-full shrink-0', a.hasProof ? 'bg-success' : 'bg-warning')} />
                         <span className="text-primary-foreground/60">{a.text}</span>
-                        {!a.hasProof && <span className="text-warning/80 text-[10px] uppercase">to source</span>}
+                        {!a.hasProof && <span className="text-warning/80 text-[10px] uppercase">add details</span>}
                       </div>
                     ))}
                   </div>
