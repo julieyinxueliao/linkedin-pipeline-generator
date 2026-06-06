@@ -321,12 +321,12 @@ const Onboarding = () => {
                   disabled={(!websiteUrl && !additionalContext.trim()) || isPulling}
                   onClick={handleAutoPull}
                 >
-                  {isPulling ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Extracting from your sources…</> : <>Extract company profile<Sparkles className="h-4 w-4 ml-1" /></>}
+                  {isPulling ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Reading your docs…</> : <>Pull company info<Sparkles className="h-4 w-4 ml-1" /></>}
                 </Button>
               ) : (
                 <div className="space-y-4 p-4 rounded-xl border border-success/20 bg-success/5">
                   <div className="flex items-center gap-2 text-success text-xs font-semibold">
-                    <Check className="h-3.5 w-3.5" /> Extracted — edit anything that's off
+                    <Check className="h-3.5 w-3.5" /> Done — fix anything that looks off
                   </div>
                   {pullWarning && (
                     <div className="flex items-start gap-2 p-3 rounded-lg border border-warning/20 bg-warning/5 text-xs text-primary-foreground/70">
@@ -336,12 +336,12 @@ const Onboarding = () => {
                   )}
                   <Field label="Company name"><Input value={companyName} onChange={(e) => setCompanyName(e.target.value)} className={inputCls} /></Field>
                   <Field label="One-line description"><Input value={companyOneLiner} onChange={(e) => setCompanyOneLiner(e.target.value)} className={inputCls} /></Field>
-                  <Field label="Category / wedge you want to own"><Input value={wedge} onChange={(e) => setWedge(e.target.value)} className={inputCls} /></Field>
-                  <Field label="Buyer titles"><Input value={icpTitles} onChange={(e) => setIcpTitles(e.target.value)} className={inputCls} /></Field>
-                  <Field label="Company type (ICP)"><Input value={icpCompanyType} onChange={(e) => setIcpCompanyType(e.target.value)} className={inputCls} /></Field>
-                  <Field label="Proof points (one per line)">
+                  <Field label="What you want to be known for"><Input value={wedge} onChange={(e) => setWedge(e.target.value)} className={inputCls} /></Field>
+                  <Field label="Who you sell to (job titles)"><Input value={icpTitles} onChange={(e) => setIcpTitles(e.target.value)} className={inputCls} /></Field>
+                  <Field label="What kind of companies they work at"><Input value={icpCompanyType} onChange={(e) => setIcpCompanyType(e.target.value)} className={inputCls} /></Field>
+                  <Field label="Customer wins & numbers (one per line)">
                     <Textarea value={proofPointsRaw} onChange={(e) => setProofPointsRaw(e.target.value)} rows={4} className={cn(inputCls, 'resize-none leading-relaxed')} />
-                    <p className="text-[11px] text-primary-foreground/30 mt-1">We never invent metrics. Anything missing becomes [INSERT METRIC].</p>
+                    <p className="text-[11px] text-primary-foreground/30 mt-1">We never make up numbers. Anything missing shows up as [INSERT METRIC] so you can fill it in.</p>
                   </Field>
                 </div>
               )}
