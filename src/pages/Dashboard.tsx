@@ -327,16 +327,5 @@ function MixRow({ label, target, actual }: { label: string; target: number; actu
 
 
 
-function StatCard({ label, value, icon: Icon, small }: { label: string; value: string | number; icon: any; small?: boolean }) {
-  return (
-    <div className="bg-card border border-border rounded-xl p-4 flex items-center gap-3">
-      <div className="h-9 w-9 rounded-lg bg-muted flex items-center justify-center"><Icon className="h-4 w-4 text-muted-foreground" /></div>
-      <div className="min-w-0">
-        <p className={small ? 'text-sm font-bold text-foreground truncate' : 'text-2xl font-black text-foreground'}>{value}</p>
-        <p className="text-[11px] text-muted-foreground">{label}</p>
-      </div>
-    </div>
-  );
-}
 
 export default Dashboard;
