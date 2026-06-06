@@ -185,19 +185,5 @@ const CalendarPage = () => {
   );
 };
 
-function MixRow({ label, target, actual }: { label: string; target: number; actual: number }) {
-  const diff = actual - target;
-  const ok = Math.abs(diff) <= 10;
-  return (
-    <div className="flex items-center gap-3">
-      <span className="text-xs font-semibold text-foreground w-28 shrink-0">{label}</span>
-      <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden relative">
-        <div className="absolute inset-y-0 left-0 bg-linkedin/40" style={{ width: `${target}%` }} />
-        <div className={cn('absolute inset-y-0 left-0 border-r-2', ok ? 'border-success' : 'border-destructive')} style={{ width: `${actual}%` }} />
-      </div>
-      <span className={cn('text-[11px] font-mono w-16 text-right', ok ? 'text-muted-foreground' : 'text-destructive')}>{actual}% / {target}%</span>
-    </div>
-  );
-}
 
 export default CalendarPage;
