@@ -28,9 +28,9 @@ const Dashboard = () => {
     return (
       <div className="p-8 max-w-2xl mx-auto text-center space-y-4">
         <AlertCircle className="h-10 w-10 text-muted-foreground mx-auto" />
-        <h2 className="text-2xl font-black tracking-tight">Turn your expertise into pipeline.</h2>
+        <h2 className="text-2xl font-black tracking-tight">Turn what you know into LinkedIn posts.</h2>
         <p className="text-muted-foreground text-sm max-w-md mx-auto leading-relaxed">
-          A proven content strategy, built around your company. Tell us about your product, voice, and goals — we'll generate your strategy brief, 4-week calendar, and drafts in your voice.
+          A simple content plan, built around your company. Tell us about your product, voice, and goals — we'll generate a 4-week calendar and post drafts that sound like you.
         </p>
         <Button variant="linkedin" onClick={() => navigate('/onboarding')}>Start onboarding</Button>
       </div>
