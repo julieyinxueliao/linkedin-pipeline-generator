@@ -184,12 +184,20 @@ const Onboarding = () => {
   useEffect(() => {
     if (step !== 4 || aiBrief || briefLoading) return;
     let cancelled = false;
+    const timeoutCtrl = new AbortController();
+    const timer = setTimeout(() => timeoutCtrl.abort(), 45_000);
     (async () => {
       setBriefLoading(true);
       setBriefError(null);
       try {
         const payload = { ...briefInputs, voiceTraits: voiceTraits ?? [], additionalContext };
-        const { data, error } = await supabase.functions.invoke('generate-strategy-brief', { body: payload });
+        const invokePromise = supabase.functions.invoke('generate-strategy-brief', { body: payload });
+        const abortPromise = new Promise<never>((_, reject) => {
+          timeoutCtrl.signal.addEventListener('abort', () =>
+            reject(new Error('Request timed out after 45s. Please try again.'))
+          );
+        });
+        const { data, error } = await Promise.race([invokePromise, abortPromise]) as any;
         if (cancelled) return;
         if (error) throw error;
         if (data?.error) throw new Error(data.error);
@@ -209,10 +217,11 @@ const Onboarding = () => {
       } catch (e) {
         if (!cancelled) setBriefError((e as Error).message || 'Could not generate brief');
       } finally {
+        clearTimeout(timer);
         if (!cancelled) setBriefLoading(false);
       }
     })();
-    return () => { cancelled = true; };
+    return () => { cancelled = true; clearTimeout(timer); };
   }, [step, briefInputs, voiceTraits, additionalContext, aiBrief, briefLoading]);
 
   const brief = aiBrief;

@@ -98,8 +98,9 @@ Constraints:
     const aiRes = await fetch(AI_GATEWAY, {
       method: 'POST',
       headers: { Authorization: `Bearer ${LOVABLE_API_KEY}`, 'Content-Type': 'application/json' },
+      signal: AbortSignal.timeout(120_000),
       body: JSON.stringify({
-        model: 'google/gemini-2.5-flash',
+        model: 'google/gemini-2.5-flash-lite',
         response_format: { type: 'json_object' },
         messages: [
           { role: 'system', content: systemPrompt },
