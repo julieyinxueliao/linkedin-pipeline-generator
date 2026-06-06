@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, RotateCcw, Check, Copy, ArrowRight, AlertCircle, AlertTriangle, Sparkles } from 'lucide-react';
+import { Loader2, RotateCcw, Check, Copy, ArrowRight, AlertCircle, AlertTriangle, Sparkles, Pencil } from 'lucide-react';
 import { toast } from 'sonner';
 import { SEO } from '@/components/SEO';
 
@@ -23,10 +23,13 @@ const DraftPost = () => {
   const brief = useAppStore((s) => s.brief);
   const profile = useAppStore((s) => s.profile);
   const calendar = useAppStore((s) => s.calendar);
+  const drafts = useAppStore((s) => s.drafts);
   const addDraft = useAppStore((s) => s.addDraft);
+  const updateDraft = useAppStore((s) => s.updateDraft);
   const updateSlot = useAppStore((s) => s.updateSlot);
 
   const slot = slotId && calendar ? calendar.slots.find((s) => s.id === slotId) : null;
+  const existingDraft = slot?.draftId ? drafts.find((d) => d.id === slot.draftId) : null;
   const [step, setStep] = useState<Step>('loading');
   const [content, setContent] = useState('');
   const [isStreaming, setIsStreaming] = useState(false);
@@ -114,6 +117,11 @@ const DraftPost = () => {
 
   useEffect(() => {
     if (!slot || !brief) return;
+    if (existingDraft) {
+      setContent(existingDraft.content);
+      setStep('preview');
+      return;
+    }
     runStream();
     return () => abortRef.current?.abort();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -158,6 +166,12 @@ const DraftPost = () => {
   const handleRegenerate = () => runStream();
 
   const handleSaveDraft = () => {
+    if (existingDraft) {
+      updateDraft(existingDraft.id, { content });
+      toast.success('Draft updated');
+      setStep('preview');
+      return;
+    }
     const draftId = `draft-${Date.now()}`;
     addDraft({
       id: draftId,
@@ -255,9 +269,11 @@ const DraftPost = () => {
               <div className="text-sm text-foreground whitespace-pre-line leading-relaxed">{content}</div>
             </CardContent>
           </Card>
-          <div className="flex gap-3 justify-center">
+          <div className="flex flex-wrap gap-3 justify-center">
+            <Button variant="outline" onClick={() => setStep('editing')}><Pencil className="h-4 w-4 mr-2" />Edit draft</Button>
+            <Button variant="outline" onClick={handleRegenerate}><RotateCcw className="h-4 w-4 mr-2" />Regenerate</Button>
             <Button variant="outline" onClick={handleCopy}><Copy className="h-4 w-4 mr-2" />Copy</Button>
-            <Button variant="linkedin" onClick={() => navigate('/dashboard')}>Back to calendar</Button>
+            <Button variant="linkedin" onClick={() => navigate('/calendar')}>Back to calendar</Button>
           </div>
         </div>
       )}
