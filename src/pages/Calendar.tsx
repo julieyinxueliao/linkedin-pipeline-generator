@@ -49,7 +49,7 @@ const CalendarPage = () => {
   }
 
   const presetMeta = PRESET_MIX[brief.preset];
-  const mix = computeMixCheck(calendar, brief.preset);
+  
 
   const weeks = Array.from({ length: calendar.weeks }, (_, i) => i + 1).map((w) => ({
     week: w,
