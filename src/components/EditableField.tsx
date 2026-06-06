@@ -28,6 +28,7 @@ export function EditableField({
   className,
   displayClassName,
   placeholder,
+  showActions = true,
 }: EditableFieldProps) {
   const [mode, setMode] = useState<'view' | 'edit' | 'refine'>('view');
   const [draft, setDraft] = useState(value);
