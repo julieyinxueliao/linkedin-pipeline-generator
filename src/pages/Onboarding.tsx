@@ -11,7 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import {
   Target, User, FileText, Check, ArrowRight, Link2, FileUp, X, Sparkles, Loader2,
-  Globe, AlertTriangle, FolderOpen, BookOpen, Database, Library,
+  Globe, AlertTriangle, FolderOpen, BookOpen, Database, Library, ChevronDown, UploadCloud,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { SEO } from '@/components/SEO';
@@ -44,6 +44,8 @@ const Onboarding = () => {
   const [websiteUrl, setWebsiteUrl] = useState('');
   const [additionalContext, setAdditionalContext] = useState('');
   const [uploadedFileNames, setUploadedFileNames] = useState<string[]>([]);
+  const [pasteOpen, setPasteOpen] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
   const [isPulling, setIsPulling] = useState(false);
   const [pulled, setPulled] = useState(false);
   const [companyName, setCompanyName] = useState('');
@@ -301,26 +303,68 @@ const Onboarding = () => {
                 </div>
               </Field>
 
-              <Field label="Company docs (pitch deck, business plan, one-pager)">
-                <Textarea
-                  value={additionalContext}
-                  onChange={(e) => setAdditionalContext(e.target.value)}
-                  placeholder="Paste anything that explains what you do, who you sell to, and your customer wins — pitch deck, business plan, one-pager, internal doc."
-                  rows={6}
-                  className={cn(inputCls, 'resize-none leading-relaxed')}
-                />
-                <div className="mt-2 flex items-center gap-3">
-                  <label className="inline-flex items-center gap-2 text-xs text-primary-foreground/60 cursor-pointer hover:text-primary-foreground">
-                    <FileUp className="h-3.5 w-3.5" />
-                    <span>Upload .txt or .md files</span>
-                    <input type="file" multiple accept=".txt,.md,.markdown,text/plain,text/markdown" className="hidden" onChange={(e) => handleFiles(e.target.files)} />
-                  </label>
-                  {uploadedFileNames.length > 0 && (
-                    <span className="text-[11px] text-primary-foreground/40">{uploadedFileNames.length} file{uploadedFileNames.length === 1 ? '' : 's'} attached</span>
+              <Field label="Upload company docs (pitch deck, business plan, one-pager)">
+                <label
+                  onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+                  onDragLeave={() => setIsDragging(false)}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    setIsDragging(false);
+                    handleFiles(e.dataTransfer.files);
+                  }}
+                  className={cn(
+                    'flex flex-col items-center justify-center gap-3 px-6 py-10 rounded-xl border-2 border-dashed cursor-pointer transition-all text-center',
+                    isDragging
+                      ? 'border-linkedin bg-linkedin/[0.06]'
+                      : 'border-primary-foreground/15 hover:border-linkedin/40 hover:bg-linkedin/[0.03]'
                   )}
-                </div>
-                <p className="text-[11px] text-primary-foreground/30 mt-2">For PDFs or slide decks, copy the text and paste it above.</p>
+                >
+                  <div className="h-12 w-12 rounded-xl bg-linkedin/10 flex items-center justify-center">
+                    <UploadCloud className="h-6 w-6 text-linkedin" />
+                  </div>
+                  <div>
+                    <div className="font-semibold text-primary-foreground text-sm">Drop files here or click to upload</div>
+                    <p className="text-xs text-primary-foreground/40 mt-1">.txt or .md files · For PDFs/decks, use paste option below</p>
+                  </div>
+                  <input
+                    type="file"
+                    multiple
+                    accept=".txt,.md,.markdown,text/plain,text/markdown"
+                    className="hidden"
+                    onChange={(e) => handleFiles(e.target.files)}
+                  />
+                </label>
+                {uploadedFileNames.length > 0 && (
+                  <p className="mt-2 text-[11px] text-primary-foreground/50">
+                    {uploadedFileNames.length} file{uploadedFileNames.length === 1 ? '' : 's'} attached: {uploadedFileNames.join(', ')}
+                  </p>
+                )}
               </Field>
+
+              <div className="rounded-xl border border-primary-foreground/10">
+                <button
+                  type="button"
+                  onClick={() => setPasteOpen((v) => !v)}
+                  className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-primary-foreground/[0.02] transition-colors rounded-xl"
+                >
+                  <span className="flex items-center gap-2 text-sm text-primary-foreground/80">
+                    <FileText className="h-3.5 w-3.5 text-primary-foreground/40" />
+                    Or paste text directly
+                  </span>
+                  <ChevronDown className={cn('h-4 w-4 text-primary-foreground/40 transition-transform', pasteOpen && 'rotate-180')} />
+                </button>
+                {pasteOpen && (
+                  <div className="px-4 pb-4">
+                    <Textarea
+                      value={additionalContext}
+                      onChange={(e) => setAdditionalContext(e.target.value)}
+                      placeholder="Paste anything that explains what you do, who you sell to, and your customer wins — pitch deck text, business plan, one-pager, internal doc."
+                      rows={6}
+                      className={cn(inputCls, 'resize-none leading-relaxed')}
+                    />
+                  </div>
+                )}
+              </div>
 
               {!pulled ? (
                 <Button
