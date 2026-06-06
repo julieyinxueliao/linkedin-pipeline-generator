@@ -42,6 +42,7 @@ export interface StrategyBrief extends BriefInputs {
   povBank: PovItem[];
   pillars: Pillar[];
   assetInventory: AssetItem[];
+  customMix?: Record<FunnelStage, number>;
 }
 
 function uid(prefix: string) {
