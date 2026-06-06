@@ -412,8 +412,20 @@ const Onboarding = () => {
                 </Button>
               ) : (
                 <div className="space-y-4 p-4 rounded-xl border border-success/20 bg-success/5">
-                  <div className="flex items-center gap-2 text-success text-xs font-semibold">
-                    <Check className="h-3.5 w-3.5" /> Done — fix anything that looks off
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-success text-xs font-semibold">
+                      <Check className="h-3.5 w-3.5" /> Done — fix anything that looks off
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="border-primary-foreground/15 text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/5"
+                      onClick={handleAutoPull}
+                      disabled={isPulling}
+                    >
+                      {isPulling ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <Sparkles className="h-3 w-3 mr-1" />}
+                      Regenerate
+                    </Button>
                   </div>
                   {pullWarning && (
                     <div className="flex items-start gap-2 p-3 rounded-lg border border-warning/20 bg-warning/5 text-xs text-primary-foreground/70">
