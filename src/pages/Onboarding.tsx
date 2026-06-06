@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppStore, type ConnectedSource } from '@/lib/store';
 import { generateStrategyBrief, type BriefInputs, type PovItem, type StrategyBrief } from '@/lib/strategy';
-import { goalToPreset } from '@/lib/principles';
+import { goalToPreset, FUNNEL_STAGE_LABELS } from '@/lib/principles';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';

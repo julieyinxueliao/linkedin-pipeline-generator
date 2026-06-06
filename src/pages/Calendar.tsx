@@ -3,7 +3,7 @@ import { useAppStore } from '@/lib/store';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { PRESET_MIX, CTA_LABEL, ARCHETYPES, type FunnelStage, type CtaType } from '@/lib/principles';
+import { PRESET_MIX, CTA_LABEL, ARCHETYPES, FUNNEL_STAGE_LABELS, type FunnelStage, type CtaType } from '@/lib/principles';
 import { generateCalendar, computeMixCheck } from '@/lib/calendar';
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
