@@ -55,13 +55,13 @@ const Auth = () => {
   return (
     <div className="min-h-screen gradient-hero flex flex-col overflow-hidden">
       <SEO
-        title={isSignUp ? 'Create your Brand Builder account' : 'Sign in to Brand Builder'}
-        description={isSignUp ? 'Create your Brand Builder account and start generating LinkedIn posts that drive real pipeline.' : 'Sign in to Brand Builder to manage your LinkedIn content strategy and 4-week calendar.'}
+        title={isSignUp ? 'Create your LinkedIn Pipeline Generator account' : 'Sign in to LinkedIn Pipeline Generator'}
+        description={isSignUp ? 'Create your LinkedIn Pipeline Generator account and start generating LinkedIn posts that drive real pipeline.' : 'Sign in to LinkedIn Pipeline Generator to manage your LinkedIn content strategy and 4-week calendar.'}
         path="/auth"
         noindex
       />
       <header className="flex items-center justify-between px-6 py-5 md:px-12 relative z-10">
-        <span className="text-lg font-bold text-primary-foreground tracking-tight">Brand Builder</span>
+        <span className="text-lg font-bold text-primary-foreground tracking-tight">LinkedIn Pipeline Generator</span>
       </header>
 
       <main className="flex-1 flex items-center justify-center px-6 md:px-12 relative">
@@ -74,7 +74,7 @@ const Auth = () => {
               {isSignUp ? 'Create your account' : 'Welcome back'}
             </div>
             <h1 className="text-4xl font-black text-primary-foreground tracking-tight">
-              Brand Builder — {isSignUp ? 'create your account' : 'sign in to your account'}
+              LinkedIn Pipeline Generator
             </h1>
           </div>
 
