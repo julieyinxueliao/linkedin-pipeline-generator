@@ -147,6 +147,31 @@ const Onboarding = () => {
     }
   };
 
+  const handleKbFiles = async (files: FileList | null) => {
+    if (!files || !files.length) return;
+    const accepted = ['text/plain', 'text/markdown'];
+    const additions: string[] = [];
+    const names: string[] = [];
+    for (const f of Array.from(files)) {
+      const ok = accepted.includes(f.type) || /\.(txt|md|markdown)$/i.test(f.name);
+      if (!ok) {
+        toast.error(`${f.name}: only .txt and .md files can be parsed in-browser. Paste a link instead for PDFs / decks.`);
+        continue;
+      }
+      try {
+        const text = await f.text();
+        additions.push(`--- ${f.name} ---\n${text}`);
+        names.push(f.name);
+      } catch {
+        toast.error(`Could not read ${f.name}`);
+      }
+    }
+    if (additions.length) {
+      setKbContext((prev) => (prev ? prev + '\n\n' : '') + additions.join('\n\n'));
+      setKbFileNames((prev) => [...prev, ...names]);
+    }
+  };
+
   const handleConnectSource = (s: typeof documentSources[0]) => {
     setConnectingSourceId(s.id);
     setTimeout(() => {
