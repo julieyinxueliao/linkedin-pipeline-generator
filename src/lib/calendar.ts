@@ -95,12 +95,17 @@ function assetForArchetype(archetypeId: string, brief: StrategyBrief): string {
 
 export function generateCalendar(
   brief: StrategyBrief,
-  opts: { cadencePerWeek?: number; weeks?: number; startDate?: Date; weekOffset?: number; rotationOffset?: number } = {},
+  opts: { cadencePerWeek?: number; weeks?: number; startDate?: Date; weekOffset?: number; rotationOffset?: number; funnelMix?: Record<FunnelStage, number> } = {},
 ): ContentCalendar {
   const cadencePerWeek = opts.cadencePerWeek ?? 2;
   const weeks = opts.weeks ?? 4;
   const preset: Preset = brief.preset;
-  const rotation = ARCHETYPE_ROTATION[preset];
+  const totalSlots = cadencePerWeek * weeks;
+  const funnelMix = opts.funnelMix ?? brief.customMix;
+  const rotation = funnelMix
+    ? buildRotationFromMix(funnelMix, totalSlots)
+    : ARCHETYPE_ROTATION[preset];
+
 
   // Posting rules: never post on weekends, Monday morning, or Friday afternoon.
   // Allowed AM slots (08:30): Tue, Wed, Thu, Fri. Allowed PM slot (15:30): Mon.
