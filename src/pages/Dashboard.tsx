@@ -83,27 +83,8 @@ const Dashboard = () => {
           <h2 className="text-sm font-bold uppercase tracking-wider">Content Plan</h2>
         </div>
 
-        <div>
-          {/* Content Balance — inline draggable sliders */}
-          <Card>
-            <CardContent className="p-5">
-              {(() => {
-                const mix = computeMixCheck(calendar, brief.preset);
-                const target = brief.customMix || mix.funnel.target;
-                return (
-                  <InlineMixEditor
-                    current={target}
-                    actual={mix.funnel.actual}
-                    preset={mix.funnel.target}
-                    onSave={(next) => updateBrief({ customMix: next })}
-                    onReset={() => updateBrief({ customMix: undefined })}
-                    isCustom={!!brief.customMix}
-                  />
-                );
-              })()}
-            </CardContent>
-          </Card>
-        </div>
+
+
 
 
         {brief.pillars && brief.pillars.length > 0 && (

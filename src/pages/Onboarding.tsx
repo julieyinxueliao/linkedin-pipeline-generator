@@ -215,7 +215,9 @@ const Onboarding = () => {
     setVoiceTraits([]);
     setVoiceSkipped(true);
     setVoiceReady(true);
+    setOnboardingStep(4);
   };
+
 
   // Generate the strategy brief when entering step 4
   useEffect(() => {
@@ -287,7 +289,7 @@ const Onboarding = () => {
       websiteUrl,
     });
     setOnboardingComplete(true);
-    navigate('/dashboard');
+    navigate('/calendar');
   };
 
   return (
@@ -323,7 +325,7 @@ const Onboarding = () => {
                   <div className={iconBoxCls(selectedGoal === g.id)}><g.icon className="h-5 w-5" /></div>
                   <div className="text-left">
                     <span className="font-semibold text-primary-foreground block">{g.label}</span>
-                    <span className="text-xs text-primary-foreground/40 mt-0.5 block">{g.desc}</span>
+                    <span className="text-xs text-primary-foreground/80 mt-0.5 block">{g.desc}</span>
                   </div>
                 </button>
               ))}
@@ -368,7 +370,7 @@ const Onboarding = () => {
                   </div>
                   <div>
                     <div className="font-semibold text-primary-foreground text-sm">Drop files here or click to upload</div>
-                    <p className="text-xs text-primary-foreground/40 mt-1">.txt or .md files · For PDFs/decks, use paste option below</p>
+                    <p className="text-xs text-primary-foreground/80 mt-1">.txt or .md files · For PDFs/decks, use paste option below</p>
                   </div>
                   <input
                     type="file"
@@ -494,7 +496,7 @@ const Onboarding = () => {
                 </div>
                 <div>
                   <div className="font-semibold text-primary-foreground text-sm">Drop files here or click to upload</div>
-                  <p className="text-xs text-primary-foreground/40 mt-1">.txt or .md files · For PDFs/decks, paste a shareable link above</p>
+                  <p className="text-xs text-primary-foreground/80 mt-1">.txt or .md files · For PDFs/decks, paste a shareable link above</p>
                 </div>
                 <input
                   type="file"
@@ -538,23 +540,18 @@ const Onboarding = () => {
                 </div>
                 <Nav back={() => { setVoiceReady(false); setVoiceOption(null); setVoiceTraits([]); }} next={() => setOnboardingStep(4)} nextLabel="Build my plan" />
               </div>
-            ) : voiceReady && voiceSkipped ? (
-              <div className="text-center space-y-8">
-                <div className="h-16 w-16 rounded-2xl bg-warning/15 flex items-center justify-center mx-auto"><AlertTriangle className="h-8 w-8 text-warning" /></div>
-                <Header step={4} title="Voice setup skipped" subtitle="Without writing samples, we can't match your voice. Drafts will sound generic until you add samples in Settings." center />
-                <Nav back={() => { setVoiceReady(false); setVoiceSkipped(false); setVoiceOption(null); }} next={() => setOnboardingStep(4)} nextLabel="Continue without voice" />
-              </div>
             ) : !voiceOption ? (
+
               <>
                 <Header step={4} title="Teach us your voice" subtitle="So every post sounds like you wrote it — not a chatbot." />
                 <div className="grid grid-cols-2 gap-3">
                   <button onClick={() => setVoiceOption('write')} className="p-6 rounded-xl border border-primary-foreground/8 hover:border-linkedin/30 hover:bg-linkedin/[0.03] transition-all text-center space-y-4 group">
                     <div className="h-12 w-12 rounded-xl bg-linkedin/10 flex items-center justify-center mx-auto"><FileText className="h-6 w-6 text-linkedin" /></div>
-                    <div><div className="font-semibold text-primary-foreground text-sm">Answer 2 prompts</div><p className="text-xs text-primary-foreground/30 mt-1">Quick written replies</p></div>
+                    <div><div className="font-semibold text-primary-foreground text-sm">Answer 2 prompts</div><p className="text-xs text-primary-foreground/80 mt-1">Quick written replies</p></div>
                   </button>
                   <button onClick={() => setVoiceOption('upload')} className="p-6 rounded-xl border border-primary-foreground/8 hover:border-linkedin/30 hover:bg-linkedin/[0.03] transition-all text-center space-y-4 group">
                     <div className="h-12 w-12 rounded-xl bg-linkedin/10 flex items-center justify-center mx-auto"><FileUp className="h-6 w-6 text-linkedin" /></div>
-                    <div><div className="font-semibold text-primary-foreground text-sm">Paste old posts</div><p className="text-xs text-primary-foreground/30 mt-1">We learn your style</p></div>
+                    <div><div className="font-semibold text-primary-foreground text-sm">Paste old posts</div><p className="text-xs text-primary-foreground/80 mt-1">We learn your style</p></div>
                   </button>
                 </div>
                 <Nav back={() => setOnboardingStep(2)} next={handleSkipVoice} nextLabel="Skip — set up later" />
@@ -622,7 +619,7 @@ const Onboarding = () => {
                           rows={2}
                           className="bg-transparent border-none focus-visible:ring-0 text-sm text-primary-foreground/80 resize-none p-0 min-h-0 leading-snug"
                         />
-                        <button onClick={() => setEditablePovBank(povBank.filter((_, i) => i !== idx))} className="text-primary-foreground/20 hover:text-primary-foreground/60"><X className="h-3.5 w-3.5" /></button>
+                        <button onClick={() => setEditablePovBank(povBank.filter((_, i) => i !== idx))} className="text-primary-foreground/20 hover:text-primary-foreground/85"><X className="h-3.5 w-3.5" /></button>
                       </div>
                     ))}
                   </div>
@@ -637,7 +634,7 @@ const Onboarding = () => {
                           <span className="text-sm font-semibold text-primary-foreground">{p.name}</span>
                           <Badge variant="secondary" className="text-[10px] bg-primary-foreground/5 text-primary-foreground/40">{FUNNEL_STAGE_LABELS[p.funnelTilt]}</Badge>
                         </div>
-                        <p className="text-xs text-primary-foreground/40">{p.exampleAngles.join(' · ')}</p>
+                        <p className="text-xs text-primary-foreground/80">{p.exampleAngles.join(' · ')}</p>
                       </div>
                     ))}
                   </div>
@@ -649,7 +646,7 @@ const Onboarding = () => {
                     {brief.assetInventory.map((a) => (
                       <div key={a.id} className="flex items-center gap-2 text-xs">
                         <span className={cn('h-1.5 w-1.5 rounded-full shrink-0', a.hasProof ? 'bg-success' : 'bg-warning')} />
-                        <span className="text-primary-foreground/60">{a.text}</span>
+                        <span className="text-primary-foreground/85">{a.text}</span>
                         {!a.hasProof && <span className="text-warning/80 text-[10px] uppercase">add details</span>}
                       </div>
                     ))}
@@ -685,7 +682,7 @@ function Header({ step, title, subtitle, center }: { step: number; title: string
     <div className={cn('space-y-3', center && 'text-center')}>
       <p className="text-linkedin text-xs font-semibold tracking-widest uppercase">Step {step} of {TOTAL_STEPS}</p>
       <h2 className="text-3xl font-black text-primary-foreground tracking-tight">{title}</h2>
-      <p className="text-primary-foreground/40 text-sm">{subtitle}</p>
+      <p className="text-primary-foreground/80 text-sm">{subtitle}</p>
     </div>
   );
 }
@@ -693,7 +690,7 @@ function Header({ step, title, subtitle, center }: { step: number; title: string
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <label className="text-xs font-semibold text-primary-foreground/60 uppercase tracking-wider mb-2 block">{label}</label>
+      <label className="text-xs font-semibold text-primary-foreground/85 uppercase tracking-wider mb-2 block">{label}</label>
       {children}
     </div>
   );
@@ -737,7 +734,7 @@ function BriefProgress() {
         <div className="h-8 w-8 rounded-full border-2 border-linkedin border-t-transparent animate-spin" />
         <div>
           <p className="text-sm font-semibold text-primary-foreground">Building your content plan</p>
-          <p className="text-xs text-primary-foreground/40">AI is working through what you shared — usually 15–25s.</p>
+          <p className="text-xs text-primary-foreground/80">AI is working through what you shared — usually 15–25s.</p>
         </div>
       </div>
       <div className="space-y-2.5">
@@ -755,7 +752,7 @@ function BriefProgress() {
                 {state === 'active' && <span className="h-1.5 w-1.5 rounded-full bg-linkedin animate-pulse" />}
               </span>
               <span className={cn(
-                state === 'done' && 'text-primary-foreground/60',
+                state === 'done' && 'text-primary-foreground/85',
                 state === 'active' && 'text-primary-foreground font-medium',
                 state === 'pending' && 'text-primary-foreground/30',
               )}>{label}</span>
