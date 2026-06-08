@@ -289,7 +289,7 @@ const Onboarding = () => {
       websiteUrl,
     });
     setOnboardingComplete(true);
-    navigate('/dashboard');
+    navigate('/calendar');
   };
 
   return (
