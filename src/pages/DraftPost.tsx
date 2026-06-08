@@ -34,6 +34,57 @@ const DraftPost = () => {
   const [content, setContent] = useState('');
   const [isStreaming, setIsStreaming] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
+  const recognitionRef = useRef<any>(null);
+  const [isDictating, setIsDictating] = useState(false);
+  const dictationBaseRef = useRef('');
+
+  const speechSupported = typeof window !== 'undefined' && ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window);
+
+  const toggleDictation = () => {
+    if (isDictating) {
+      recognitionRef.current?.stop();
+      return;
+    }
+    if (!speechSupported) {
+      toast.error('Dictation not supported in this browser. Try Chrome.');
+      return;
+    }
+    const SR: any = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    const rec = new SR();
+    rec.continuous = true;
+    rec.interimResults = true;
+    rec.lang = 'en-US';
+    dictationBaseRef.current = content ? content.replace(/\s+$/, '') + ' ' : '';
+    rec.onresult = (event: any) => {
+      let finalText = '';
+      let interimText = '';
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const transcript = event.results[i][0].transcript;
+        if (event.results[i].isFinal) finalText += transcript;
+        else interimText += transcript;
+      }
+      if (finalText) {
+        dictationBaseRef.current += finalText;
+      }
+      setContent(dictationBaseRef.current + interimText);
+    };
+    rec.onerror = (e: any) => {
+      if (e.error !== 'aborted' && e.error !== 'no-speech') {
+        toast.error(`Dictation error: ${e.error}`);
+      }
+      setIsDictating(false);
+    };
+    rec.onend = () => setIsDictating(false);
+    recognitionRef.current = rec;
+    rec.start();
+    setIsDictating(true);
+  };
+
+  useEffect(() => {
+    return () => {
+      recognitionRef.current?.stop();
+    };
+  }, []);
 
   const runStream = async () => {
     if (!slot || !brief) return;
