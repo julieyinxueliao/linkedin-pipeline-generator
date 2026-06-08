@@ -31,11 +31,12 @@ const CalendarPage = () => {
   const extendCalendar = useAppStore((s) => s.extendCalendar);
   const updateSlot = useAppStore((s) => s.updateSlot);
   const updateDraft = useAppStore((s) => s.updateDraft);
-  const approveCalendar = useAppStore((s) => s.approveCalendar);
+  const updateBrief = useAppStore((s) => s.updateBrief);
 
   useEffect(() => {
     if (brief && !calendar) setCalendar(generateCalendar(brief));
   }, [brief, calendar, setCalendar]);
+
 
   if (!brief) {
     return (
