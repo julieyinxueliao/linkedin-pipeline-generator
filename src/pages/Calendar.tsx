@@ -1,8 +1,9 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useAppStore } from '@/lib/store';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
+import { Slider } from '@/components/ui/slider';
 import { PRESET_MIX, CTA_LABEL, ARCHETYPES, FUNNEL_STAGE_LABELS, type FunnelStage, type CtaType } from '@/lib/principles';
 import { generateCalendar, computeMixCheck } from '@/lib/calendar';
 import {
@@ -13,6 +14,7 @@ import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { SEO } from '@/components/SEO';
+
 
 const funnelColor: Record<FunnelStage, string> = {
   TOFU: 'bg-linkedin/20 text-linkedin',
