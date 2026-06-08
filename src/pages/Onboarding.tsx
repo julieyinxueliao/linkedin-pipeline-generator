@@ -220,6 +220,10 @@ const Onboarding = () => {
   // Generate the strategy brief when entering step 4
   useEffect(() => {
     if (step !== 4 || aiBrief || briefLoading) return;
+    if (!briefInputs.companyName?.trim() && !briefInputs.wedge?.trim()) {
+      setBriefError('Please complete step 1 (company name and wedge) before generating your brief.');
+      return;
+    }
     let cancelled = false;
     const timeoutCtrl = new AbortController();
     const timer = setTimeout(() => timeoutCtrl.abort(), 45_000);
