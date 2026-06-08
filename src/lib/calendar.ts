@@ -78,10 +78,6 @@ function buildRotationFromMix(mix: Record<FunnelStage, number>, length: number):
   return result;
 }
 
-  const match = pillars.find((p) => p.archetypeIds.includes(archetypeId));
-  return match ?? pillars[0];
-}
-
 function nextBusinessDay(d: Date): Date {
   const dt = new Date(d);
   dt.setDate(dt.getDate() + 1);
