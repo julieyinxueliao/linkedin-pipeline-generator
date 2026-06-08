@@ -93,13 +93,29 @@ const CalendarPage = () => {
         </div>
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={handleRegenerate}><RotateCcw className="h-3.5 w-3.5 mr-1.5" />Regenerate</Button>
-          {calendar.approvedAt ? (
-            <Badge className="bg-success/15 text-success border-success/30 h-9 px-3"><CheckCircle2 className="h-3.5 w-3.5 mr-1" />Approved</Badge>
-          ) : (
-            <Button variant="linkedin" size="sm" onClick={handleApprove}><CheckCircle2 className="h-4 w-4 mr-1.5" />Approve calendar</Button>
-          )}
         </div>
       </div>
+
+      {/* Content Balance editor */}
+      <Card className="mb-6">
+        <CardContent className="p-5">
+          {(() => {
+            const mix = computeMixCheck(calendar, brief.preset);
+            const target = brief.customMix || mix.funnel.target;
+            return (
+              <InlineMixEditor
+                current={target}
+                actual={mix.funnel.actual}
+                preset={mix.funnel.target}
+                onSave={handleSaveMix}
+                onReset={handleResetMix}
+                isCustom={!!brief.customMix}
+              />
+            );
+          })()}
+        </CardContent>
+      </Card>
+
 
       {/* Metrics */}
       {(() => {
