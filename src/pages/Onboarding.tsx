@@ -540,13 +540,8 @@ const Onboarding = () => {
                 </div>
                 <Nav back={() => { setVoiceReady(false); setVoiceOption(null); setVoiceTraits([]); }} next={() => setOnboardingStep(4)} nextLabel="Build my plan" />
               </div>
-            ) : voiceReady && voiceSkipped ? (
-              <div className="text-center space-y-8">
-                <div className="h-16 w-16 rounded-2xl bg-warning/15 flex items-center justify-center mx-auto"><AlertTriangle className="h-8 w-8 text-warning" /></div>
-                <Header step={4} title="Voice setup skipped" subtitle="Without writing samples, we can't match your voice. Drafts will sound generic until you add samples in Settings." center />
-                <Nav back={() => { setVoiceReady(false); setVoiceSkipped(false); setVoiceOption(null); }} next={() => setOnboardingStep(4)} nextLabel="Continue without voice" />
-              </div>
             ) : !voiceOption ? (
+
               <>
                 <Header step={4} title="Teach us your voice" subtitle="So every post sounds like you wrote it — not a chatbot." />
                 <div className="grid grid-cols-2 gap-3">
