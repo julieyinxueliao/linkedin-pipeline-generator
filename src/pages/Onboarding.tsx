@@ -215,7 +215,9 @@ const Onboarding = () => {
     setVoiceTraits([]);
     setVoiceSkipped(true);
     setVoiceReady(true);
+    setOnboardingStep(4);
   };
+
 
   // Generate the strategy brief when entering step 4
   useEffect(() => {
