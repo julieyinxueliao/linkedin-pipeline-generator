@@ -268,7 +268,7 @@ const Onboarding = () => {
       }
     })();
     return () => { cancelled = true; clearTimeout(timer); };
-  }, [step, briefInputs, voiceTraits, additionalContext, aiBrief, briefLoading]);
+  }, [step, briefInputs, voiceTraits, additionalContext, aiBrief, briefError]);
 
   const brief = aiBrief;
   const povBank = editablePovBank ?? brief?.povBank ?? [];
