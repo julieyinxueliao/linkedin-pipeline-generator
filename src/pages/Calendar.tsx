@@ -176,12 +176,12 @@ const CalendarPage = () => {
                         <Button
                           size="sm"
                           variant={slot.status === 'drafted' || slot.status === 'approved' || slot.status === 'published' ? 'outline' : 'linkedin'}
-                          disabled={!calendar.approvedAt}
                           onClick={() => navigate(`/draft?slot=${slot.id}`)}
                         >
                           <PenSquare className="h-3.5 w-3.5 mr-1.5" />
                           {slot.status === 'planned' ? 'Draft' : 'Edit draft'}
                         </Button>
+
                         {slot.status === 'drafted' && (
                           <Button
                             size="sm"
