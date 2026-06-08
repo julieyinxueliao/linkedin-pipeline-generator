@@ -40,6 +40,48 @@ function pickPillarForArchetype(archetypeId: string, pillars: Pillar[]): Pillar 
   return match ?? pillars[0];
 }
 
+const ARCHETYPES_BY_STAGE: Record<FunnelStage, string[]> = {
+  TOFU: ['contrarian-pov', 'lesson-learned', 'frame-shift', 'teardown', 'data-drop'],
+  MOFU: ['teardown', 'data-drop', 'frame-shift', 'customer-story', 'comment-gated'],
+  BOFU: ['customer-story', 'narrative-product', 'comment-gated'],
+};
+
+function buildRotationFromMix(mix: Record<FunnelStage, number>, length: number): string[] {
+  const stages: FunnelStage[] = ['TOFU', 'MOFU', 'BOFU'];
+  const raw = stages.map((s) => ({ stage: s, exact: (mix[s] / 100) * length }));
+  const floors = raw.map((r) => ({ ...r, count: Math.floor(r.exact), frac: r.exact - Math.floor(r.exact) }));
+  let assigned = floors.reduce((sum, r) => sum + r.count, 0);
+  floors.sort((a, b) => b.frac - a.frac);
+  let i = 0;
+  while (assigned < length) {
+    floors[i % floors.length].count += 1;
+    assigned += 1;
+    i += 1;
+  }
+  const pools = stages.map((s) => {
+    const entry = floors.find((f) => f.stage === s)!;
+    return { stage: s, remaining: entry.count, items: ARCHETYPES_BY_STAGE[s], idx: 0 };
+  });
+  const result: string[] = [];
+  while (result.length < length) {
+    let progressed = false;
+    for (const p of pools) {
+      if (p.remaining > 0 && result.length < length) {
+        result.push(p.items[p.idx % p.items.length]);
+        p.idx += 1;
+        p.remaining -= 1;
+        progressed = true;
+      }
+    }
+    if (!progressed) break;
+  }
+  return result;
+}
+
+  const match = pillars.find((p) => p.archetypeIds.includes(archetypeId));
+  return match ?? pillars[0];
+}
+
 function nextBusinessDay(d: Date): Date {
   const dt = new Date(d);
   dt.setDate(dt.getDate() + 1);
