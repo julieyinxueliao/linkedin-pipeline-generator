@@ -61,14 +61,22 @@ const CalendarPage = () => {
   }));
 
   const handleRegenerate = () => {
-    setCalendar(generateCalendar(brief));
+    setCalendar(generateCalendar(brief, { funnelMix: brief.customMix }));
     toast.success('Calendar regenerated');
   };
 
-  const handleApprove = () => {
-    approveCalendar();
-    toast.success('Calendar approved — you can draft slots now');
+  const handleSaveMix = (next: Record<FunnelStage, number>) => {
+    updateBrief({ customMix: next });
+    setCalendar(generateCalendar(brief, { funnelMix: next }));
+    toast.success('Content balance updated — calendar regenerated');
   };
+
+  const handleResetMix = () => {
+    updateBrief({ customMix: undefined });
+    setCalendar(generateCalendar(brief));
+    toast.success('Reset to preset');
+  };
+
 
   return (
     <div className="p-6 md:p-8 max-w-6xl mx-auto">
