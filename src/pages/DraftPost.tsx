@@ -303,7 +303,23 @@ const DraftPost = () => {
             </div>
             <span className="text-xs text-muted-foreground">{wordCount} words</span>
           </div>
-          <Textarea value={content} onChange={(e) => setContent(e.target.value)} rows={18} className="resize-none text-sm leading-relaxed font-mono" readOnly={isStreaming} />
+          <div className="relative">
+            <Textarea value={content} onChange={(e) => setContent(e.target.value)} rows={18} className="resize-none text-sm leading-relaxed font-mono pr-12" readOnly={isStreaming} />
+            <Button
+              type="button"
+              size="icon"
+              variant={isDictating ? 'destructive' : 'heroOutline'}
+              onClick={toggleDictation}
+              disabled={isStreaming}
+              className="absolute top-2 right-2 h-9 w-9"
+              title={isDictating ? 'Stop dictation' : 'Dictate'}
+            >
+              {isDictating ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
+            </Button>
+          </div>
+          {isDictating && (
+            <p className="text-xs text-linkedin flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-linkedin animate-pulse" /> Listening… speak naturally.</p>
+          )}
           <div className="flex gap-3">
             <Button variant="outline" onClick={handleRegenerate} disabled={isStreaming}><RotateCcw className="h-4 w-4 mr-2" />Regenerate</Button>
             <Button variant="linkedin" className="flex-1" onClick={handleSaveDraft} disabled={isStreaming || !content.trim()}>Save draft<ArrowRight className="h-4 w-4 ml-2" /></Button>
