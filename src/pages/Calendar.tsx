@@ -222,12 +222,10 @@ const CalendarPage = () => {
           </div>
         );
       })()}
-      {!calendar.approvedAt && (
-        <p className="text-xs text-muted-foreground text-center mt-8">Approve the calendar to unlock drafting.</p>
-      )}
     </div>
   );
 };
+
 
 function StatCard({ label, value, icon: Icon }: { label: string; value: string | number; icon: any }) {
   return (
