@@ -239,5 +239,128 @@ function StatCard({ label, value, icon: Icon }: { label: string; value: string |
   );
 }
 
+function InlineMixEditor({
+  current,
+  actual,
+  preset,
+  onSave,
+  onReset,
+  isCustom,
+}: {
+  current: Record<FunnelStage, number>;
+  actual: Record<FunnelStage, number>;
+  preset: Record<FunnelStage, number>;
+  onSave: (next: Record<FunnelStage, number>) => void;
+  onReset: () => void;
+  isCustom: boolean;
+}) {
+  const [draft, setDraft] = useState<Record<FunnelStage, number>>(current);
+
+  useEffect(() => {
+    setDraft(current);
+  }, [current.TOFU, current.MOFU, current.BOFU]);
+
+  const total = draft.TOFU + draft.MOFU + draft.BOFU;
+  const valid = total === 100;
+  const dirty =
+    draft.TOFU !== current.TOFU || draft.MOFU !== current.MOFU || draft.BOFU !== current.BOFU;
+
+  const handleChange = (key: FunnelStage, value: number) => {
+    const v = Math.max(0, Math.min(100, Math.round(value)));
+    const others = (['TOFU', 'MOFU', 'BOFU'] as FunnelStage[]).filter((k) => k !== key);
+    const remaining = 100 - v;
+    const othersTotal = draft[others[0]] + draft[others[1]];
+    let a: number, b: number;
+    if (othersTotal === 0) {
+      a = Math.round(remaining / 2);
+      b = remaining - a;
+    } else {
+      a = Math.round((draft[others[0]] / othersTotal) * remaining);
+      b = remaining - a;
+    }
+    setDraft({ ...draft, [key]: v, [others[0]]: a, [others[1]]: b } as Record<FunnelStage, number>);
+  };
+
+  const save = () => {
+    if (!valid) {
+      toast.error('Must total 100%');
+      return;
+    }
+    onSave(draft);
+  };
+
+  return (
+    <div>
+      <div className="flex items-center justify-between gap-2 mb-4">
+        <div className="flex items-center gap-2">
+          <Sparkles className="h-3.5 w-3.5 text-linkedin" />
+          <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+            Content balance — drag to adjust how your posts are split
+          </p>
+        </div>
+        {isCustom && !dirty && (
+          <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={onReset}>
+            <RotateCcw className="h-3 w-3 mr-1" />Reset to preset
+          </Button>
+        )}
+      </div>
+
+      <div className="space-y-5">
+        {(['TOFU', 'MOFU', 'BOFU'] as FunnelStage[]).map((k) => {
+          const delta = draft[k] - current[k];
+          const diff = actual[k] - draft[k];
+          const ok = Math.abs(diff) <= 10;
+          return (
+            <div key={k} className="space-y-1.5">
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-sm font-semibold text-foreground">{FUNNEL_STAGE_LABELS[k]}</span>
+                <div className="flex items-center gap-2">
+                  {delta !== 0 && (
+                    <span className={cn('text-[10px] font-mono', delta > 0 ? 'text-success' : 'text-destructive')}>
+                      {delta > 0 ? '+' : ''}{delta}
+                    </span>
+                  )}
+                  <span className="text-xs font-mono text-foreground w-10 text-right">{draft[k]}%</span>
+                </div>
+              </div>
+              <Slider value={[draft[k]]} min={0} max={100} step={1} onValueChange={(v) => handleChange(k, v[0])} />
+              <div className="flex justify-between text-[10px] text-muted-foreground">
+                <span>Preset {preset[k]}%</span>
+                <span className={cn(ok ? 'text-muted-foreground' : 'text-destructive')}>
+                  Actual posts: {actual[k]}%
+                </span>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="mt-5 rounded-md border border-border bg-muted/30 p-3 space-y-2">
+        <div className="flex items-center justify-between">
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+            {dirty ? 'Preview of new split' : 'Current split'}
+          </p>
+          <span className={cn('text-[10px] font-mono', valid ? 'text-muted-foreground' : 'text-destructive')}>
+            Total {total}%
+          </span>
+        </div>
+        <div className="flex h-2 w-full overflow-hidden rounded-full bg-muted">
+          <div className="bg-linkedin" style={{ width: `${draft.TOFU}%` }} />
+          <div className="bg-linkedin/70" style={{ width: `${draft.MOFU}%` }} />
+          <div className="bg-linkedin/40" style={{ width: `${draft.BOFU}%` }} />
+        </div>
+      </div>
+
+      {dirty && (
+        <div className="mt-4 flex items-center justify-end gap-2">
+          <Button variant="ghost" size="sm" onClick={() => setDraft(current)}>Cancel</Button>
+          <Button variant="linkedin" size="sm" onClick={save} disabled={!valid}>Save & regenerate</Button>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default CalendarPage;
+
 
