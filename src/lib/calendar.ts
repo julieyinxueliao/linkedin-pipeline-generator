@@ -140,9 +140,12 @@ export function generateCalendar(
   const preset: Preset = brief.preset;
   const totalSlots = cadencePerWeek * weeks;
   const funnelMix = opts.funnelMix ?? brief.customMix;
-  const rotation = funnelMix
+  const rotation: { archId: string; stage: FunnelStage }[] = funnelMix
     ? buildRotationFromMix(funnelMix, totalSlots)
-    : ARCHETYPE_ROTATION[preset];
+    : ARCHETYPE_ROTATION[preset].map((archId) => ({
+        archId,
+        stage: ARCHETYPE_BY_ID[archId].funnel[0],
+      }));
 
 
   // Posting rules: never post on weekends, Monday morning, or Friday afternoon.
@@ -168,10 +171,10 @@ export function generateCalendar(
     const weekStart = new Date(cursor);
     weekStart.setDate(cursor.getDate() + (w - 1) * 7);
     for (const dow of dayPattern) {
-      const archId = rotation[i % rotation.length];
+      const { archId, stage } = rotation[i % rotation.length];
       const arch = ARCHETYPE_BY_ID[archId];
       const pillar = pickPillarForArchetype(archId, brief.pillars);
-      const funnelStage: FunnelStage = arch.funnel[0];
+      const funnelStage: FunnelStage = stage;
       const date = new Date(weekStart);
       date.setDate(weekStart.getDate() + (dow - 1));
       slots.push({
