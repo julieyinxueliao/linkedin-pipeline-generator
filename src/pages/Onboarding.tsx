@@ -453,7 +453,7 @@ const Onboarding = () => {
                   )}
                   <Field label="Company name"><Input value={companyName} onChange={(e) => setCompanyName(e.target.value)} className={inputCls} /></Field>
                   
-                  <Field label="YOUR PRODUCT"><Input value={wedge} onChange={(e) => setWedge(e.target.value)} className={inputCls} /></Field>
+                  <Field label="YOUR PRODUCT"><Textarea value={wedge} onChange={(e) => setWedge(e.target.value)} className={inputCls} rows={4} /></Field>
                   <Field label="YOUR TARGET USER (JOB TITLES)"><Input value={icpTitles} onChange={(e) => setIcpTitles(e.target.value)} className={inputCls} /></Field>
                   <Field label="YOUR TARGET COMPANY (SIZE, INDUSTRY, ETC.)"><Input value={icpCompanyType} onChange={(e) => setIcpCompanyType(e.target.value)} className={inputCls} /></Field>
                 </div>
