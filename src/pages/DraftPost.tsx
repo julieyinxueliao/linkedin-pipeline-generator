@@ -188,13 +188,13 @@ const DraftPost = () => {
     );
   }
 
-  if (!calendar || !calendar.approvedAt) {
+  if (!calendar) {
     return (
       <div className="p-8 max-w-2xl mx-auto text-center space-y-4">
         <AlertCircle className="h-10 w-10 text-muted-foreground mx-auto" />
-        <h2 className="text-xl font-bold">Approve a calendar before drafting</h2>
+        <h2 className="text-xl font-bold">Generate a calendar before drafting</h2>
         <p className="text-muted-foreground text-sm">Drafts are anchored to calendar slots — that keeps every post on-strategy.</p>
-        <Button variant="linkedin" onClick={() => navigate('/dashboard')}>Open calendar</Button>
+        <Button variant="linkedin" onClick={() => navigate('/calendar')}>Open calendar</Button>
       </div>
     );
   }

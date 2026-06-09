@@ -46,7 +46,7 @@ const ARCHETYPES_BY_STAGE: Record<FunnelStage, string[]> = {
   BOFU: ['customer-story', 'narrative-product', 'comment-gated'],
 };
 
-function buildRotationFromMix(mix: Record<FunnelStage, number>, length: number): string[] {
+function buildRotationFromMix(mix: Record<FunnelStage, number>, length: number): { archId: string; stage: FunnelStage }[] {
   const stages: FunnelStage[] = ['TOFU', 'MOFU', 'BOFU'];
   const raw = stages.map((s) => ({ stage: s, exact: (mix[s] / 100) * length }));
   const floors = raw.map((r) => ({ ...r, count: Math.floor(r.exact), frac: r.exact - Math.floor(r.exact) }));
@@ -62,12 +62,12 @@ function buildRotationFromMix(mix: Record<FunnelStage, number>, length: number):
     const entry = floors.find((f) => f.stage === s)!;
     return { stage: s, remaining: entry.count, items: ARCHETYPES_BY_STAGE[s], idx: 0 };
   });
-  const result: string[] = [];
+  const result: { archId: string; stage: FunnelStage }[] = [];
   while (result.length < length) {
     let progressed = false;
     for (const p of pools) {
       if (p.remaining > 0 && result.length < length) {
-        result.push(p.items[p.idx % p.items.length]);
+        result.push({ archId: p.items[p.idx % p.items.length], stage: p.stage });
         p.idx += 1;
         p.remaining -= 1;
         progressed = true;
@@ -140,9 +140,12 @@ export function generateCalendar(
   const preset: Preset = brief.preset;
   const totalSlots = cadencePerWeek * weeks;
   const funnelMix = opts.funnelMix ?? brief.customMix;
-  const rotation = funnelMix
+  const rotation: { archId: string; stage: FunnelStage }[] = funnelMix
     ? buildRotationFromMix(funnelMix, totalSlots)
-    : ARCHETYPE_ROTATION[preset];
+    : ARCHETYPE_ROTATION[preset].map((archId) => ({
+        archId,
+        stage: ARCHETYPE_BY_ID[archId].funnel[0],
+      }));
 
 
   // Posting rules: never post on weekends, Monday morning, or Friday afternoon.
@@ -168,10 +171,10 @@ export function generateCalendar(
     const weekStart = new Date(cursor);
     weekStart.setDate(cursor.getDate() + (w - 1) * 7);
     for (const dow of dayPattern) {
-      const archId = rotation[i % rotation.length];
+      const { archId, stage } = rotation[i % rotation.length];
       const arch = ARCHETYPE_BY_ID[archId];
       const pillar = pickPillarForArchetype(archId, brief.pillars);
-      const funnelStage: FunnelStage = arch.funnel[0];
+      const funnelStage: FunnelStage = stage;
       const date = new Date(weekStart);
       date.setDate(weekStart.getDate() + (dow - 1));
       slots.push({
