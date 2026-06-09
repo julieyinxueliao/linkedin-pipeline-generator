@@ -593,7 +593,10 @@ const Onboarding = () => {
             {briefError && !briefLoading && (
               <div className="p-4 rounded-xl border border-destructive/30 bg-destructive/10 text-sm text-destructive">
                 {briefError}
-                <Button variant="outline" size="sm" className="ml-3" onClick={() => { setAiBrief(null); setBriefError(null); }}>Retry</Button>
+                <div className="mt-3 flex gap-2">
+                  <Button variant="outline" size="sm" onClick={() => { setAiBrief(null); setBriefError(null); setOnboardingStep(0); }}>Back to start</Button>
+                  <Button variant="outline" size="sm" onClick={() => { setAiBrief(null); setBriefError(null); }}>Retry</Button>
+                </div>
               </div>
             )}
 
