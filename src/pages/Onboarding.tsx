@@ -219,6 +219,13 @@ const Onboarding = () => {
   };
 
 
+  // If we land on step 4 without form data (e.g. after a refresh), send the user back to step 1.
+  useEffect(() => {
+    if (step === 4 && !companyName.trim() && !wedge.trim()) {
+      setOnboardingStep(0);
+    }
+  }, [step, companyName, wedge, setOnboardingStep]);
+
   // Generate the strategy brief when entering step 4
   useEffect(() => {
     if (step !== 4 || aiBrief || briefLoading || briefError) return;
@@ -593,7 +600,10 @@ const Onboarding = () => {
             {briefError && !briefLoading && (
               <div className="p-4 rounded-xl border border-destructive/30 bg-destructive/10 text-sm text-destructive">
                 {briefError}
-                <Button variant="outline" size="sm" className="ml-3" onClick={() => { setAiBrief(null); setBriefError(null); }}>Retry</Button>
+                <div className="mt-3 flex gap-2">
+                  <Button variant="outline" size="sm" onClick={() => { setAiBrief(null); setBriefError(null); setOnboardingStep(0); }}>Back to start</Button>
+                  <Button variant="outline" size="sm" onClick={() => { setAiBrief(null); setBriefError(null); }}>Retry</Button>
+                </div>
               </div>
             )}
 
