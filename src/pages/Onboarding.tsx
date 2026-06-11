@@ -308,7 +308,7 @@ const Onboarding = () => {
         {/* Progress */}
         <div className="flex items-center gap-2 mb-10 justify-center">
           {Array.from({ length: TOTAL_STEPS }).map((_, i) => (
-            <div key={i} className={cn('h-1 rounded-full transition-all duration-500', i <= step ? 'bg-linkedin w-12' : 'bg-primary-foreground/10 w-6')} />
+            <div key={i} className={cn('h-1 rounded-full transition-all duration-500', i < step ? 'bg-linkedin w-12' : 'bg-primary-foreground/10 w-6')} />
           ))}
         </div>
 
