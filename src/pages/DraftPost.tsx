@@ -281,7 +281,7 @@ const DraftPost = () => {
         <div className="text-center space-y-4 py-16 animate-fade-in">
           <Sparkles className="h-10 w-10 text-linkedin mx-auto animate-pulse" />
           <h2 className="text-lg font-semibold text-foreground">Drafting from {arch.name}…</h2>
-          <p className="text-sm text-muted-foreground">GPT-5 is writing in your voice. First tokens in a few seconds.</p>
+          <p className="text-sm text-muted-foreground">GPT-5 is writing in your style. First tokens in a few seconds.</p>
         </div>
       )}
 
