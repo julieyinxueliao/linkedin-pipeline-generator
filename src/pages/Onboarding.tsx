@@ -509,7 +509,7 @@ const Onboarding = () => {
             {isAnalyzing ? (
               <div className="text-center space-y-5 py-16">
                 <div className="h-12 w-12 rounded-full border-2 border-linkedin border-t-transparent animate-spin mx-auto" />
-                <h2 className="text-xl font-bold text-primary-foreground">Learning your voice…</h2>
+                <h2 className="text-xl font-bold text-primary-foreground">Learning your writing style…</h2>
               </div>
             ) : voiceReady && !voiceSkipped ? (
               <div className="text-center space-y-8">
