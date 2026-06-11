@@ -273,7 +273,7 @@ const DraftPost = () => {
       {!hasVoice && (
         <div className="mb-4 p-3 rounded-lg border border-warning/30 bg-warning/10 text-xs text-warning flex items-start gap-2">
           <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
-          <div>Voice unconfirmed — drafted in a clean operator tone. Add sample posts in onboarding to calibrate.</div>
+          <div>Writing style unconfirmed — drafted in a clean operator tone. Add sample posts in onboarding to calibrate.</div>
         </div>
       )}
 
