@@ -218,7 +218,7 @@ const Onboarding = () => {
   // If we land on step 4 without form data (e.g. after a refresh), send the user back to step 1.
   useEffect(() => {
     if (step === 4 && !companyName.trim() && !wedge.trim()) {
-      setOnboardingStep(0);
+      setOnboardingStep(1);
     }
   }, [step, companyName, wedge, setOnboardingStep]);
 
