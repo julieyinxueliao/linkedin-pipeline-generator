@@ -436,7 +436,7 @@ const Onboarding = () => {
         {step === 2 && (
           <div className="animate-fade-in space-y-8">
             <Header
-              step={3}
+              step={2}
               title="Add your knowledge base"
               subtitle="Whitepapers, meeting notes, business plans, pitch decks — anything you want us to mine for tailored content. Separate from the company docs you uploaded earlier."
             />
