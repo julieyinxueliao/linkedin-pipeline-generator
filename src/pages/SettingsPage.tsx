@@ -72,7 +72,7 @@ const SettingsPage = () => {
       </Card>
 
       <Card>
-        <CardHeader><CardTitle className="text-base">Voice Profile</CardTitle></CardHeader>
+        <CardHeader><CardTitle className="text-base">Writing Style Profile</CardTitle></CardHeader>
         <CardContent className="space-y-3">
           <p className="text-xs text-muted-foreground">Edit how your posts should sound. Add or remove traits anytime.</p>
           <div className="space-y-2">
