@@ -95,11 +95,11 @@ const SettingsPage = () => {
               value={newTrait}
               onChange={(e) => setNewTrait(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleAddTrait()}
-              placeholder="Add a voice trait — e.g. Punchy, no jargon"
+              placeholder="Add a writing style trait — e.g. Punchy, no jargon"
             />
             <Button variant="outline" size="icon" onClick={handleAddTrait}><Plus className="h-4 w-4" /></Button>
           </div>
-          <Button variant="linkedin" size="sm" onClick={handleSave}>Save voice profile</Button>
+          <Button variant="linkedin" size="sm" onClick={handleSave}>Save writing style profile</Button>
         </CardContent>
       </Card>
 
