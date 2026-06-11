@@ -562,7 +562,7 @@ const Onboarding = () => {
         {/* Step 4 — Strategy Brief review */}
         {step === 4 && (
           <div className="animate-fade-in space-y-8">
-            <Header step={5} title="Your content plan" subtitle="Check it over and tweak anything. Every post we draft starts here." />
+            <Header step={4} title="Your content plan" subtitle="Check it over and tweak anything. Every post we draft starts here." />
 
             {briefLoading && <BriefProgress />}
 
