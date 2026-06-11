@@ -10,17 +10,11 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import {
-  Target, User, FileText, Check, ArrowRight, Link2, FileUp, X, Sparkles, Loader2,
+  FileText, Check, ArrowRight, Link2, FileUp, X, Sparkles, Loader2,
   Globe, AlertTriangle, FolderOpen, BookOpen, Database, Library, ChevronDown, UploadCloud,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { SEO } from '@/components/SEO';
-
-const goals = [
-  { id: 'sell', label: 'Get leads for my product', desc: 'Use posts to bring in customers and close deals', icon: Target },
-  { id: 'brand', label: 'Get known in my space', desc: 'Become a recognized voice in your industry', icon: User },
-  { id: 'other', label: 'Something else', desc: 'Tell us what you want to get out of posting', icon: FileText },
-];
 
 const documentSources = [
   { id: 'google-drive', name: 'Google Drive', Icon: FolderOpen, desc: 'Docs, slides, and spreadsheets' },
@@ -29,16 +23,18 @@ const documentSources = [
   { id: 'confluence', name: 'Confluence', Icon: Library, desc: 'Team knowledge base' },
 ];
 
-const TOTAL_STEPS = 5;
+const TOTAL_STEPS = 4;
+
+// Default goal — lead generation. We no longer ask users to pick.
+const DEFAULT_GOAL = 'sell';
 
 const Onboarding = () => {
   const navigate = useNavigate();
   const { currentOnboardingStep, setOnboardingStep, updateProfile, setOnboardingComplete, setBrief } = useAppStore();
   const step = currentOnboardingStep;
 
-  // Step 0 — Goal
-  const [selectedGoal, setSelectedGoal] = useState('');
-  const [customGoal, setCustomGoal] = useState('');
+  // Goal is fixed; no UI step for it.
+  const selectedGoal = DEFAULT_GOAL;
 
   // Step 1 — Company website + source documents/text
   const [websiteUrl, setWebsiteUrl] = useState('');
@@ -221,8 +217,12 @@ const Onboarding = () => {
 
   // If we land on step 4 without form data (e.g. after a refresh), send the user back to step 1.
   useEffect(() => {
+    if (step === 0) {
+      setOnboardingStep(1);
+      return;
+    }
     if (step === 4 && !companyName.trim() && !wedge.trim()) {
-      setOnboardingStep(0);
+      setOnboardingStep(1);
     }
   }, [step, companyName, wedge, setOnboardingStep]);
 
@@ -287,7 +287,7 @@ const Onboarding = () => {
     const finalBrief = { ...brief, povBank };
     setBrief(finalBrief);
     updateProfile({
-      goal: selectedGoal === 'other' ? customGoal : selectedGoal,
+      goal: selectedGoal,
       role: selectedGoal,
       industry: wedge,
       voiceStyle: voiceTraits,
@@ -312,42 +312,15 @@ const Onboarding = () => {
         {/* Progress */}
         <div className="flex items-center gap-2 mb-10 justify-center">
           {Array.from({ length: TOTAL_STEPS }).map((_, i) => (
-            <div key={i} className={cn('h-1 rounded-full transition-all duration-500', i <= step ? 'bg-linkedin w-12' : 'bg-primary-foreground/10 w-6')} />
+            <div key={i} className={cn('h-1 rounded-full transition-all duration-500', i < step ? 'bg-linkedin w-12' : 'bg-primary-foreground/10 w-6')} />
           ))}
         </div>
 
-        {/* Step 0 — Goal */}
-        {step === 0 && (
-          <div className="animate-fade-in space-y-8">
-            <div className="rounded-xl border border-linkedin/20 bg-linkedin/[0.04] p-4">
-              <p className="text-[0.7rem] font-semibold tracking-[0.08em] uppercase text-linkedin mb-1.5">The playbook</p>
-              <p className="text-sm text-primary-foreground/70 leading-[1.6]">
-                You're a founder with real expertise. We turn it into posts people actually read — using the same approach that's worked for teams like Clay, Unify, and AirOps.
-              </p>
-            </div>
-            <Header step={1} title="What's your goal?" subtitle="Pick what matters most — this shapes what we'll help you post." />
-            <div className="space-y-3">
-              {goals.map((g) => (
-                <button key={g.id} onClick={() => setSelectedGoal(g.id)} className={cardCls(selectedGoal === g.id)}>
-                  <div className={iconBoxCls(selectedGoal === g.id)}><g.icon className="h-5 w-5" /></div>
-                  <div className="text-left">
-                    <span className="font-semibold text-primary-foreground block">{g.label}</span>
-                    <span className="text-xs text-primary-foreground/80 mt-0.5 block">{g.desc}</span>
-                  </div>
-                </button>
-              ))}
-              {selectedGoal === 'other' && (
-                <Input value={customGoal} onChange={(e) => setCustomGoal(e.target.value)} placeholder="What are you trying to achieve?" className="bg-primary-foreground/5 border-primary-foreground/10 text-primary-foreground h-12" />
-              )}
-            </div>
-            <Button variant="linkedin" size="lg" className="w-full h-12 font-semibold" disabled={!selectedGoal || (selectedGoal === 'other' && !customGoal)} onClick={() => setOnboardingStep(1)}>Continue<ArrowRight className="h-4 w-4 ml-1" /></Button>
-          </div>
-        )}
 
         {/* Step 1 — Website + sources */}
         {step === 1 && (
           <div className="animate-fade-in space-y-8">
-            <Header step={2} title="About your products" subtitle="Paste your website and drop in any docs — pitch deck, business plan, one-pager. We'll pull out the essentials." />
+            <Header step={1} title="About your products" subtitle="Paste your website and drop in any docs — pitch deck, business plan, one-pager. We'll pull out the essentials." />
             <div className="space-y-4">
               <Field label="Company website">
                 <div className="relative">
@@ -467,7 +440,7 @@ const Onboarding = () => {
         {step === 2 && (
           <div className="animate-fade-in space-y-8">
             <Header
-              step={3}
+              step={2}
               title="Add your knowledge base"
               subtitle="Whitepapers, meeting notes, business plans, pitch decks — anything you want us to mine for tailored content. Separate from the company docs you uploaded earlier."
             />
@@ -541,7 +514,7 @@ const Onboarding = () => {
             ) : voiceReady && !voiceSkipped ? (
               <div className="text-center space-y-8">
                 <div className="h-16 w-16 rounded-2xl bg-success/15 flex items-center justify-center mx-auto"><Check className="h-8 w-8 text-success" /></div>
-                <Header step={4} title="Voice captured" subtitle="Every draft will sound like you." center />
+                <Header step={3} title="Voice captured" subtitle="Every draft will sound like you." center />
                 <div className="bg-primary-foreground/[0.03] border border-primary-foreground/8 rounded-xl p-5 space-y-3 text-left">
                   {voiceTraits.map((trait, i) => (<div key={i} className="flex items-center gap-3"><div className="h-1.5 w-1.5 rounded-full bg-linkedin shrink-0" /><span className="text-sm text-primary-foreground/70">{trait}</span></div>))}
                 </div>
@@ -550,7 +523,7 @@ const Onboarding = () => {
             ) : !voiceOption ? (
 
               <>
-                <Header step={4} title="Teach us your voice" subtitle="So every post sounds like you wrote it — not a chatbot." />
+                <Header step={3} title="Teach us your voice" subtitle="So every post sounds like you wrote it — not a chatbot." />
                 <div className="grid grid-cols-2 gap-3">
                   <button onClick={() => setVoiceOption('write')} className="p-6 rounded-xl border border-primary-foreground/8 hover:border-linkedin/30 hover:bg-linkedin/[0.03] transition-all text-center space-y-4 group">
                     <div className="h-12 w-12 rounded-xl bg-linkedin/10 flex items-center justify-center mx-auto"><FileText className="h-6 w-6 text-linkedin" /></div>
@@ -593,7 +566,7 @@ const Onboarding = () => {
         {/* Step 4 — Strategy Brief review */}
         {step === 4 && (
           <div className="animate-fade-in space-y-8">
-            <Header step={5} title="Your content plan" subtitle="Check it over and tweak anything. Every post we draft starts here." />
+            <Header step={4} title="Your content plan" subtitle="Check it over and tweak anything. Every post we draft starts here." />
 
             {briefLoading && <BriefProgress />}
 

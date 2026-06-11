@@ -68,7 +68,7 @@ export const useAppStore = create<AppState>()(
   persist(
     (set) => ({
       onboardingComplete: false,
-      currentOnboardingStep: 0,
+      currentOnboardingStep: 1,
       profile: initialProfile,
       brief: null,
       calendar: null,
@@ -100,7 +100,7 @@ export const useAppStore = create<AppState>()(
       resetAll: () =>
         set({
           onboardingComplete: false,
-          currentOnboardingStep: 0,
+          currentOnboardingStep: 1,
           profile: initialProfile,
           brief: null,
           calendar: null,
