@@ -316,7 +316,7 @@ const Onboarding = () => {
         {/* Step 1 — Website + sources */}
         {step === 1 && (
           <div className="animate-fade-in space-y-8">
-            <Header step={2} title="About your products" subtitle="Paste your website and drop in any docs — pitch deck, business plan, one-pager. We'll pull out the essentials." />
+            <Header step={1} title="About your products" subtitle="Paste your website and drop in any docs — pitch deck, business plan, one-pager. We'll pull out the essentials." />
             <div className="space-y-4">
               <Field label="Company website">
                 <div className="relative">
