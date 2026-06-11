@@ -10,17 +10,11 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import {
-  Target, User, FileText, Check, ArrowRight, Link2, FileUp, X, Sparkles, Loader2,
+  FileText, Check, ArrowRight, Link2, FileUp, X, Sparkles, Loader2,
   Globe, AlertTriangle, FolderOpen, BookOpen, Database, Library, ChevronDown, UploadCloud,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { SEO } from '@/components/SEO';
-
-const goals = [
-  { id: 'sell', label: 'Get leads for my product', desc: 'Use posts to bring in customers and close deals', icon: Target },
-  { id: 'brand', label: 'Get known in my space', desc: 'Become a recognized voice in your industry', icon: User },
-  { id: 'other', label: 'Something else', desc: 'Tell us what you want to get out of posting', icon: FileText },
-];
 
 const documentSources = [
   { id: 'google-drive', name: 'Google Drive', Icon: FolderOpen, desc: 'Docs, slides, and spreadsheets' },
@@ -29,16 +23,18 @@ const documentSources = [
   { id: 'confluence', name: 'Confluence', Icon: Library, desc: 'Team knowledge base' },
 ];
 
-const TOTAL_STEPS = 5;
+const TOTAL_STEPS = 4;
+
+// Default goal — lead generation. We no longer ask users to pick.
+const DEFAULT_GOAL = 'sell';
 
 const Onboarding = () => {
   const navigate = useNavigate();
   const { currentOnboardingStep, setOnboardingStep, updateProfile, setOnboardingComplete, setBrief } = useAppStore();
   const step = currentOnboardingStep;
 
-  // Step 0 — Goal
-  const [selectedGoal, setSelectedGoal] = useState('');
-  const [customGoal, setCustomGoal] = useState('');
+  // Goal is fixed; no UI step for it.
+  const selectedGoal = DEFAULT_GOAL;
 
   // Step 1 — Company website + source documents/text
   const [websiteUrl, setWebsiteUrl] = useState('');
