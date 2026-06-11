@@ -546,7 +546,7 @@ const Onboarding = () => {
                   {currentPrompt === 0 ? (
                     <Button variant="linkedin" disabled={!samplePost1} onClick={() => setCurrentPrompt(1)}>Next<ArrowRight className="h-3.5 w-3.5 ml-1" /></Button>
                   ) : (
-                    <Button variant="linkedin" disabled={!samplePost2} onClick={handleAnalyzeVoice}>Learn my voice</Button>
+                    <Button variant="linkedin" disabled={!samplePost2} onClick={handleAnalyzeVoice}>Learn my writing style</Button>
                   )}
                 </div>
               </div>
