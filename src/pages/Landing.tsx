@@ -65,7 +65,7 @@ const Landing = () => {
           <div className="animate-fade-in flex items-center justify-center gap-8 pt-4">
             {[
               { icon: Clock, text: '5 min setup' },
-              { icon: Shield, text: 'Your voice, not AI slop' },
+              { icon: Shield, text: 'Your writing style, not AI slop' },
               { icon: Zap, text: 'Posts in seconds' },
             ].map((item) => (
               <div key={item.text} className="flex items-center gap-2 text-primary-foreground/30 text-xs font-medium">
