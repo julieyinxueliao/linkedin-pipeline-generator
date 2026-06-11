@@ -303,7 +303,7 @@ const Onboarding = () => {
     <div className="min-h-screen gradient-hero flex flex-col items-center justify-center px-4 py-10 relative overflow-hidden">
       <SEO
         title="Onboarding — set up your LinkedIn strategy | Brand Builder"
-        description="Tell us your goal, voice, and company context. Brand Builder generates a customized LinkedIn content strategy in minutes."
+        description="Tell us your goal, writing style, and company context. Brand Builder generates a customized LinkedIn content strategy in minutes."
         path="/onboarding"
         noindex
       />
