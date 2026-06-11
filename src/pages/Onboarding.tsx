@@ -283,7 +283,7 @@ const Onboarding = () => {
     const finalBrief = { ...brief, povBank };
     setBrief(finalBrief);
     updateProfile({
-      goal: selectedGoal === 'other' ? customGoal : selectedGoal,
+      goal: selectedGoal,
       role: selectedGoal,
       industry: wedge,
       voiceStyle: voiceTraits,
