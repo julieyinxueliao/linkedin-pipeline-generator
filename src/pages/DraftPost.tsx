@@ -273,7 +273,7 @@ const DraftPost = () => {
       {!hasVoice && (
         <div className="mb-4 p-3 rounded-lg border border-warning/30 bg-warning/10 text-xs text-warning flex items-start gap-2">
           <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
-          <div>Voice unconfirmed — drafted in a clean operator tone. Add sample posts in onboarding to calibrate.</div>
+          <div>Writing style unconfirmed — drafted in a clean operator tone. Add sample posts in onboarding to calibrate.</div>
         </div>
       )}
 
@@ -281,7 +281,7 @@ const DraftPost = () => {
         <div className="text-center space-y-4 py-16 animate-fade-in">
           <Sparkles className="h-10 w-10 text-linkedin mx-auto animate-pulse" />
           <h2 className="text-lg font-semibold text-foreground">Drafting from {arch.name}…</h2>
-          <p className="text-sm text-muted-foreground">GPT-5 is writing in your voice. First tokens in a few seconds.</p>
+          <p className="text-sm text-muted-foreground">GPT-5 is writing in your style. First tokens in a few seconds.</p>
         </div>
       )}
 

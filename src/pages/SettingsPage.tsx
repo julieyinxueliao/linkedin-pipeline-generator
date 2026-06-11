@@ -50,8 +50,8 @@ const SettingsPage = () => {
   return (
     <div className="p-6 md:p-8 max-w-2xl mx-auto space-y-6">
       <SEO
-        title="Settings — profile, voice, and company | Brand Builder"
-        description="Manage your profile, voice traits, and company context. Update anything captured during onboarding."
+        title="Settings — profile, writing style, and company | Brand Builder"
+        description="Manage your profile, writing style traits, and company context. Update anything captured during onboarding."
         path="/settings"
         noindex
       />
@@ -72,7 +72,7 @@ const SettingsPage = () => {
       </Card>
 
       <Card>
-        <CardHeader><CardTitle className="text-base">Voice Profile</CardTitle></CardHeader>
+        <CardHeader><CardTitle className="text-base">Writing Style Profile</CardTitle></CardHeader>
         <CardContent className="space-y-3">
           <p className="text-xs text-muted-foreground">Edit how your posts should sound. Add or remove traits anytime.</p>
           <div className="space-y-2">
@@ -95,11 +95,11 @@ const SettingsPage = () => {
               value={newTrait}
               onChange={(e) => setNewTrait(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleAddTrait()}
-              placeholder="Add a voice trait — e.g. Punchy, no jargon"
+              placeholder="Add a writing style trait — e.g. Punchy, no jargon"
             />
             <Button variant="outline" size="icon" onClick={handleAddTrait}><Plus className="h-4 w-4" /></Button>
           </div>
-          <Button variant="linkedin" size="sm" onClick={handleSave}>Save voice profile</Button>
+          <Button variant="linkedin" size="sm" onClick={handleSave}>Save writing style profile</Button>
         </CardContent>
       </Card>
 

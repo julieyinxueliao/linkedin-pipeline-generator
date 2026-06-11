@@ -33,7 +33,7 @@ const Dashboard = () => {
         <AlertCircle className="h-10 w-10 text-muted-foreground mx-auto" />
         <h2 className="text-2xl font-black tracking-tight">Turn what you know into LinkedIn posts.</h2>
         <p className="text-muted-foreground text-sm max-w-md mx-auto leading-relaxed">
-          A simple content plan, built around your company. Tell us about your product, voice, and goals — we'll generate a 4-week calendar and post drafts that sound like you.
+          A simple content plan, built around your company. Tell us about your product, writing style, and goals — we'll generate a 4-week calendar and post drafts that sound like you.
         </p>
         <Button variant="linkedin" onClick={() => navigate('/onboarding')}>Start onboarding</Button>
       </div>

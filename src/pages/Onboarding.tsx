@@ -303,7 +303,7 @@ const Onboarding = () => {
     <div className="min-h-screen gradient-hero flex flex-col items-center justify-center px-4 py-10 relative overflow-hidden">
       <SEO
         title="Onboarding — set up your LinkedIn strategy | Brand Builder"
-        description="Tell us your goal, voice, and company context. Brand Builder generates a customized LinkedIn content strategy in minutes."
+        description="Tell us your goal, writing style, and company context. Brand Builder generates a customized LinkedIn content strategy in minutes."
         path="/onboarding"
         noindex
       />
@@ -509,12 +509,12 @@ const Onboarding = () => {
             {isAnalyzing ? (
               <div className="text-center space-y-5 py-16">
                 <div className="h-12 w-12 rounded-full border-2 border-linkedin border-t-transparent animate-spin mx-auto" />
-                <h2 className="text-xl font-bold text-primary-foreground">Learning your voice…</h2>
+                <h2 className="text-xl font-bold text-primary-foreground">Learning your writing style…</h2>
               </div>
             ) : voiceReady && !voiceSkipped ? (
               <div className="text-center space-y-8">
                 <div className="h-16 w-16 rounded-2xl bg-success/15 flex items-center justify-center mx-auto"><Check className="h-8 w-8 text-success" /></div>
-                <Header step={3} title="Voice captured" subtitle="Every draft will sound like you." center />
+                <Header step={3} title="Writing style captured" subtitle="Every draft will sound like you." center />
                 <div className="bg-primary-foreground/[0.03] border border-primary-foreground/8 rounded-xl p-5 space-y-3 text-left">
                   {voiceTraits.map((trait, i) => (<div key={i} className="flex items-center gap-3"><div className="h-1.5 w-1.5 rounded-full bg-linkedin shrink-0" /><span className="text-sm text-primary-foreground/70">{trait}</span></div>))}
                 </div>
@@ -523,7 +523,7 @@ const Onboarding = () => {
             ) : !voiceOption ? (
 
               <>
-                <Header step={3} title="Teach us your voice" subtitle="So every post sounds like you wrote it — not a chatbot." />
+                <Header step={3} title="Teach us your writing style" subtitle="So every post sounds like you wrote it — not a chatbot." />
                 <div className="grid grid-cols-2 gap-3">
                   <button onClick={() => setVoiceOption('write')} className="p-6 rounded-xl border border-primary-foreground/8 hover:border-linkedin/30 hover:bg-linkedin/[0.03] transition-all text-center space-y-4 group">
                     <div className="h-12 w-12 rounded-xl bg-linkedin/10 flex items-center justify-center mx-auto"><FileText className="h-6 w-6 text-linkedin" /></div>
@@ -546,7 +546,7 @@ const Onboarding = () => {
                   {currentPrompt === 0 ? (
                     <Button variant="linkedin" disabled={!samplePost1} onClick={() => setCurrentPrompt(1)}>Next<ArrowRight className="h-3.5 w-3.5 ml-1" /></Button>
                   ) : (
-                    <Button variant="linkedin" disabled={!samplePost2} onClick={handleAnalyzeVoice}>Learn my voice</Button>
+                    <Button variant="linkedin" disabled={!samplePost2} onClick={handleAnalyzeVoice}>Learn my writing style</Button>
                   )}
                 </div>
               </div>
