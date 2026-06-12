@@ -211,8 +211,9 @@ const Onboarding = () => {
     setVoiceTraits([]);
     setVoiceSkipped(true);
     setVoiceReady(true);
-    setOnboardingStep(4);
+    setOnboardingStep(3);
   };
+
 
 
   // If we land on step 3 without form data (e.g. after a refresh), send the user back to step 1.
