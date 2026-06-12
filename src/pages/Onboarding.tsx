@@ -23,7 +23,7 @@ const documentSources = [
   { id: 'confluence', name: 'Confluence', Icon: Library, desc: 'Team knowledge base' },
 ];
 
-const TOTAL_STEPS = 4;
+const TOTAL_STEPS = 3;
 
 // Default goal — lead generation. We no longer ask users to pick.
 const DEFAULT_GOAL = 'sell';
@@ -211,24 +211,25 @@ const Onboarding = () => {
     setVoiceTraits([]);
     setVoiceSkipped(true);
     setVoiceReady(true);
-    setOnboardingStep(4);
+    setOnboardingStep(3);
   };
 
 
-  // If we land on step 4 without form data (e.g. after a refresh), send the user back to step 1.
+
+  // If we land on step 3 without form data (e.g. after a refresh), send the user back to step 1.
   useEffect(() => {
     if (step === 0) {
       setOnboardingStep(1);
       return;
     }
-    if (step === 4 && !companyName.trim() && !wedge.trim()) {
+    if (step === 3 && !companyName.trim() && !wedge.trim()) {
       setOnboardingStep(1);
     }
   }, [step, companyName, wedge, setOnboardingStep]);
 
-  // Generate the strategy brief when entering step 4
+  // Generate the strategy brief when entering step 3
   useEffect(() => {
-    if (step !== 4 || aiBrief || briefLoading || briefError) return;
+    if (step !== 3 || aiBrief || briefLoading || briefError) return;
     if (!briefInputs.companyName?.trim() && !briefInputs.wedge?.trim()) {
       setBriefError('Please complete step 1 (company name and wedge) before generating your brief.');
       return;
@@ -258,7 +259,6 @@ const Onboarding = () => {
         if (data?.error) throw new Error(data.error);
         const ai = data?.brief;
         if (!ai) throw new Error('No brief returned');
-        // Compose final StrategyBrief by combining inputs with AI output (structural fields)
         const fallback = generateStrategyBrief(briefInputs);
         const final: StrategyBrief = {
           ...fallback,
@@ -277,7 +277,8 @@ const Onboarding = () => {
       }
     })();
     return () => { cancelled = true; clearTimeout(timer); };
-  }, [step, briefInputs, voiceTraits, additionalContext, aiBrief, briefError]);
+  }, [step, briefInputs, voiceTraits, additionalContext, kbLinks, kbContext, aiBrief, briefError]);
+
 
   const brief = aiBrief;
   const povBank = editablePovBank ?? brief?.povBank ?? [];
@@ -431,80 +432,74 @@ const Onboarding = () => {
                   <Field label="YOUR TARGET COMPANY (SIZE, INDUSTRY, ETC.)"><Input value={icpCompanyType} onChange={(e) => setIcpCompanyType(e.target.value)} className={inputCls} /></Field>
                 </div>
               )}
+
+              {pulled && (
+                <div className="pt-6 space-y-4 border-t border-primary-foreground/10">
+                  <div>
+                    <h3 className="text-sm font-bold text-primary-foreground">Add your knowledge base <span className="text-primary-foreground/40 font-normal">(optional)</span></h3>
+                    <p className="text-xs text-primary-foreground/60 mt-1">Whitepapers, meeting notes, articles — anything extra you want us to mine for tailored content.</p>
+                  </div>
+
+                  <Field label="Paste links to docs, articles, or shared files">
+                    <Textarea
+                      value={kbLinks}
+                      onChange={(e) => setKbLinks(e.target.value)}
+                      placeholder={"One link per line — Google Doc, Notion page, blog post, PDF URL…"}
+                      rows={3}
+                      className={cn(inputCls, 'resize-none leading-relaxed')}
+                    />
+                  </Field>
+
+                  <Field label="Upload knowledge base files">
+                    <label
+                      onDragOver={(e) => { e.preventDefault(); setKbDragging(true); }}
+                      onDragLeave={() => setKbDragging(false)}
+                      onDrop={(e) => {
+                        e.preventDefault();
+                        setKbDragging(false);
+                        handleKbFiles(e.dataTransfer.files);
+                      }}
+                      className={cn(
+                        'flex flex-col items-center justify-center gap-3 px-6 py-8 rounded-xl border-2 border-dashed cursor-pointer transition-all text-center',
+                        kbDragging
+                          ? 'border-linkedin bg-linkedin/[0.06]'
+                          : 'border-primary-foreground/15 hover:border-linkedin/40 hover:bg-linkedin/[0.03]'
+                      )}
+                    >
+                      <div className="h-10 w-10 rounded-xl bg-linkedin/10 flex items-center justify-center">
+                        <UploadCloud className="h-5 w-5 text-linkedin" />
+                      </div>
+                      <div>
+                        <div className="font-semibold text-primary-foreground text-sm">Drop files here or click to upload</div>
+                        <p className="text-xs text-primary-foreground/80 mt-1">.txt or .md files · For PDFs/decks, paste a shareable link above</p>
+                      </div>
+                      <input
+                        type="file"
+                        multiple
+                        accept=".txt,.md,.markdown,text/plain,text/markdown"
+                        className="hidden"
+                        onChange={(e) => handleKbFiles(e.target.files)}
+                      />
+                    </label>
+                    {kbFileNames.length > 0 && (
+                      <p className="mt-2 text-[11px] text-primary-foreground/50">
+                        {kbFileNames.length} file{kbFileNames.length === 1 ? '' : 's'} attached: {kbFileNames.join(', ')}
+                      </p>
+                    )}
+                  </Field>
+                </div>
+              )}
             </div>
             <Nav back={() => setOnboardingStep(0)} next={() => setOnboardingStep(2)} disabled={!pulled || !companyName || !wedge} />
           </div>
         )}
 
-        {/* Step 2 — Knowledge base for tailored content */}
+
+
+
+
+        {/* Step 2 — Voice */}
         {step === 2 && (
-          <div className="animate-fade-in space-y-8">
-            <Header
-              step={2}
-              title="Add your knowledge base"
-              subtitle="Whitepapers, meeting notes, business plans, pitch decks — anything you want us to mine for tailored content. Separate from the company docs you uploaded earlier."
-            />
-
-            <Field label="Paste links to docs, articles, or shared files">
-              <Textarea
-                value={kbLinks}
-                onChange={(e) => setKbLinks(e.target.value)}
-                placeholder={"One link per line — Google Doc, Notion page, blog post, PDF URL…"}
-                rows={4}
-                className={cn(inputCls, 'resize-none leading-relaxed')}
-              />
-            </Field>
-
-            <Field label="Upload knowledge base files">
-              <label
-                onDragOver={(e) => { e.preventDefault(); setKbDragging(true); }}
-                onDragLeave={() => setKbDragging(false)}
-                onDrop={(e) => {
-                  e.preventDefault();
-                  setKbDragging(false);
-                  handleKbFiles(e.dataTransfer.files);
-                }}
-                className={cn(
-                  'flex flex-col items-center justify-center gap-3 px-6 py-10 rounded-xl border-2 border-dashed cursor-pointer transition-all text-center',
-                  kbDragging
-                    ? 'border-linkedin bg-linkedin/[0.06]'
-                    : 'border-primary-foreground/15 hover:border-linkedin/40 hover:bg-linkedin/[0.03]'
-                )}
-              >
-                <div className="h-12 w-12 rounded-xl bg-linkedin/10 flex items-center justify-center">
-                  <UploadCloud className="h-6 w-6 text-linkedin" />
-                </div>
-                <div>
-                  <div className="font-semibold text-primary-foreground text-sm">Drop files here or click to upload</div>
-                  <p className="text-xs text-primary-foreground/80 mt-1">.txt or .md files · For PDFs/decks, paste a shareable link above</p>
-                </div>
-                <input
-                  type="file"
-                  multiple
-                  accept=".txt,.md,.markdown,text/plain,text/markdown"
-                  className="hidden"
-                  onChange={(e) => handleKbFiles(e.target.files)}
-                />
-              </label>
-              {kbFileNames.length > 0 && (
-                <p className="mt-2 text-[11px] text-primary-foreground/50">
-                  {kbFileNames.length} file{kbFileNames.length === 1 ? '' : 's'} attached: {kbFileNames.join(', ')}
-                </p>
-              )}
-            </Field>
-
-            <Nav
-              back={() => setOnboardingStep(1)}
-              next={() => setOnboardingStep(3)}
-              nextLabel={(kbFileNames.length || kbLinks.trim()) ? 'Continue' : 'Skip for now'}
-            />
-          </div>
-        )}
-
-
-
-        {/* Step 3 — Voice */}
-        {step === 3 && (
           <div className="animate-fade-in space-y-8">
             {isAnalyzing ? (
               <div className="text-center space-y-5 py-16">
@@ -514,16 +509,16 @@ const Onboarding = () => {
             ) : voiceReady && !voiceSkipped ? (
               <div className="text-center space-y-8">
                 <div className="h-16 w-16 rounded-2xl bg-success/15 flex items-center justify-center mx-auto"><Check className="h-8 w-8 text-success" /></div>
-                <Header step={3} title="Writing style captured" subtitle="Every draft will sound like you." center />
+                <Header step={2} title="Writing style captured" subtitle="Every draft will sound like you." center />
                 <div className="bg-primary-foreground/[0.03] border border-primary-foreground/8 rounded-xl p-5 space-y-3 text-left">
                   {voiceTraits.map((trait, i) => (<div key={i} className="flex items-center gap-3"><div className="h-1.5 w-1.5 rounded-full bg-linkedin shrink-0" /><span className="text-sm text-primary-foreground/70">{trait}</span></div>))}
                 </div>
-                <Nav back={() => { setVoiceReady(false); setVoiceOption(null); setVoiceTraits([]); }} next={() => setOnboardingStep(4)} nextLabel="Build my plan" />
+                <Nav back={() => { setVoiceReady(false); setVoiceOption(null); setVoiceTraits([]); }} next={() => setOnboardingStep(3)} nextLabel="Build my plan" />
               </div>
             ) : !voiceOption ? (
 
               <>
-                <Header step={3} title="Teach us your writing style" subtitle="So every post sounds like you wrote it — not a chatbot." />
+                <Header step={2} title="Teach us your writing style" subtitle="So every post sounds like you wrote it — not a chatbot." />
                 <div className="grid grid-cols-2 gap-3">
                   <button onClick={() => setVoiceOption('write')} className="p-6 rounded-xl border border-primary-foreground/8 hover:border-linkedin/30 hover:bg-linkedin/[0.03] transition-all text-center space-y-4 group">
                     <div className="h-12 w-12 rounded-xl bg-linkedin/10 flex items-center justify-center mx-auto"><FileText className="h-6 w-6 text-linkedin" /></div>
@@ -534,7 +529,7 @@ const Onboarding = () => {
                     <div><div className="font-semibold text-primary-foreground text-sm">Paste old posts</div><p className="text-xs text-primary-foreground/80 mt-1">We learn your style</p></div>
                   </button>
                 </div>
-                <Nav back={() => setOnboardingStep(2)} next={handleSkipVoice} nextLabel="Skip — set up later" />
+                <Nav back={() => setOnboardingStep(1)} next={handleSkipVoice} nextLabel="Skip — set up later" />
               </>
             ) : voiceOption === 'write' ? (
               <div className="space-y-6">
@@ -563,10 +558,10 @@ const Onboarding = () => {
           </div>
         )}
 
-        {/* Step 4 — Strategy Brief review */}
-        {step === 4 && (
+        {/* Step 3 — Strategy Brief review */}
+        {step === 3 && (
           <div className="animate-fade-in space-y-8">
-            <Header step={4} title="Your content plan" subtitle="Check it over and tweak anything. Every post we draft starts here." />
+            <Header step={3} title="Your content plan" subtitle="Check it over and tweak anything. Every post we draft starts here." />
 
             {briefLoading && <BriefProgress />}
 
@@ -637,7 +632,7 @@ const Onboarding = () => {
                 </div>
 
                 <div className="flex gap-3 pt-4">
-                  <Button variant="ghost" className="text-primary-foreground/40" onClick={() => setOnboardingStep(3)}>Back</Button>
+                  <Button variant="ghost" className="text-primary-foreground/40" onClick={() => setOnboardingStep(2)}>Back</Button>
                   <Button variant="heroOutline" onClick={() => { setAiBrief(null); setEditablePovBank(null); }}>Regenerate</Button>
                   <Button variant="linkedin" size="lg" className="flex-1 h-12 font-semibold" onClick={handleFinish}>Looks good — build my calendar<ArrowRight className="h-4 w-4 ml-1" /></Button>
                 </div>
