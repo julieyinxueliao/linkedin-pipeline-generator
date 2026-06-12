@@ -509,11 +509,11 @@ const Onboarding = () => {
             ) : voiceReady && !voiceSkipped ? (
               <div className="text-center space-y-8">
                 <div className="h-16 w-16 rounded-2xl bg-success/15 flex items-center justify-center mx-auto"><Check className="h-8 w-8 text-success" /></div>
-                <Header step={3} title="Writing style captured" subtitle="Every draft will sound like you." center />
+                <Header step={2} title="Writing style captured" subtitle="Every draft will sound like you." center />
                 <div className="bg-primary-foreground/[0.03] border border-primary-foreground/8 rounded-xl p-5 space-y-3 text-left">
                   {voiceTraits.map((trait, i) => (<div key={i} className="flex items-center gap-3"><div className="h-1.5 w-1.5 rounded-full bg-linkedin shrink-0" /><span className="text-sm text-primary-foreground/70">{trait}</span></div>))}
                 </div>
-                <Nav back={() => { setVoiceReady(false); setVoiceOption(null); setVoiceTraits([]); }} next={() => setOnboardingStep(4)} nextLabel="Build my plan" />
+                <Nav back={() => { setVoiceReady(false); setVoiceOption(null); setVoiceTraits([]); }} next={() => setOnboardingStep(3)} nextLabel="Build my plan" />
               </div>
             ) : !voiceOption ? (
 
