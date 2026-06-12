@@ -518,7 +518,7 @@ const Onboarding = () => {
             ) : !voiceOption ? (
 
               <>
-                <Header step={3} title="Teach us your writing style" subtitle="So every post sounds like you wrote it — not a chatbot." />
+                <Header step={2} title="Teach us your writing style" subtitle="So every post sounds like you wrote it — not a chatbot." />
                 <div className="grid grid-cols-2 gap-3">
                   <button onClick={() => setVoiceOption('write')} className="p-6 rounded-xl border border-primary-foreground/8 hover:border-linkedin/30 hover:bg-linkedin/[0.03] transition-all text-center space-y-4 group">
                     <div className="h-12 w-12 rounded-xl bg-linkedin/10 flex items-center justify-center mx-auto"><FileText className="h-6 w-6 text-linkedin" /></div>
@@ -529,7 +529,7 @@ const Onboarding = () => {
                     <div><div className="font-semibold text-primary-foreground text-sm">Paste old posts</div><p className="text-xs text-primary-foreground/80 mt-1">We learn your style</p></div>
                   </button>
                 </div>
-                <Nav back={() => setOnboardingStep(2)} next={handleSkipVoice} nextLabel="Skip — set up later" />
+                <Nav back={() => setOnboardingStep(1)} next={handleSkipVoice} nextLabel="Skip — set up later" />
               </>
             ) : voiceOption === 'write' ? (
               <div className="space-y-6">
