@@ -215,20 +215,20 @@ const Onboarding = () => {
   };
 
 
-  // If we land on step 4 without form data (e.g. after a refresh), send the user back to step 1.
+  // If we land on step 3 without form data (e.g. after a refresh), send the user back to step 1.
   useEffect(() => {
     if (step === 0) {
       setOnboardingStep(1);
       return;
     }
-    if (step === 4 && !companyName.trim() && !wedge.trim()) {
+    if (step === 3 && !companyName.trim() && !wedge.trim()) {
       setOnboardingStep(1);
     }
   }, [step, companyName, wedge, setOnboardingStep]);
 
-  // Generate the strategy brief when entering step 4
+  // Generate the strategy brief when entering step 3
   useEffect(() => {
-    if (step !== 4 || aiBrief || briefLoading || briefError) return;
+    if (step !== 3 || aiBrief || briefLoading || briefError) return;
     if (!briefInputs.companyName?.trim() && !briefInputs.wedge?.trim()) {
       setBriefError('Please complete step 1 (company name and wedge) before generating your brief.');
       return;
@@ -258,7 +258,6 @@ const Onboarding = () => {
         if (data?.error) throw new Error(data.error);
         const ai = data?.brief;
         if (!ai) throw new Error('No brief returned');
-        // Compose final StrategyBrief by combining inputs with AI output (structural fields)
         const fallback = generateStrategyBrief(briefInputs);
         const final: StrategyBrief = {
           ...fallback,
@@ -277,7 +276,8 @@ const Onboarding = () => {
       }
     })();
     return () => { cancelled = true; clearTimeout(timer); };
-  }, [step, briefInputs, voiceTraits, additionalContext, aiBrief, briefError]);
+  }, [step, briefInputs, voiceTraits, additionalContext, kbLinks, kbContext, aiBrief, briefError]);
+
 
   const brief = aiBrief;
   const povBank = editablePovBank ?? brief?.povBank ?? [];
