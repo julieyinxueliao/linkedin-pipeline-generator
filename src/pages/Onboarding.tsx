@@ -441,62 +441,6 @@ const Onboarding = () => {
                 </div>
               )}
 
-              {pulled && (
-                <div className="pt-6 space-y-4 border-t border-primary-foreground/10">
-                  <div>
-                    <h3 className="text-sm font-bold text-primary-foreground">Add your knowledge base <span className="text-primary-foreground/40 font-normal">(optional)</span></h3>
-                    <p className="text-xs text-primary-foreground/60 mt-1">Whitepapers, meeting notes, articles — anything extra you want us to mine for tailored content.</p>
-                  </div>
-
-                  <Field label="Paste links to docs, articles, or shared files">
-                    <Textarea
-                      value={kbLinks}
-                      onChange={(e) => setKbLinks(e.target.value)}
-                      placeholder={"One link per line — Google Doc, Notion page, blog post, PDF URL…"}
-                      rows={3}
-                      className={cn(inputCls, 'resize-none leading-relaxed')}
-                    />
-                  </Field>
-
-                  <Field label="Upload knowledge base files">
-                    <label
-                      onDragOver={(e) => { e.preventDefault(); setKbDragging(true); }}
-                      onDragLeave={() => setKbDragging(false)}
-                      onDrop={(e) => {
-                        e.preventDefault();
-                        setKbDragging(false);
-                        handleKbFiles(e.dataTransfer.files);
-                      }}
-                      className={cn(
-                        'flex flex-col items-center justify-center gap-3 px-6 py-8 rounded-xl border-2 border-dashed cursor-pointer transition-all text-center',
-                        kbDragging
-                          ? 'border-linkedin bg-linkedin/[0.06]'
-                          : 'border-primary-foreground/15 hover:border-linkedin/40 hover:bg-linkedin/[0.03]'
-                      )}
-                    >
-                      <div className="h-10 w-10 rounded-xl bg-linkedin/10 flex items-center justify-center">
-                        <UploadCloud className="h-5 w-5 text-linkedin" />
-                      </div>
-                      <div>
-                        <div className="font-semibold text-primary-foreground text-sm">Drop files here or click to upload</div>
-                        <p className="text-xs text-primary-foreground/80 mt-1">.txt or .md files · For PDFs/decks, paste a shareable link above</p>
-                      </div>
-                      <input
-                        type="file"
-                        multiple
-                        accept=".txt,.md,.markdown,text/plain,text/markdown"
-                        className="hidden"
-                        onChange={(e) => handleKbFiles(e.target.files)}
-                      />
-                    </label>
-                    {kbFileNames.length > 0 && (
-                      <p className="mt-2 text-[11px] text-primary-foreground/50">
-                        {kbFileNames.length} file{kbFileNames.length === 1 ? '' : 's'} attached: {kbFileNames.join(', ')}
-                      </p>
-                    )}
-                  </Field>
-                </div>
-              )}
             </div>
             <Nav back={() => setOnboardingStep(0)} next={() => setOnboardingStep(2)} disabled={!pulled || !companyName || !wedge} />
           </div>
