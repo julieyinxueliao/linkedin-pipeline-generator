@@ -330,7 +330,8 @@ const Onboarding = () => {
                 </div>
               </Field>
 
-              <Field label="Upload company docs (pitch deck, business plan, one-pager)">
+              <Field label="Upload company docs & knowledge base">
+                <p className="text-xs text-primary-foreground/60 -mt-1 mb-2">Pitch deck, business plan, one-pager, whitepapers, meeting notes, articles — anything we should mine for tailored content.</p>
                 <label
                   onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
                   onDragLeave={() => setIsDragging(false)}
@@ -351,7 +352,7 @@ const Onboarding = () => {
                   </div>
                   <div>
                     <div className="font-semibold text-primary-foreground text-sm">Drop files here or click to upload</div>
-                    <p className="text-xs text-primary-foreground/80 mt-1">.txt or .md files · For PDFs/decks, use paste option below</p>
+                    <p className="text-xs text-primary-foreground/80 mt-1">.txt or .md files · For PDFs/decks, paste a link or text below</p>
                   </div>
                   <input
                     type="file"
@@ -366,6 +367,13 @@ const Onboarding = () => {
                     {uploadedFileNames.length} file{uploadedFileNames.length === 1 ? '' : 's'} attached: {uploadedFileNames.join(', ')}
                   </p>
                 )}
+                <Textarea
+                  value={kbLinks}
+                  onChange={(e) => setKbLinks(e.target.value)}
+                  placeholder={"Or paste links — Google Doc, Notion page, blog post, PDF URL… (one per line)"}
+                  rows={3}
+                  className={cn(inputCls, 'resize-none leading-relaxed mt-3')}
+                />
               </Field>
 
               <div className="rounded-xl border border-primary-foreground/10">
