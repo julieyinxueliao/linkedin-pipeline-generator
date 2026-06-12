@@ -498,8 +498,8 @@ const Onboarding = () => {
 
 
 
-        {/* Step 3 — Voice */}
-        {step === 3 && (
+        {/* Step 2 — Voice */}
+        {step === 2 && (
           <div className="animate-fade-in space-y-8">
             {isAnalyzing ? (
               <div className="text-center space-y-5 py-16">
