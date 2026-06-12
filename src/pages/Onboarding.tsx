@@ -227,14 +227,6 @@ const Onboarding = () => {
     }
   }, [step, companyName, wedge, setOnboardingStep]);
 
-  // Auto-advance from step 1 to step 2 once company info is pulled and required fields are filled.
-  useEffect(() => {
-    if (step !== 1) return;
-    if (pulled && companyName.trim() && wedge.trim()) {
-      const t = setTimeout(() => setOnboardingStep(2), 1200);
-      return () => clearTimeout(t);
-    }
-  }, [step, pulled, companyName, wedge, setOnboardingStep]);
 
   // Generate the strategy brief when entering step 3
   useEffect(() => {
