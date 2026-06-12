@@ -23,7 +23,7 @@ const documentSources = [
   { id: 'confluence', name: 'Confluence', Icon: Library, desc: 'Team knowledge base' },
 ];
 
-const TOTAL_STEPS = 4;
+const TOTAL_STEPS = 3;
 
 // Default goal — lead generation. We no longer ask users to pick.
 const DEFAULT_GOAL = 'sell';
