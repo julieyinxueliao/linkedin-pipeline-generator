@@ -227,14 +227,6 @@ const Onboarding = () => {
     }
   }, [step, companyName, wedge, setOnboardingStep]);
 
-  // Auto-advance from step 1 to step 2 once company info is pulled and required fields are filled.
-  useEffect(() => {
-    if (step !== 1) return;
-    if (pulled && companyName.trim() && wedge.trim()) {
-      const t = setTimeout(() => setOnboardingStep(2), 1200);
-      return () => clearTimeout(t);
-    }
-  }, [step, pulled, companyName, wedge, setOnboardingStep]);
 
   // Generate the strategy brief when entering step 3
   useEffect(() => {
@@ -447,8 +439,10 @@ const Onboarding = () => {
                   <Field label="YOUR PRODUCT"><Textarea value={wedge} onChange={(e) => setWedge(e.target.value)} className={inputCls} rows={4} /></Field>
                   <Field label="YOUR TARGET USER (JOB TITLES)"><Input value={icpTitles} onChange={(e) => setIcpTitles(e.target.value)} className={inputCls} /></Field>
                   <Field label="YOUR TARGET COMPANY (SIZE, INDUSTRY, ETC.)"><Input value={icpCompanyType} onChange={(e) => setIcpCompanyType(e.target.value)} className={inputCls} /></Field>
+                  <Nav back={() => setPulled(false)} next={() => setOnboardingStep(2)} disabled={!companyName.trim() || !wedge.trim()} />
                 </div>
               )}
+
 
             </div>
           </div>
