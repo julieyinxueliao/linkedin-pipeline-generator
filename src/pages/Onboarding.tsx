@@ -451,7 +451,6 @@ const Onboarding = () => {
               )}
 
             </div>
-            <Nav back={() => setOnboardingStep(0)} next={() => setOnboardingStep(2)} disabled={!pulled || !companyName || !wedge} />
           </div>
         )}
 
