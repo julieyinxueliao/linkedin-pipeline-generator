@@ -69,10 +69,6 @@ const Auth = () => {
 
         <div className="max-w-md w-full relative z-10 space-y-8">
           <div className="animate-fade-in space-y-4 text-center">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-primary-foreground/10 bg-primary-foreground/5 text-primary-foreground/70 text-[0.7rem] font-semibold tracking-[0.08em] uppercase">
-              <Zap className="h-3 w-3" aria-hidden="true" />
-              For Founders Selling B2B GTM Tools
-            </div>
             <h1 className="text-4xl font-black text-primary-foreground tracking-[-0.035em] leading-[1.05]">
               Write LinkedIn posts that generate{' '}
               <span className="text-linkedin">real pipeline.</span>
