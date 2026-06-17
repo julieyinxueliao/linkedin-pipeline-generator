@@ -326,7 +326,7 @@ const Onboarding = () => {
             <div className="space-y-4">
               <Field label="Company website">
                 <div className="relative">
-                  <Globe className="h-4 w-4 text-primary-foreground/30 absolute left-3 top-1/2 -translate-y-1/2" />
+                  <Globe className="h-4 w-4 text-primary-foreground/70 absolute left-3 top-1/2 -translate-y-1/2" />
                   <Input value={websiteUrl} onChange={(e) => setWebsiteUrl(e.target.value)} placeholder="https://yourcompany.com" className={cn(inputCls, 'pl-9')} />
                 </div>
               </Field>
