@@ -73,7 +73,7 @@ const Auth = () => {
               Write LinkedIn posts that generate{' '}
               <span className="text-linkedin">real pipeline.</span>
             </h1>
-            <p className="text-sm text-primary-foreground/55 leading-[1.65] max-w-sm mx-auto">
+            <p className="text-sm text-primary-foreground leading-[1.65] max-w-sm mx-auto">
               Based on the tried-and-true playbook built on what already works for Clay, Unify, and AirOps — tailored to your product and story.
             </p>
           </div>
