@@ -68,7 +68,7 @@ const Landing = () => {
               { icon: Shield, text: 'Your writing style, not AI slop' },
               { icon: Zap, text: 'Posts in seconds' },
             ].map((item) => (
-              <div key={item.text} className="flex items-center gap-2 text-primary-foreground/30 text-xs font-medium">
+              <div key={item.text} className="flex items-center gap-2 text-primary-foreground text-xs font-medium">
                 <item.icon className="h-3.5 w-3.5" />
                 <span>{item.text}</span>
               </div>
