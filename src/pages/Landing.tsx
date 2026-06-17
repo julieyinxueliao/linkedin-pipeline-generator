@@ -16,7 +16,7 @@ const Landing = () => {
           Brand Builder
         </span>
         <div className="flex items-center gap-3">
-          <Button variant="ghost" className="text-primary-foreground/60 hover:text-primary-foreground hover:bg-primary-foreground/5" onClick={handleLogin}>
+          <Button variant="ghost" className="text-primary-foreground hover:text-primary-foreground hover:bg-primary-foreground/5" onClick={handleLogin}>
             Log In
           </Button>
           <Button variant="linkedin" size="sm" onClick={handleLogin}>
@@ -33,6 +33,8 @@ const Landing = () => {
           <div className="animate-fade-in space-y-6">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-primary-foreground/10 bg-primary-foreground/5 text-primary-foreground/70 text-xs font-medium tracking-wide uppercase">
               <Zap className="h-3 w-3" />
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-primary-foreground/10 bg-primary-foreground/5 text-primary-foreground text-xs font-medium tracking-wide uppercase">
+              <Zap className="h-3 w-3" />
               AI-Powered LinkedIn Growth
             </div>
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-black text-primary-foreground leading-[1.05] tracking-tight">
@@ -41,6 +43,7 @@ const Landing = () => {
               <span className="text-linkedin">Published.</span>
             </h1>
             <p className="text-lg md:text-xl text-primary-foreground/50 max-w-lg mx-auto leading-relaxed font-light">
+            <p className="text-lg md:text-xl text-primary-foreground max-w-lg mx-auto leading-relaxed font-light">
               Turn documents and voice notes into LinkedIn posts that sound like you. Built for founders who move fast.
             </p>
           </div>
