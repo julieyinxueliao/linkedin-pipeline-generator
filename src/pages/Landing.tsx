@@ -31,8 +31,6 @@ const Landing = () => {
 
         <div className="max-w-3xl w-full text-center relative z-10 space-y-10">
           <div className="animate-fade-in space-y-6">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-primary-foreground/10 bg-primary-foreground/5 text-primary-foreground/70 text-xs font-medium tracking-wide uppercase">
-              <Zap className="h-3 w-3" />
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-primary-foreground/10 bg-primary-foreground/5 text-primary-foreground text-xs font-medium tracking-wide uppercase">
               <Zap className="h-3 w-3" />
               AI-Powered LinkedIn Growth
@@ -42,7 +40,6 @@ const Landing = () => {
               <br />
               <span className="text-linkedin">Published.</span>
             </h1>
-            <p className="text-lg md:text-xl text-primary-foreground/50 max-w-lg mx-auto leading-relaxed font-light">
             <p className="text-lg md:text-xl text-primary-foreground max-w-lg mx-auto leading-relaxed font-light">
               Turn documents and voice notes into LinkedIn posts that sound like you. Built for founders who move fast.
             </p>
