@@ -73,7 +73,7 @@ const Auth = () => {
               Write LinkedIn posts that generate{' '}
               <span className="text-linkedin">real pipeline.</span>
             </h1>
-            <p className="text-sm text-primary-foreground/55 leading-[1.65] max-w-sm mx-auto">
+            <p className="text-sm text-primary-foreground leading-[1.65] max-w-sm mx-auto">
               Based on the tried-and-true playbook built on what already works for Clay, Unify, and AirOps — tailored to your product and story.
             </p>
           </div>
@@ -97,7 +97,7 @@ const Auth = () => {
 
             <div className="flex items-center gap-3">
               <div className="flex-1 h-px bg-primary-foreground/10" />
-              <span className="text-xs text-primary-foreground/30 font-medium">or</span>
+              <span className="text-xs text-primary-foreground/70 font-medium">or</span>
               <div className="flex-1 h-px bg-primary-foreground/10" />
             </div>
 
@@ -108,7 +108,7 @@ const Auth = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="bg-primary-foreground/5 border-primary-foreground/10 text-primary-foreground placeholder:text-primary-foreground/20 h-12"
+                className="bg-primary-foreground/5 border-primary-foreground/10 text-primary-foreground placeholder:text-primary-foreground/50 h-12"
               />
               <Input
                 type="password"
@@ -117,7 +117,7 @@ const Auth = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 minLength={6}
-                className="bg-primary-foreground/5 border-primary-foreground/10 text-primary-foreground placeholder:text-primary-foreground/20 h-12"
+                className="bg-primary-foreground/5 border-primary-foreground/10 text-primary-foreground placeholder:text-primary-foreground/50 h-12"
               />
               <Button variant="hero" size="lg" className="w-full h-14" type="submit" disabled={loading}>
                 {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : (
@@ -130,7 +130,7 @@ const Auth = () => {
               </Button>
             </form>
 
-            <p className="text-center text-sm text-primary-foreground/40">
+            <p className="text-center text-sm text-primary-foreground">
               {isSignUp ? 'Already have an account?' : "Don't have an account?"}{' '}
               <button onClick={() => setIsSignUp(!isSignUp)} className="text-linkedin hover:underline font-medium">
                 {isSignUp ? 'Sign in' : 'Sign up'}

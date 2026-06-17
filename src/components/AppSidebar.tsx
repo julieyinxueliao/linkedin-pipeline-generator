@@ -68,7 +68,7 @@ export function AppSidebar() {
           {!collapsed && (
             <div className="min-w-0">
               <p className="text-sm font-semibold text-sidebar-foreground truncate">{profile.name || user?.email || 'User'}</p>
-              <p className="text-xs text-sidebar-foreground/40 truncate">{profile.role || 'Getting started'}</p>
+              <p className="text-xs text-sidebar-foreground truncate">{profile.role || 'Getting started'}</p>
             </div>
           )}
         </div>
