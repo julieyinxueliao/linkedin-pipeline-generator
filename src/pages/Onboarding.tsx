@@ -326,13 +326,13 @@ const Onboarding = () => {
             <div className="space-y-4">
               <Field label="Company website">
                 <div className="relative">
-                  <Globe className="h-4 w-4 text-primary-foreground/70 absolute left-3 top-1/2 -translate-y-1/2" />
+                  <Globe className="h-4 w-4 text-primary-foreground absolute left-3 top-1/2 -translate-y-1/2" />
                   <Input value={websiteUrl} onChange={(e) => setWebsiteUrl(e.target.value)} placeholder="https://yourcompany.com" className={cn(inputCls, 'pl-9')} />
                 </div>
               </Field>
 
               <Field label="Upload company docs & knowledge base">
-                <p className="text-xs text-primary-foreground/60 -mt-1 mb-2">Pitch deck, business plan, one-pager, whitepapers, meeting notes, articles — anything we should mine for tailored content.</p>
+                <p className="text-xs text-primary-foreground -mt-1 mb-2">Pitch deck, business plan, one-pager, whitepapers, meeting notes, articles — anything we should mine for tailored content.</p>
                 <label
                   onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
                   onDragLeave={() => setIsDragging(false)}
@@ -353,7 +353,7 @@ const Onboarding = () => {
                   </div>
                   <div>
                     <div className="font-semibold text-primary-foreground text-sm">Drop files here or click to upload</div>
-                    <p className="text-xs text-primary-foreground/80 mt-1">.txt or .md files · For PDFs/decks, paste a link or text below</p>
+                    <p className="text-xs text-primary-foreground mt-1">.txt or .md files · For PDFs/decks, paste a link or text below</p>
                   </div>
                   <input
                     type="file"
@@ -364,7 +364,7 @@ const Onboarding = () => {
                   />
                 </label>
                 {uploadedFileNames.length > 0 && (
-                  <p className="mt-2 text-[11px] text-primary-foreground/50">
+                  <p className="mt-2 text-[11px] text-primary-foreground">
                     {uploadedFileNames.length} file{uploadedFileNames.length === 1 ? '' : 's'} attached: {uploadedFileNames.join(', ')}
                   </p>
                 )}
@@ -383,11 +383,11 @@ const Onboarding = () => {
                   onClick={() => setPasteOpen((v) => !v)}
                   className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-primary-foreground/[0.02] transition-colors rounded-xl"
                 >
-                  <span className="flex items-center gap-2 text-sm text-primary-foreground/80">
-                    <FileText className="h-3.5 w-3.5 text-primary-foreground/40" />
+                  <span className="flex items-center gap-2 text-sm text-primary-foreground">
+                    <FileText className="h-3.5 w-3.5 text-primary-foreground" />
                     Or paste text directly
                   </span>
-                  <ChevronDown className={cn('h-4 w-4 text-primary-foreground/40 transition-transform', pasteOpen && 'rotate-180')} />
+                  <ChevronDown className={cn('h-4 w-4 text-primary-foreground transition-transform', pasteOpen && 'rotate-180')} />
                 </button>
                 {pasteOpen && (
                   <div className="px-4 pb-4">
@@ -429,7 +429,7 @@ const Onboarding = () => {
                     </Button>
                   </div>
                   {pullWarning && (
-                    <div className="flex items-start gap-2 p-3 rounded-lg border border-warning/20 bg-warning/5 text-xs text-primary-foreground/70">
+                    <div className="flex items-start gap-2 p-3 rounded-lg border border-warning/20 bg-warning/5 text-xs text-primary-foreground">
                       <AlertTriangle className="h-3.5 w-3.5 text-warning shrink-0 mt-0.5" />
                       <span>{pullWarning}</span>
                     </div>
@@ -465,7 +465,7 @@ const Onboarding = () => {
                 <div className="h-16 w-16 rounded-2xl bg-success/15 flex items-center justify-center mx-auto"><Check className="h-8 w-8 text-success" /></div>
                 <Header step={2} title="Writing style captured" subtitle="Every draft will sound like you." center />
                 <div className="bg-primary-foreground/[0.03] border border-primary-foreground/8 rounded-xl p-5 space-y-3 text-left">
-                  {voiceTraits.map((trait, i) => (<div key={i} className="flex items-center gap-3"><div className="h-1.5 w-1.5 rounded-full bg-linkedin shrink-0" /><span className="text-sm text-primary-foreground/70">{trait}</span></div>))}
+                  {voiceTraits.map((trait, i) => (<div key={i} className="flex items-center gap-3"><div className="h-1.5 w-1.5 rounded-full bg-linkedin shrink-0" /><span className="text-sm text-primary-foreground">{trait}</span></div>))}
                 </div>
                 <Nav back={() => { setVoiceReady(false); setVoiceOption(null); setVoiceTraits([]); }} next={() => setOnboardingStep(3)} nextLabel="Build my plan" />
               </div>
@@ -476,11 +476,11 @@ const Onboarding = () => {
                 <div className="grid grid-cols-2 gap-3">
                   <button onClick={() => setVoiceOption('write')} className="p-6 rounded-xl border border-primary-foreground/8 hover:border-linkedin/30 hover:bg-linkedin/[0.03] transition-all text-center space-y-4 group">
                     <div className="h-12 w-12 rounded-xl bg-linkedin/10 flex items-center justify-center mx-auto"><FileText className="h-6 w-6 text-linkedin" /></div>
-                    <div><div className="font-semibold text-primary-foreground text-sm">Answer 2 prompts</div><p className="text-xs text-primary-foreground/80 mt-1">Quick written replies</p></div>
+                    <div><div className="font-semibold text-primary-foreground text-sm">Answer 2 prompts</div><p className="text-xs text-primary-foreground mt-1">Quick written replies</p></div>
                   </button>
                   <button onClick={() => setVoiceOption('upload')} className="p-6 rounded-xl border border-primary-foreground/8 hover:border-linkedin/30 hover:bg-linkedin/[0.03] transition-all text-center space-y-4 group">
                     <div className="h-12 w-12 rounded-xl bg-linkedin/10 flex items-center justify-center mx-auto"><FileUp className="h-6 w-6 text-linkedin" /></div>
-                    <div><div className="font-semibold text-primary-foreground text-sm">Paste old posts</div><p className="text-xs text-primary-foreground/80 mt-1">We learn your style</p></div>
+                    <div><div className="font-semibold text-primary-foreground text-sm">Paste old posts</div><p className="text-xs text-primary-foreground mt-1">We learn your style</p></div>
                   </button>
                 </div>
                 <Nav back={() => setOnboardingStep(1)} next={handleSkipVoice} nextLabel="Skip — set up later" />
@@ -491,7 +491,7 @@ const Onboarding = () => {
                 <h2 className="text-xl font-bold text-primary-foreground leading-snug">{promptForWedge}</h2>
                 <Textarea value={currentPrompt === 0 ? samplePost1 : samplePost2} onChange={(e) => currentPrompt === 0 ? setSamplePost1(e.target.value) : setSamplePost2(e.target.value)} placeholder="Write naturally…" rows={7} className={cn(inputCls, 'resize-none leading-relaxed')} />
                 <div className="flex justify-between">
-                  <Button variant="ghost" className="text-primary-foreground/40" onClick={() => setVoiceOption(null)}>Back</Button>
+                  <Button variant="ghost" className="text-primary-foreground" onClick={() => setVoiceOption(null)}>Back</Button>
                   {currentPrompt === 0 ? (
                     <Button variant="linkedin" disabled={!samplePost1} onClick={() => setCurrentPrompt(1)}>Next<ArrowRight className="h-3.5 w-3.5 ml-1" /></Button>
                   ) : (
@@ -504,7 +504,7 @@ const Onboarding = () => {
                 <h2 className="text-xl font-bold text-primary-foreground">Paste your LinkedIn posts</h2>
                 <Textarea value={pastedPosts} onChange={(e) => setPastedPosts(e.target.value)} placeholder="Paste 3–5 posts here…" rows={8} className={cn(inputCls, 'resize-none leading-relaxed')} />
                 <div className="flex justify-between">
-                  <Button variant="ghost" className="text-primary-foreground/40" onClick={() => setVoiceOption(null)}>Back</Button>
+                  <Button variant="ghost" className="text-primary-foreground" onClick={() => setVoiceOption(null)}>Back</Button>
                   <Button variant="linkedin" disabled={!pastedPosts} onClick={handleAnalyzeVoice}>Analyze</Button>
                 </div>
               </div>
@@ -535,7 +535,7 @@ const Onboarding = () => {
 
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <p className="text-xs font-semibold text-primary-foreground/40 uppercase tracking-wider flex items-center gap-1.5"><Sparkles className="h-3 w-3" /> Hot takes you can post ({povBank.length})</p>
+                    <p className="text-xs font-semibold text-primary-foreground uppercase tracking-wider flex items-center gap-1.5"><Sparkles className="h-3 w-3" /> Hot takes you can post ({povBank.length})</p>
                   </div>
                   <div className="space-y-2">
                     {povBank.map((p, idx) => (
@@ -549,36 +549,36 @@ const Onboarding = () => {
                             setEditablePovBank(next);
                           }}
                           rows={2}
-                          className="bg-transparent border-none focus-visible:ring-0 text-sm text-primary-foreground/80 resize-none p-0 min-h-0 leading-snug"
+                          className="bg-transparent border-none focus-visible:ring-0 text-sm text-primary-foreground resize-none p-0 min-h-0 leading-snug"
                         />
-                        <button onClick={() => setEditablePovBank(povBank.filter((_, i) => i !== idx))} className="text-primary-foreground/20 hover:text-primary-foreground/85"><X className="h-3.5 w-3.5" /></button>
+                        <button onClick={() => setEditablePovBank(povBank.filter((_, i) => i !== idx))} className="text-primary-foreground/20 hover:text-primary-foreground"><X className="h-3.5 w-3.5" /></button>
                       </div>
                     ))}
                   </div>
                 </div>
 
                 <div className="space-y-3">
-                  <p className="text-xs font-semibold text-primary-foreground/40 uppercase tracking-wider">Topics you'll post about</p>
+                  <p className="text-xs font-semibold text-primary-foreground uppercase tracking-wider">Topics you'll post about</p>
                   <div className="space-y-2">
                     {brief.pillars.map((p) => (
                       <div key={p.id} className="p-3 rounded-lg border border-primary-foreground/8 bg-primary-foreground/[0.02]">
                         <div className="flex items-center gap-2 mb-1">
                           <span className="text-sm font-semibold text-primary-foreground">{p.name}</span>
-                          <Badge variant="secondary" className="text-[10px] bg-primary-foreground/5 text-primary-foreground/40">{FUNNEL_STAGE_LABELS[p.funnelTilt]}</Badge>
+                          <Badge variant="secondary" className="text-[10px] bg-primary-foreground/5 text-primary-foreground">{FUNNEL_STAGE_LABELS[p.funnelTilt]}</Badge>
                         </div>
-                        <p className="text-xs text-primary-foreground/80">{p.exampleAngles.join(' · ')}</p>
+                        <p className="text-xs text-primary-foreground">{p.exampleAngles.join(' · ')}</p>
                       </div>
                     ))}
                   </div>
                 </div>
 
                 <div className="space-y-3">
-                  <p className="text-xs font-semibold text-primary-foreground/40 uppercase tracking-wider">Stories & proof to pull from</p>
+                  <p className="text-xs font-semibold text-primary-foreground uppercase tracking-wider">Stories & proof to pull from</p>
                   <div className="space-y-1.5">
                     {brief.assetInventory.map((a) => (
                       <div key={a.id} className="flex items-center gap-2 text-xs">
                         <span className={cn('h-1.5 w-1.5 rounded-full shrink-0', a.hasProof ? 'bg-success' : 'bg-warning')} />
-                        <span className="text-primary-foreground/85">{a.text}</span>
+                        <span className="text-primary-foreground">{a.text}</span>
                         {!a.hasProof && <span className="text-warning/80 text-[10px] uppercase">add details</span>}
                       </div>
                     ))}
@@ -586,7 +586,7 @@ const Onboarding = () => {
                 </div>
 
                 <div className="flex gap-3 pt-4">
-                  <Button variant="ghost" className="text-primary-foreground/40" onClick={() => setOnboardingStep(2)}>Back</Button>
+                  <Button variant="ghost" className="text-primary-foreground" onClick={() => setOnboardingStep(2)}>Back</Button>
                   <Button variant="heroOutline" onClick={() => { setAiBrief(null); setEditablePovBank(null); }}>Regenerate</Button>
                   <Button variant="linkedin" size="lg" className="flex-1 h-12 font-semibold" onClick={handleFinish}>Looks good — build my calendar<ArrowRight className="h-4 w-4 ml-1" /></Button>
                 </div>
@@ -599,14 +599,14 @@ const Onboarding = () => {
   );
 };
 
-const inputCls = 'bg-primary-foreground/5 border-primary-foreground/10 text-primary-foreground placeholder:text-primary-foreground/20 h-12';
+const inputCls = 'bg-primary-foreground/5 border-primary-foreground/10 text-primary-foreground placeholder:text-primary-foreground/50 h-12';
 const cardCls = (active: boolean) => cn(
   'w-full p-5 rounded-xl border text-left transition-all flex items-start gap-4 group',
   active ? 'border-linkedin bg-linkedin/8 shadow-glow' : 'border-primary-foreground/8 hover:border-primary-foreground/15 bg-primary-foreground/[0.02]'
 );
 const iconBoxCls = (active: boolean) => cn(
   'h-10 w-10 rounded-lg flex items-center justify-center shrink-0',
-  active ? 'bg-linkedin/20 text-linkedin' : 'bg-primary-foreground/5 text-primary-foreground/30'
+  active ? 'bg-linkedin/20 text-linkedin' : 'bg-primary-foreground/5 text-primary-foreground'
 );
 
 function Header({ step, title, subtitle, center }: { step: number; title: string; subtitle: string; center?: boolean }) {
@@ -614,7 +614,7 @@ function Header({ step, title, subtitle, center }: { step: number; title: string
     <div className={cn('space-y-3', center && 'text-center')}>
       <p className="text-linkedin text-xs font-semibold tracking-widest uppercase">Step {step} of {TOTAL_STEPS}</p>
       <h2 className="text-3xl font-black text-primary-foreground tracking-tight">{title}</h2>
-      <p className="text-primary-foreground/80 text-sm">{subtitle}</p>
+      <p className="text-primary-foreground text-sm">{subtitle}</p>
     </div>
   );
 }
@@ -622,7 +622,7 @@ function Header({ step, title, subtitle, center }: { step: number; title: string
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <label className="text-xs font-semibold text-primary-foreground/85 uppercase tracking-wider mb-2 block">{label}</label>
+      <label className="text-xs font-semibold text-primary-foreground uppercase tracking-wider mb-2 block">{label}</label>
       {children}
     </div>
   );
@@ -631,7 +631,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 function Nav({ back, next, disabled, nextLabel }: { back: () => void; next: () => void; disabled?: boolean; nextLabel?: string }) {
   return (
     <div className="flex gap-3">
-      <Button variant="ghost" className="text-primary-foreground/40" onClick={back}>Back</Button>
+      <Button variant="ghost" className="text-primary-foreground" onClick={back}>Back</Button>
       <Button variant="linkedin" size="lg" className="flex-1 h-12 font-semibold" disabled={disabled} onClick={next}>{nextLabel || 'Continue'}<ArrowRight className="h-4 w-4 ml-1" /></Button>
     </div>
   );
@@ -640,8 +640,8 @@ function Nav({ back, next, disabled, nextLabel }: { back: () => void; next: () =
 function BriefBlock({ label, value }: { label: string; value: string }) {
   return (
     <div className="space-y-1.5">
-      <p className="text-xs font-semibold text-primary-foreground/40 uppercase tracking-wider">{label}</p>
-      <p className="text-sm text-primary-foreground/85 leading-relaxed p-3 rounded-lg border border-primary-foreground/8 bg-primary-foreground/[0.02]">{value}</p>
+      <p className="text-xs font-semibold text-primary-foreground uppercase tracking-wider">{label}</p>
+      <p className="text-sm text-primary-foreground leading-relaxed p-3 rounded-lg border border-primary-foreground/8 bg-primary-foreground/[0.02]">{value}</p>
     </div>
   );
 }
@@ -666,7 +666,7 @@ function BriefProgress() {
         <div className="h-8 w-8 rounded-full border-2 border-linkedin border-t-transparent animate-spin" />
         <div>
           <p className="text-sm font-semibold text-primary-foreground">Building your content plan</p>
-          <p className="text-xs text-primary-foreground/80">AI is working through what you shared — usually 15–25s.</p>
+          <p className="text-xs text-primary-foreground">AI is working through what you shared — usually 15–25s.</p>
         </div>
       </div>
       <div className="space-y-2.5">
@@ -684,9 +684,9 @@ function BriefProgress() {
                 {state === 'active' && <span className="h-1.5 w-1.5 rounded-full bg-linkedin animate-pulse" />}
               </span>
               <span className={cn(
-                state === 'done' && 'text-primary-foreground/85',
+                state === 'done' && 'text-primary-foreground',
                 state === 'active' && 'text-primary-foreground font-medium',
-                state === 'pending' && 'text-primary-foreground/30',
+                state === 'pending' && 'text-primary-foreground',
               )}>{label}</span>
             </div>
           );
