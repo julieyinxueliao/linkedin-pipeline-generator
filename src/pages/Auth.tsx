@@ -97,7 +97,7 @@ const Auth = () => {
 
             <div className="flex items-center gap-3">
               <div className="flex-1 h-px bg-primary-foreground/10" />
-              <span className="text-xs text-primary-foreground/30 font-medium">or</span>
+              <span className="text-xs text-primary-foreground/70 font-medium">or</span>
               <div className="flex-1 h-px bg-primary-foreground/10" />
             </div>
 
